@@ -9,7 +9,9 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include <net/if.h>
 #include <pcap/pcap.h>
+#include <sys/ioctl.h>
 
 #include <cstring>
 #include <iostream>

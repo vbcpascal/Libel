@@ -1,6 +1,22 @@
 #include "device.h"
 
-Device::Device(std::string name) : name(name) { id = (max_id++); }
+Device::Device(std::string name) : name(name) {
+  id = (max_id++);
+  u_char mac[ETHER_ADDR_LEN];
+
+  // get MAC address
+
+#ifndef __APPLE__
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  ifreq ifr;
+  strcpy(ifr.ifr_name, name.c_str());
+  int res = ioctl(sock, SIOCGIFADD, &ifr);
+  for (int i = 0; i < 6; ++i) {
+    sprintf(mac + 2 * i, "%02x", (unsigned char)ifr.ifr_hwaddr.sa_data[i]);
+  }
+  LOG(INFO, "get MAC address: %s\n", mac);
+#endif
+}
 
 int Device::get_id() { return id; }
 
