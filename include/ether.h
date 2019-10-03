@@ -43,6 +43,12 @@ class EtherFrame {
 
   EtherFrame() { std::memset(frame, 0, ETHER_MAX_LEN); }
 
+  /**
+   * @brief Construct a new Ether Frame object
+   *
+   * @param buf frame buffer
+   * @param l length of the buffer
+   */
   EtherFrame(const void* buf, int l) : len(l) {
     std::memcpy(frame, buf, len);
     std::memcpy(&header, buf, ETHER_HDR_LEN);
@@ -85,6 +91,12 @@ class EtherFrame {
    */
   void setChecksum() { ASSERT(false, "not implemented."); }
 
+  /**
+   * @brief Print the frame
+   *
+   * @param brief whether show detailed information
+   * @param col
+   */
   void printFrame(bool brief = true, int col = 2) {
     printf("\033[33m[ PACKET ]\033[0m \t");
     printMAC(header.ether_shost, false);
