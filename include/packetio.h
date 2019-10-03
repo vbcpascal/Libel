@@ -31,17 +31,6 @@ int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
               int id);
 
 /**
- * @brief Process a frame upon receiving it.
- *
- * @param buf Pointer to the frame.
- * @param len Length of the frame.
- * @param id ID of the device (returned by `addDevice`) receiving current frame.
- * @return 0 on success, -1 on error.
- * @see addDevice
- */
-typedef int (*frameReceiveCallback)(const void*, int, int);
-
-/**
  * @brief Register a callback function to be called each time an Ethernet II
  * frame was received.
  *

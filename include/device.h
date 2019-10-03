@@ -12,7 +12,6 @@
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <net/if_dl.h>
-#include <pcap/pcap.h>
 #include <sys/ioctl.h>
 
 #include <cstring>
@@ -34,6 +33,7 @@ class Device {
   int id;
   std::string name;
   u_char mac[ETHER_ADDR_LEN];
+  pcap_t *pcap;
 
  public:
   Device(std::string name);
@@ -56,8 +56,6 @@ class DeviceController {
   int sendFrame(int id, EtherFrame &frame);
 };
 
-DeviceController deviceCtrl;
-
 /**
  * Add a device to the library for sending/receiving packets.
  *
@@ -74,6 +72,9 @@ int addDevice(const char *device);
  * was found.
  */
 int findDevice(const char *device);
+
+extern DeviceController deviceCtrl;
+extern frameReceiveCallback callback;
 
 }  // namespace Device
 

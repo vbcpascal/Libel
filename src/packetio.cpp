@@ -1,5 +1,8 @@
 #include "packetio.h"
 
+extern Device::DeviceController Device::deviceCtrl;
+extern frameReceiveCallback Device::callback;
+
 int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
               int id) {
   if (!ETHER_IS_VALID_LEN(len + ETHER_HDR_LEN)) {
@@ -17,4 +20,7 @@ int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
   return Device::deviceCtrl.sendFrame(id, frame);
 }
 
-int setFrameReceiveCallback(frameReceiveCallback callback) {}
+int setFrameReceiveCallback(frameReceiveCallback callback) {
+  Device::callback = callback;
+  return 0;
+}
