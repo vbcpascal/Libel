@@ -32,6 +32,7 @@
 #define ASSERT_EQ(A, B, Msg, ...) ASSERT((A) == (B), Msg, ##__VA_ARGS__)
 #define ASSERT_NE(A, B, Msg, ...) ASSERT((A) != (B), Msg, ##__VA_ARGS__)
 
+#ifdef OPENPOS
 #define LOG(Title, Msg, ...)                    \
   {                                             \
     const size_t BUFSIZE = 200;                 \
@@ -42,5 +43,14 @@
             "Source:\t\t%s, line %d\n",         \
             Title, buf, __FILE__, __LINE__);    \
   }
+#else
+#define LOG(Title, Msg, ...)                      \
+  {                                               \
+    const size_t BUFSIZE = 200;                   \
+    char buf[BUFSIZE];                            \
+    snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__);   \
+    fprintf(stderr, "[ %s ] \t%s\n", Title, buf); \
+  }
+#endif
 
 #endif

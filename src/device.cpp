@@ -15,7 +15,7 @@ struct pcapArgs {
   }
 };
 
-int getMACAddr(u_char* mac, const char* if_name = "en0") {
+int getMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
 #ifdef __APPLE__
   ifaddrs* iflist;
   int found = -1;
@@ -32,15 +32,19 @@ int getMACAddr(u_char* mac, const char* if_name = "en0") {
     freeifaddrs(iflist);
   }
   return found;
+
 #else
-  int sock = socket(AF_INET, SOCK_STREAM, 0);
-  ifreq ifr;
-  strcpy(ifr.ifr_name, "eth0");
-  int res = ioctl(sock, SIOCGIFHWADDR, &ifr);
-  for (int i = 0; i < 6; ++i) {
-    sprintf(mac[i], "%02x", (unsigned char)ifr.ifr_hwaddr.sa_data[i]);
+  ifreq ifinfo;
+  strcpy(ifinfo.ifr_name, if_name);
+  int sd = socket(AF_INET, SOCK_DGRAM, 0);
+  int res = ioctl(sd, SIOCGIFADDR, &ifinfo);
+  close(sd);
+
+  if ((res == 0) && (ifinfo.ifr_hwaddr.sa_family == 1)) {
+    memcpy(mac, ifinfo.ifr_hwaddr.sa_data, IFHWADDRLEN);
+    found = 1;
   }
-  return 1;
+  return found
 #endif
 }
 
@@ -64,6 +68,7 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
 
 //////////////////// Device ////////////////////
 
+Device::~Device() { sniffingThread.join(); }
 Device::Device(std::string name) : name(name) {
   id = (max_id++);
 
@@ -73,12 +78,13 @@ Device::Device(std::string name) : name(name) {
     abort();
   }
   LOG(INFO, "get MAC address succeed.");
-  printMAC();
+  EtherFrame::printMAC(mac);
 
   // obtain a PCAP descriptor
   char pcap_errbuf[PCAP_ERRBUF_SIZE];
   memset(pcap_errbuf, 0, PCAP_ERRBUF_SIZE);
-  pcap = pcap_open_live(name.c_str(), 65536, 0, 0, pcap_errbuf);
+  pcap = pcap_open_live(name.c_str(), MAX_FRAME_SIZE, false, FRAME_TIME_OUT,
+                        pcap_errbuf);
   if (pcap_errbuf[0] != '\0') {
     LOG(ERR, "pcap_open_live error! %s", pcap_errbuf);
   }
@@ -88,7 +94,9 @@ Device::Device(std::string name) : name(name) {
 
   // start sniffing
   pcapArgs pa(id, name, mac);
-  pcap_loop(pcap, -1, getPacket, (u_char*)&pa);
+  sniffingThread =
+      std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)&pa); });
+  // sniffing.detach();
 }
 
 int Device::getId() { return id; }
@@ -112,29 +120,20 @@ int Device::sendFrame(EtherFrame& frame) {
   return 0;
 }
 
-void Device::printMAC() {
-#ifndef NDEBUG
-  printf("Mac Address: ");
-  for (int i = 0; i < ETHER_ADDR_LEN; ++i) {
-    printf("%02x:", mac[i]);
-  }
-  printf("\n");
-  return;
-#endif
-}
-
 //////////////////// DeviceController ////////////////////
 
 int DeviceController::addDevice(std::string name) {
-  auto d = Device(name);
-  devices.push_back(d);
-  return d.getId();
+  DevicePtr dev = std::make_shared<Device>(name);
+  devices.push_back(dev);
+  int id = dev->getId();
+  LOG(INFO, "Add device succeed. name: %s, id: %d", dev->getName().c_str(), id);
+  return id;
 }
 
 int DeviceController::findDevice(std::string name) {
   int id = -1;
   for (auto& dev : devices) {
-    if (dev.getName() == name) id = dev.getId();
+    if (dev->getName() == name) id = dev->getId();
   }
   return id;
 }
@@ -142,9 +141,9 @@ int DeviceController::findDevice(std::string name) {
 int DeviceController::getMACAddr(u_char* mac, int id) {
   int found = -1;
   for (auto& dev : devices) {
-    if (dev.getId() == id) {
+    if (dev->getId() == id) {
       found = 1;
-      dev.getMAC(mac);
+      dev->getMAC(mac);
     }
   }
   return found;
@@ -153,17 +152,26 @@ int DeviceController::getMACAddr(u_char* mac, int id) {
 int DeviceController::sendFrame(int id, EtherFrame& frame) {
   int found = -1;
   for (auto& dev : devices) {
-    if (dev.getId() == id) {
+    if (dev->getId() == id) {
       found = 1;
-      dev.getMAC(frame.header.ether_shost);
+      dev->getMAC(frame.header.ether_shost);
       frame.updateHeader();
-      int res = dev.sendFrame(frame);
+      int res = dev->sendFrame(frame);
       if (res < 0) {
         LOG(ERR, "Sending frame failed. error code: %d", res);
         return -1;
       }
       LOG(INFO, "Sending frame succeed.");
       break;
+    }
+  }
+  return 0;
+}
+
+int DeviceController::keepReceiving() {
+  for (auto& dev : devices) {
+    if (dev->sniffingThread.joinable()) {
+      dev->sniffingThread.join();
     }
   }
   return 0;
@@ -177,7 +185,6 @@ int addDevice(const char* device) {
   if (id < 0) {
     return -1;
   }
-  LOG(INFO, "Add device succeed. id: %d", id);
   return id;
 }
 
@@ -185,3 +192,5 @@ int findDevice(const char* device) {
   int id = Device::deviceCtrl.findDevice(device);
   return id;
 }
+
+int keepReceiving() { return Device::deviceCtrl.keepReceiving(); }

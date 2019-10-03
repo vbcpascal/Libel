@@ -1,11 +1,9 @@
 /**
  * @file type.h
  * @author guanzhichao
- * @brief
+ * @brief Define some types and constant will be used.
  * @version 0.1
  * @date 2019-10-03
- *
- * @copyright Copyright (c) 2019
  *
  */
 
@@ -18,14 +16,18 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 
 #include "massert.h"
 
 #ifdef __APPLE__
 #include <netinet/if_ether.h>
+#define DEFAULT_DEV_NAME "en0"
 #else
 #include <netinet/ether.h>
+#define DEFAULT_DEV_NAME "eth0"
 #endif
 
 /**
