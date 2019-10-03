@@ -18,6 +18,12 @@ include(FindPCAP.cmake)
 add_library(${LIB_NAME} SHARED ${proj_HEADERS} ${proj_SOURCES})
 target_link_libraries(tcp_ip ${PCAP_LIBRARY})
 
+# Load all sub-cmakefiles.
+set(UTILS_ROOT "${PROJECT_SOURCE_DIR}/cmake")
+file(GLOB cmake_utils "${UTILS_ROOT}/*.cmake")
+foreach(util IN LISTS cmake_utils)
+    include(${util})
+endforeach(util)
+
 # Add subdirectories.
-# add_subdirectory(examples)
-# add_subdirectory(tests)
+add_subdirectory(tests)

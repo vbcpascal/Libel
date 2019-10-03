@@ -69,9 +69,11 @@ Device::Device(std::string name) : name(name) {
 
   // get MAC
   if (getMACAddr(mac, name.c_str()) < 0) {
-    ASSERT(false, "[ ERR ] get MAC address failed.");
+    LOG(ERR, "get MAC address failed.");
+    abort();
   }
   LOG(INFO, "get MAC address succeed.");
+  printMAC();
 
   // obtain a PCAP descriptor
   char pcap_errbuf[PCAP_ERRBUF_SIZE];
@@ -108,6 +110,17 @@ int Device::sendFrame(EtherFrame& frame) {
   }
   pcap_close(pcap);
   return 0;
+}
+
+void Device::printMAC() {
+#ifndef NDEBUG
+  printf("Mac Address: ");
+  for (int i = 0; i < ETHER_ADDR_LEN; ++i) {
+    printf("%02x:", mac[i]);
+  }
+  printf("\n");
+  return;
+#endif
 }
 
 //////////////////// DeviceController ////////////////////
@@ -156,9 +169,11 @@ int DeviceController::sendFrame(int id, EtherFrame& frame) {
   return 0;
 }
 
+}  // namespace Device
+
 int addDevice(const char* device) {
   LOG(INFO, "Add a new device.");
-  int id = deviceCtrl.addDevice(device);
+  int id = Device::deviceCtrl.addDevice(device);
   if (id < 0) {
     return -1;
   }
@@ -167,8 +182,6 @@ int addDevice(const char* device) {
 }
 
 int findDevice(const char* device) {
-  int id = deviceCtrl.findDevice(device);
+  int id = Device::deviceCtrl.findDevice(device);
   return id;
 }
-
-}  // namespace Device

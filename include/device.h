@@ -35,6 +35,8 @@ class Device {
   u_char mac[ETHER_ADDR_LEN];
   pcap_t *pcap;
 
+  void printMAC();
+
  public:
   Device(std::string name);
   int getId();
@@ -56,6 +58,10 @@ class DeviceController {
   int sendFrame(int id, EtherFrame &frame);
 };
 
+extern DeviceController deviceCtrl;
+extern frameReceiveCallback callback;
+}  // namespace Device
+
 /**
  * Add a device to the library for sending/receiving packets.
  *
@@ -72,10 +78,5 @@ int addDevice(const char *device);
  * was found.
  */
 int findDevice(const char *device);
-
-extern DeviceController deviceCtrl;
-extern frameReceiveCallback callback;
-
-}  // namespace Device
 
 #endif
