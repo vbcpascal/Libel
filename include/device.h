@@ -9,7 +9,9 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include <ifaddrs.h>
 #include <net/if.h>
+#include <net/if_dl.h>
 #include <pcap/pcap.h>
 #include <sys/ioctl.h>
 
@@ -23,17 +25,22 @@
 #include "ether.h"
 #include "type.h"
 
+namespace Device {
+
 static int max_id = 0;
 
 class Device {
  private:
   int id;
   std::string name;
+  u_char mac[ETHER_ADDR_LEN];
 
  public:
   Device(std::string name);
-  int get_id();
-  std::string get_name();
+  int getId();
+  std::string getName();
+  void getMAC(u_char *dst_mac);
+  int sendFrame(EtherFrame &frame);
 };
 
 using DevicePtr = std::shared_ptr<Device>;
@@ -45,7 +52,8 @@ class DeviceController {
  public:
   int addDevice(std::string name);
   int findDevice(std::string name);
-  int sendFrame(EtherFrame frame);
+  int getMACAddr(u_char *mac, int id);
+  int sendFrame(int id, EtherFrame &frame);
 };
 
 DeviceController deviceCtrl;
@@ -66,5 +74,7 @@ int addDevice(const char *device);
  * was found.
  */
 int findDevice(const char *device);
+
+}  // namespace Device
 
 #endif

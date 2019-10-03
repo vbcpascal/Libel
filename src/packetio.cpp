@@ -14,4 +14,7 @@ int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
   EtherFrame frame;
   frame.setHeader(hdr);
   frame.setPayload(buf, len);
+  return Device::deviceCtrl.sendFrame(id, frame);
 }
+
+int setFrameReceiveCallback(frameReceiveCallback callback) {}

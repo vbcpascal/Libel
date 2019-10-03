@@ -12,6 +12,7 @@
 
 #include <cstring>
 
+#include "device.h"
 #include "ether.h"
 #include "type.h"
 
