@@ -11,6 +11,7 @@
 
 #include <ifaddrs.h>
 #include <net/if.h>
+#include <pthread.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -93,7 +94,19 @@ class Device {
    */
   int sendFrame(EtherFrame &frame);
 
+  /**
+   * @brief start sniffing in this device
+   *
+   * @return int 0 on success, -1 on error
+   */
   int startSniffing();
+
+  /**
+   * @brief stop sniffing
+   *
+   * @return int 0 on success, -1 on error
+   */
+  int stopSniffing();
 };
 
 using DevicePtr = std::shared_ptr<Device>;

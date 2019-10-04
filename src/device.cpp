@@ -81,9 +81,7 @@ void Device::badDevice() {
   id = -1;
 }
 
-Device::~Device() {
-  if (sniffing && sniffingThread.joinable()) sniffingThread.join();
-}
+Device::~Device() { stopSniffing(); }
 
 Device::Device(std::string name, bool sniff) : name(name), sniffing(false) {
   id = (max_id++);
@@ -94,21 +92,19 @@ Device::Device(std::string name, bool sniff) : name(name), sniffing(false) {
     badDevice();
     return;
   }
-  // LOG(INFO, "get MAC address succeed.");
-  // EtherFrame::printMAC(mac);
 
   // obtain a PCAP descriptor
   char pcap_errbuf[PCAP_ERRBUF_SIZE];
   memset(pcap_errbuf, 0, PCAP_ERRBUF_SIZE);
   pcap = pcap_open_live(name.c_str(), MAX_FRAME_SIZE, false, FRAME_TIME_OUT,
                         pcap_errbuf);
-  if (pcap_errbuf[0] != '\0') {
-    LOG(ERR, "pcap_open_live error! %s", pcap_errbuf);
+  if (!pcap) {
+    LOG(ERR, "Cannot get pcap.");
     badDevice();
     return;
   }
-  if (!pcap) {
-    LOG(ERR, "Cannot get pcap.");
+  if (pcap_errbuf[0] != '\0') {
+    LOG(ERR, "pcap_open_live error! %s", pcap_errbuf);
     badDevice();
     return;
   }
@@ -145,6 +141,16 @@ int Device::startSniffing() {
   pcapArgs* pa = new pcapArgs(id, name, mac);
   sniffingThread =
       std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)pa); });
+  return 0;
+}
+
+int Device::stopSniffing() {
+  if (!sniffing) return -1;
+
+  sniffing = false;
+  pthread_t pthread = sniffingThread.native_handle();
+  if (pthread_cancel(pthread)) return -1;
+  sniffingThread.detach();
   return 0;
 }
 
