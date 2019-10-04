@@ -33,7 +33,7 @@ class EtherFrame {
    * We cannot promise that it will match the header in frame
    *
    */
-  ether_header_t header;
+  ether_header header;
 
   /**
    * @brief Length of the frame
@@ -41,7 +41,11 @@ class EtherFrame {
    */
   int len;
 
-  EtherFrame() { std::memset(frame, 0, ETHER_MAX_LEN); }
+  EtherFrame() {
+    std::memset(frame, 0, ETHER_MAX_LEN);
+    std::memset(header.ether_dhost, 0, ETHER_ADDR_LEN);
+    std::memset(header.ether_shost, 0, ETHER_ADDR_LEN);
+  }
 
   /**
    * @brief Construct a new Ether Frame object
@@ -50,16 +54,29 @@ class EtherFrame {
    * @param l length of the buffer
    */
   EtherFrame(const void* buf, int l) : len(l) {
+    if (len < ETHER_HDR_LEN) {
+      LOG(ERR, "packet length is too small. length : %d", len);
+      len = 0;
+      return;
+    } else if (len > ETHER_MAX_LEN) {
+      LOG(ERR, "packet length is too large. length : %d", len);
+      len = 0;
+      return;
+    }
     std::memcpy(frame, buf, len);
     std::memcpy(&header, buf, ETHER_HDR_LEN);
   }
+
+  u_char* getPayload() { return frame + ETHER_HDR_LEN; }
+
+  int getPayloadLength() { return len - ETHER_HDR_LEN - ETHER_CRC_LEN; }
 
   /**
    * @brief Set the Header object
    *
    * @param hdr the header
    */
-  void setHeader(ether_header_t hdr) {
+  void setHeader(ether_header hdr) {
     header = hdr;
     updateHeader();
   }
@@ -98,7 +115,7 @@ class EtherFrame {
    * @param col
    */
   void printFrame(bool brief = true, int col = 2) {
-    printf("\033[33m[ PACKET ]\033[0m \t");
+    printf("[ \033[33mPACKET\033[0m ] \t");
     printMAC(header.ether_shost, false);
     printf(" > ");
     printMAC(header.ether_dhost, false);

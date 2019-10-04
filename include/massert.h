@@ -3,8 +3,8 @@
 
 #define MACOS
 
-#define INFO "INFO"
-#define ERR "ERR"
+#define INFO "\033[32mINFO\033[0m"
+#define ERR "\033[31mERR\033[0m"
 #define WAR "WAR"
 
 #include <cstdio>

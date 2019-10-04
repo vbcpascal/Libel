@@ -35,16 +35,17 @@ int getMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
 
 #else
   ifreq ifinfo;
+  int found = -1;
   strcpy(ifinfo.ifr_name, if_name);
   int sd = socket(AF_INET, SOCK_DGRAM, 0);
-  int res = ioctl(sd, SIOCGIFADDR, &ifinfo);
+  int res = ioctl(sd, SIOCGIFHWADDR, &ifinfo);
   close(sd);
 
   if ((res == 0) && (ifinfo.ifr_hwaddr.sa_family == 1)) {
     memcpy(mac, ifinfo.ifr_hwaddr.sa_data, IFHWADDRLEN);
     found = 1;
   }
-  return found
+  return found;
 #endif
 }
 
@@ -58,8 +59,15 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
     LOG(ERR, "Data Lost.");
     return;
   }
+
+  auto frame = EtherFrame(packet, header->len);
+  if (frame.len == 0) return;
+
+  printf("id: %d\t", pa->id);
+  if (frame.len) frame.printFrame();
+
   if (callback != NULL) {
-    int res = callback(packet, header->len, pa->id);
+    int res = callback(frame.getPayload(), frame.getPayloadLength(), pa->id);
     if (res < 0) {
       LOG(ERR, "Callback error!");
     }
@@ -68,17 +76,26 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
 
 //////////////////// Device ////////////////////
 
-Device::~Device() { sniffingThread.join(); }
+void Device::badDevice() {
+  --max_id;
+  id = -1;
+}
+
+Device::~Device() {
+  if (sniffingThread.joinable()) sniffingThread.join();
+}
+
 Device::Device(std::string name) : name(name) {
   id = (max_id++);
 
   // get MAC
   if (getMACAddr(mac, name.c_str()) < 0) {
     LOG(ERR, "get MAC address failed.");
-    abort();
+    badDevice();
+    return;
   }
-  LOG(INFO, "get MAC address succeed.");
-  EtherFrame::printMAC(mac);
+  // LOG(INFO, "get MAC address succeed.");
+  // EtherFrame::printMAC(mac);
 
   // obtain a PCAP descriptor
   char pcap_errbuf[PCAP_ERRBUF_SIZE];
@@ -87,9 +104,13 @@ Device::Device(std::string name) : name(name) {
                         pcap_errbuf);
   if (pcap_errbuf[0] != '\0') {
     LOG(ERR, "pcap_open_live error! %s", pcap_errbuf);
+    badDevice();
+    return;
   }
   if (!pcap) {
     LOG(ERR, "Cannot get pcap.");
+    badDevice();
+    return;
   }
 
   // start sniffing
@@ -124,8 +145,12 @@ int Device::sendFrame(EtherFrame& frame) {
 
 int DeviceController::addDevice(std::string name) {
   DevicePtr dev = std::make_shared<Device>(name);
-  devices.push_back(dev);
   int id = dev->getId();
+  if (id < 0) {
+    return -1;
+  }
+
+  devices.push_back(dev);
   LOG(INFO, "Add device succeed. name: %s, id: %d", dev->getName().c_str(), id);
   return id;
 }
@@ -165,7 +190,7 @@ int DeviceController::sendFrame(int id, EtherFrame& frame) {
       break;
     }
   }
-  return 0;
+  return found;
 }
 
 int DeviceController::keepReceiving() {
@@ -180,11 +205,10 @@ int DeviceController::keepReceiving() {
 }  // namespace Device
 
 int addDevice(const char* device) {
-  LOG(INFO, "Add a new device.");
-  int id = Device::deviceCtrl.addDevice(device);
-  if (id < 0) {
-    return -1;
-  }
+  LOG(INFO, "Add a new device, name: \033[33;1m%s\033[0m", device);
+  int id = -1;
+  id = Device::deviceCtrl.addDevice(device);
+
   return id;
 }
 

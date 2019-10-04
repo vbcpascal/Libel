@@ -10,7 +10,7 @@ int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
     return -1;
   }
 
-  ether_header_t hdr;
+  ether_header hdr;
   hdr.ether_type = (u_short)ethtype;
   std::memcpy(hdr.ether_dhost, destmac, ETHER_ADDR_LEN);
 

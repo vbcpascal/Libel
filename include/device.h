@@ -11,7 +11,6 @@
 
 #include <ifaddrs.h>
 #include <net/if.h>
-#include <net/if_dl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -43,6 +42,8 @@ class Device {
   std::string name;
   u_char mac[ETHER_ADDR_LEN];
   pcap_t *pcap;
+
+  void badDevice();
 
  public:
   /**

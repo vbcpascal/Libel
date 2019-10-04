@@ -23,9 +23,11 @@
 #include "massert.h"
 
 #ifdef __APPLE__
+#include <net/if_dl.h>
 #include <netinet/if_ether.h>
 #define DEFAULT_DEV_NAME "en0"
 #else
+#include <ifaddrs.h>
 #include <netinet/ether.h>
 #define DEFAULT_DEV_NAME "eth0"
 #endif
