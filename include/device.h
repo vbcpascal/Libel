@@ -41,7 +41,9 @@ class Device {
   int id;
   std::string name;
   u_char mac[ETHER_ADDR_LEN];
+
   pcap_t *pcap;
+  bool sniffing;
 
   void badDevice();
 
@@ -58,8 +60,9 @@ class Device {
    * @brief Construct a new Device object
    *
    * @param name the name of device
+   * @param sniff whether begin to sniff after construct this device
    */
-  Device(std::string name);
+  Device(std::string name, bool sniff = false);
 
   /**
    * @brief Get the Id object
@@ -89,6 +92,8 @@ class Device {
    * @return int 0 on success, -1 on error
    */
   int sendFrame(EtherFrame &frame);
+
+  int startSniffing();
 };
 
 using DevicePtr = std::shared_ptr<Device>;

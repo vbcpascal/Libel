@@ -82,10 +82,10 @@ void Device::badDevice() {
 }
 
 Device::~Device() {
-  if (sniffingThread.joinable()) sniffingThread.join();
+  if (sniffing && sniffingThread.joinable()) sniffingThread.join();
 }
 
-Device::Device(std::string name) : name(name) {
+Device::Device(std::string name, bool sniff) : name(name), sniffing(false) {
   id = (max_id++);
 
   // get MAC
@@ -114,10 +114,7 @@ Device::Device(std::string name) : name(name) {
   }
 
   // start sniffing
-  pcapArgs pa(id, name, mac);
-  sniffingThread =
-      std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)&pa); });
-  // sniffing.detach();
+  if (sniff) startSniffing();
 }
 
 int Device::getId() { return id; }
@@ -138,6 +135,16 @@ int Device::sendFrame(EtherFrame& frame) {
     return -3;
   }
   pcap_close(pcap);
+  return 0;
+}
+
+int Device::startSniffing() {
+  if (sniffing) return -1;
+
+  sniffing = true;
+  pcapArgs pa(id, name, mac);
+  sniffingThread =
+      std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)&pa); });
   return 0;
 }
 
