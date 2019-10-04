@@ -63,8 +63,8 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   auto frame = EtherFrame(packet, header->len);
   if (frame.len == 0) return;
 
-  printf("id: %d\t", pa->id);
-  if (frame.len) frame.printFrame();
+  // printf("id: %d\t", pa->id);
+  // if (frame.len) frame.printFrame();
 
   if (callback != NULL) {
     int res = callback(frame.getPayload(), frame.getPayloadLength(), pa->id);
@@ -142,9 +142,9 @@ int Device::startSniffing() {
   if (sniffing) return -1;
 
   sniffing = true;
-  pcapArgs pa(id, name, mac);
+  pcapArgs* pa = new pcapArgs(id, name, mac);
   sniffingThread =
-      std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)&pa); });
+      std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)pa); });
   return 0;
 }
 
