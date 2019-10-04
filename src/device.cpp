@@ -64,9 +64,9 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   if (frame.len == 0) return;
 
   printf("id: %d\t", pa->id);
-  if (frame.len) frame.printFrame(false);
+  if (frame.len) frame.printFrame();
 
-  if (callback != NULL) {
+  if (callback != nullptr) {
     int res = callback(frame.getPayload(), frame.getPayloadLength(), pa->id);
     if (res < 0) {
       LOG(ERR, "Callback error!");
