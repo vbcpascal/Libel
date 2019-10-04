@@ -75,6 +75,13 @@ class Device {
   void getMAC(u_char *dst_mac);
 
   /**
+   * @brief Get the MAC address (Not Recommand!)
+   *
+   * @return const u_char* MAC address
+   */
+  const u_char *getMAC();
+
+  /**
    * @brief Send a frame on the device
    *
    * @param frame the frame will be sent
@@ -125,7 +132,7 @@ class DeviceManager {
    * @param name the name of device
    * @return int id, -1 on error
    */
-  int addDevice(std::string name);
+  int addDevice(std::string name, bool sniff = true);
 
   /**
    * @brief Find a device
@@ -144,11 +151,19 @@ class DeviceManager {
   DevicePtr getDevicePtr(int id);
 
   /**
+   * @brief Get the pointer of device according to id
+   *
+   * @param name name of device
+   * @return DevicePtr pointer of device
+   */
+  DevicePtr getDevicePtr(std::string name);
+
+  /**
    * @brief Try to add all devices
    *
    * @return int the number of devices added
    */
-  int addAllDevice();
+  int addAllDevice(bool sniff = true);
 
   /**
    * @brief Get MAC address of a device

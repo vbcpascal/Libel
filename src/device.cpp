@@ -125,6 +125,8 @@ void Device::getMAC(u_char* dst_mac) {
   std::memcpy(dst_mac, mac, ETHER_ADDR_LEN);
 }
 
+const u_char* Device::getMAC() { return mac; }
+
 int Device::sendFrame(EtherFrame& frame) {
   LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
 
@@ -161,14 +163,14 @@ int Device::stopSniffing() {
 
 //////////////////// DeviceManager ////////////////////
 
-int DeviceManager::addDevice(std::string name) {
+int DeviceManager::addDevice(std::string name, bool sniff) {
   // LOG_INFO("Add a new device, name: \033[33;1m%s\033[0m", name);
   if (findDevice(name) >= 0) {
     LOG_WARN("Device exists, no actions.");
     return -1;
   }
 
-  DevicePtr dev = std::make_shared<Device>(name, true);
+  DevicePtr dev = std::make_shared<Device>(name, sniff);
   int id = dev->getId();
   if (id < 0) {
     return -1;
@@ -208,7 +210,18 @@ DevicePtr DeviceManager::getDevicePtr(int id) {
   return devPtr;
 }
 
-int DeviceManager::addAllDevice() {
+DevicePtr DeviceManager::getDevicePtr(std::string name) {
+  DevicePtr devPtr = nullptr;
+  for (auto& dev : devices) {
+    if (dev->getName() == name) {
+      devPtr = dev;
+      break;
+    }
+  }
+  return devPtr;
+}
+
+int DeviceManager::addAllDevice(bool sniff) {
   int cnt = 0;
 
   pcap_if_t* devsPtr;
@@ -216,7 +229,7 @@ int DeviceManager::addAllDevice() {
   pcap_findalldevs(&devsPtr, errbuf);
 
   while (devsPtr != nullptr) {
-    int id = addDevice(devsPtr->name);
+    int id = addDevice(devsPtr->name, sniff);
     if (id >= 0) ++cnt;
     devsPtr = devsPtr->next;
   }

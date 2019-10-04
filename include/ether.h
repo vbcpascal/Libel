@@ -15,6 +15,7 @@
 
 #include "type.h"
 
+#define e_PRINT_NONE 0
 #define e_PRINT_INTRO 1
 #define e_PRINT_MAC 2
 #define e_PRINT_TYPE 4
@@ -29,7 +30,7 @@ namespace MAC {
  * @param mac MAC address
  * @return std::string MAC address string
  */
-std::string toString(u_char* mac);
+std::string toString(const u_char* mac);
 
 /**
  * @brief A tool funtion to print MAC address
@@ -37,7 +38,7 @@ std::string toString(u_char* mac);
  * @param mac MAC to print
  * @param newline
  */
-void printMAC(u_char* mac, bool newline = true);
+void printMAC(const u_char* mac, bool newline = true);
 
 /**
  * @brief Convert a string to MAC address

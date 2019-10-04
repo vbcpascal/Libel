@@ -3,14 +3,14 @@
 
 namespace MAC {
 
-std::string toString(u_char* mac) {
+std::string toString(const u_char* mac) {
   char cstr[18] = "";
   sprintf(cstr, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3],
           mac[4], mac[5]);
   return std::string(cstr);
 }
 
-void printMAC(u_char* mac, bool newline) {
+void printMAC(const u_char* mac, bool newline) {
   printf("%s", toString(mac).c_str());
   if (newline) printf("\n");
 }
