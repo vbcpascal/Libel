@@ -15,6 +15,12 @@
 
 #include "type.h"
 
+#define e_PRINT_INTRO 1
+#define e_PRINT_MAC 2
+#define e_PRINT_TYPE 4
+#define e_PRINT_LEN 8
+#define e_PRINT_ALL 127
+
 namespace MAC {
 
 /**
@@ -125,7 +131,7 @@ class EtherFrame {
    *
    * @param col show brief information if col is 0
    */
-  void printFrame(int col = 0);
+  void printFrame(int col = 0, int option = e_PRINT_ALL);
 };
 
 #endif

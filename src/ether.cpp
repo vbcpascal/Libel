@@ -1,4 +1,5 @@
 #include "ether.h"
+#include <map>
 
 namespace MAC {
 
@@ -11,10 +12,6 @@ std::string toString(u_char* mac) {
 
 void printMAC(u_char* mac, bool newline) {
   printf("%s", toString(mac).c_str());
-  //   printf("%02x", mac[0]);
-  //   for (int i = 1; i < ETHER_ADDR_LEN; ++i) {
-  //     printf(":%02x", mac[i]);
-  //   }
   if (newline) printf("\n");
 }
 
@@ -26,6 +23,25 @@ void strtoMAC(u_char* mac, const char* str) {
 }
 
 }  // namespace MAC
+
+std::string etherToStr(uint16_t type) {
+  std::string s;
+  switch (type) {
+    case ETHERTYPE_IP:
+      s = "IPV4  ";
+      break;
+    case ETHERTYPE_IPV6:
+      s = "IPV6  ";
+      break;
+    case ETHERTYPE_VLAN:
+      s = "VLAN  ";
+      break;
+    default:
+      s = "";
+      // s = std::to_string(type);
+  }
+  return s;
+};
 
 EtherFrame::EtherFrame() {
   std::memset(frame, 0, ETHER_MAX_LEN);
@@ -47,13 +63,31 @@ EtherFrame::EtherFrame(const void* buf, int l) : len(l) {
   std::memcpy(&header, buf, ETHER_HDR_LEN);
 }
 
-void EtherFrame::printFrame(int col) {
-  printf("[ \033[33mPACKET\033[0m ] \t");
-  MAC::printMAC(header.ether_shost, false);
-  printf(" > ");
-  MAC::printMAC(header.ether_dhost, false);
-  printf("\ttype: 0x%04x", header.ether_type);
-  printf("\tlen: %d\n", len);
+void EtherFrame::printFrame(int col, int option) {
+  int b = 0;
+
+  if ((option >> (b++)) & 1) {
+    printf("[ \033[33mPACKET\033[0m ] \t");
+  }
+
+  if ((option >> (b++)) & 1) {
+    MAC::printMAC(header.ether_shost, false);
+    printf(" > ");
+    MAC::printMAC(header.ether_dhost, false);
+  }  // print mac
+
+  if ((option >> (b++)) & 1) {
+    std::string s = etherToStr(header.ether_type);
+    if (s == "")
+      printf("\ttype: 0x%04x", header.ether_type);
+    else
+      printf("\ttype: %s", s.c_str());
+  }  // print type
+
+  if ((option >> (b++)) & 1) {
+    printf("\tlen: %d\n", len);
+  }  // print length
+
   if (col <= 0) return;
 
   for (int i = 0; i < len; ++i) {
