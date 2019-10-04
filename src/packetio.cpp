@@ -1,6 +1,6 @@
 #include "packetio.h"
 
-extern Device::DeviceController Device::deviceCtrl;
+extern Device::DeviceManager Device::deviceMgr;
 extern frameReceiveCallback Device::callback;
 
 int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
@@ -17,7 +17,7 @@ int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
   EtherFrame frame;
   frame.setHeader(hdr);
   frame.setPayload(buf, len);
-  return Device::deviceCtrl.sendFrame(id, frame);
+  return Device::deviceMgr.sendFrame(id, frame);
 }
 
 int setFrameReceiveCallback(frameReceiveCallback callback) {

@@ -2,7 +2,7 @@
 
 namespace Device {
 
-DeviceController deviceCtrl;
+DeviceManager deviceMgr;
 frameReceiveCallback callback;
 
 struct pcapArgs {
@@ -148,10 +148,10 @@ int Device::startSniffing() {
   return 0;
 }
 
-//////////////////// DeviceController ////////////////////
+//////////////////// DeviceManager ////////////////////
 
-int DeviceController::addDevice(std::string name) {
-  DevicePtr dev = std::make_shared<Device>(name);
+int DeviceManager::addDevice(std::string name) {
+  DevicePtr dev = std::make_shared<Device>(name, true);
   int id = dev->getId();
   if (id < 0) {
     return -1;
@@ -162,7 +162,7 @@ int DeviceController::addDevice(std::string name) {
   return id;
 }
 
-int DeviceController::findDevice(std::string name) {
+int DeviceManager::findDevice(std::string name) {
   int id = -1;
   for (auto& dev : devices) {
     if (dev->getName() == name) id = dev->getId();
@@ -170,7 +170,7 @@ int DeviceController::findDevice(std::string name) {
   return id;
 }
 
-int DeviceController::getMACAddr(u_char* mac, int id) {
+int DeviceManager::getMACAddr(u_char* mac, int id) {
   int found = -1;
   for (auto& dev : devices) {
     if (dev->getId() == id) {
@@ -181,7 +181,7 @@ int DeviceController::getMACAddr(u_char* mac, int id) {
   return found;
 }
 
-int DeviceController::sendFrame(int id, EtherFrame& frame) {
+int DeviceManager::sendFrame(int id, EtherFrame& frame) {
   int found = -1;
   for (auto& dev : devices) {
     if (dev->getId() == id) {
@@ -200,7 +200,7 @@ int DeviceController::sendFrame(int id, EtherFrame& frame) {
   return found;
 }
 
-int DeviceController::keepReceiving() {
+int DeviceManager::keepReceiving() {
   for (auto& dev : devices) {
     if (dev->sniffingThread.joinable()) {
       dev->sniffingThread.join();
@@ -214,14 +214,14 @@ int DeviceController::keepReceiving() {
 int addDevice(const char* device) {
   LOG(INFO, "Add a new device, name: \033[33;1m%s\033[0m", device);
   int id = -1;
-  id = Device::deviceCtrl.addDevice(device);
+  id = Device::deviceMgr.addDevice(device);
 
   return id;
 }
 
 int findDevice(const char* device) {
-  int id = Device::deviceCtrl.findDevice(device);
+  int id = Device::deviceMgr.findDevice(device);
   return id;
 }
 
-int keepReceiving() { return Device::deviceCtrl.keepReceiving(); }
+int keepReceiving() { return Device::deviceMgr.keepReceiving(); }

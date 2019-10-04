@@ -102,7 +102,7 @@ using DevicePtr = std::shared_ptr<Device>;
  * @brief Control all the devices.
  *
  */
-class DeviceController {
+class DeviceManager {
  private:
   std::vector<DevicePtr> devices;
 
@@ -149,7 +149,7 @@ class DeviceController {
   int keepReceiving();
 };
 
-extern DeviceController deviceCtrl;
+extern DeviceManager deviceMgr;
 extern frameReceiveCallback callback;
 }  // namespace Device
 
