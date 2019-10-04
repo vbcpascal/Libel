@@ -31,23 +31,11 @@
 
 namespace Device {
 
-static int max_id = 0;
-
 /**
  * @brief Device created by addDevice
  *
  */
 class Device {
- private:
-  int id;
-  std::string name;
-  u_char mac[ETHER_ADDR_LEN];
-
-  pcap_t *pcap;
-  bool sniffing;
-
-  void badDevice();
-
  public:
   /**
    * @brief thread sniffing
@@ -107,6 +95,17 @@ class Device {
    * @return int 0 on success, -1 on error
    */
   int stopSniffing();
+
+ private:
+  static int max_id;
+  int id;
+  std::string name;
+  u_char mac[ETHER_ADDR_LEN];
+
+  pcap_t *pcap;
+  bool sniffing;
+
+  void badDevice();
 };
 
 using DevicePtr = std::shared_ptr<Device>;
@@ -135,6 +134,21 @@ class DeviceManager {
    * @return int id, -1 on error
    */
   int findDevice(std::string name);
+
+  /**
+   * @brief Get the pointer of device according to id
+   *
+   * @param id id of device
+   * @return DevicePtr pointer of device
+   */
+  DevicePtr getDevicePtr(int id);
+
+  /**
+   * @brief Try to add all devices
+   *
+   * @return int the number of devices added
+   */
+  int addAllDevice();
 
   /**
    * @brief Get MAC address of a device

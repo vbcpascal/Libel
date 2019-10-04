@@ -21,7 +21,7 @@ int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
 }
 
 int setFrameReceiveCallback(frameReceiveCallback callback) {
-  LOG(INFO, "Set new callback function.");
+  LOG_INFO("Set new callback function.");
   Device::callback = callback;
   return 0;
 }

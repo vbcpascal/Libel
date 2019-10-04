@@ -5,7 +5,7 @@
 
 #define INFO "\033[32mINFO\033[0m"
 #define ERR "\033[31mERR \033[0m"
-#define WAR "WAR "
+#define WARN "\033[34mWAR \033[0m"
 
 #include <cstdio>
 #include <cstdlib>
@@ -14,7 +14,7 @@
 #define ASSERT(Expr, Msg, ...)                    \
   {                                               \
     if (!(Expr)) {                                \
-      const size_t BUFSIZE = 200;                 \
+      const size_t BUFSIZE = 255;                 \
       char buf[BUFSIZE];                          \
       snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__); \
       fprintf(stderr,                             \
@@ -32,25 +32,16 @@
 #define ASSERT_EQ(A, B, Msg, ...) ASSERT((A) == (B), Msg, ##__VA_ARGS__)
 #define ASSERT_NE(A, B, Msg, ...) ASSERT((A) != (B), Msg, ##__VA_ARGS__)
 
-#ifdef OPENPOS
-#define LOG(Title, Msg, ...)                    \
-  {                                             \
-    const size_t BUFSIZE = 200;                 \
-    char buf[BUFSIZE];                          \
-    snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__); \
-    fprintf(stderr,                             \
-            "[ %s ] \t%s\n"                     \
-            "Source:\t\t%s, line %d\n",         \
-            Title, buf, __FILE__, __LINE__);    \
-  }
-#else
 #define LOG(Title, Msg, ...)                      \
   {                                               \
-    const size_t BUFSIZE = 200;                   \
+    const size_t BUFSIZE = 255;                   \
     char buf[BUFSIZE];                            \
     snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__);   \
     fprintf(stderr, "[ %s ] \t%s\n", Title, buf); \
   }
-#endif
+
+#define LOG_ERR(...) LOG(ERR, ##__VA_ARGS__)
+#define LOG_WARN(...) LOG(WARN, ##__VA_ARGS__)
+#define LOG_INFO(...) LOG(INFO, ##__VA_ARGS__)
 
 #endif

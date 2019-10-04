@@ -10,6 +10,7 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+#include <arpa/inet.h>
 #include <pcap/pcap.h>
 
 #include <cstdint>
