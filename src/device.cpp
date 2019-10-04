@@ -63,8 +63,8 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   auto frame = EtherFrame(packet, header->len);
   if (frame.len == 0) return;
 
-  // printf("id: %d\t", pa->id);
-  // if (frame.len) frame.printFrame();
+  printf("id: %d\t", pa->id);
+  if (frame.len) frame.printFrame(false);
 
   if (callback != NULL) {
     int res = callback(frame.getPayload(), frame.getPayloadLength(), pa->id);
@@ -157,8 +157,15 @@ int DeviceManager::addDevice(std::string name) {
     return -1;
   }
 
+  u_char mac[ETHER_ADDR_LEN];
+  dev->getMAC(mac);
+
   devices.push_back(dev);
-  LOG(INFO, "Add device succeed. name: %s, id: %d", dev->getName().c_str(), id);
+  LOG(INFO,
+      "Add device succeed. name: %s, id: %d, mac: "
+      "%02x:%02x:%02x:%02x:%02x:%02x",
+      dev->getName().c_str(), id, mac[0], mac[1], mac[2], mac[3], mac[4],
+      mac[5]);
   return id;
 }
 
