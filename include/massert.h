@@ -5,7 +5,7 @@
 
 #define INFO "\033[32mINFO\033[0m"
 #define ERR "\033[31mERR \033[0m"
-#define WARN "\033[34mWAR \033[0m"
+#define WARN "\033[34mWARN\033[0m"
 
 #include <cstdio>
 #include <cstdlib>

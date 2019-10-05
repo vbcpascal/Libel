@@ -65,7 +65,6 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   frame.header.ether_type = ntohs(frame.header.ether_type);
   frame.updateHeader();
 
-  printf("id: %d\t", pa->id);
   if (frame.len) frame.printFrame();
 
   if (callback != nullptr) {

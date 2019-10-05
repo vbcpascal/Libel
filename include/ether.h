@@ -15,6 +15,10 @@
 
 #include "type.h"
 
+#ifndef ETH_ZLEN
+#define ETH_ZLEN 60
+#endif
+
 #define e_PRINT_NONE 0
 #define e_PRINT_INTRO 1
 #define e_PRINT_MAC 2
