@@ -19,12 +19,13 @@
 #define ETH_ZLEN 60
 #endif
 
-#define e_PRINT_NONE 0
-#define e_PRINT_INTRO 1
-#define e_PRINT_MAC 2
-#define e_PRINT_TYPE 4
-#define e_PRINT_LEN 8
-#define e_PRINT_ALL 127
+// print frame option
+constexpr int e_PRINT_NONE = 0;
+constexpr int e_PRINT_INTRO = 1;
+constexpr int e_PRINT_MAC = 2;
+constexpr int e_PRINT_TYPE = 4;
+constexpr int e_PRINT_LEN = 8;
+constexpr int e_PRINT_ALL = 127;
 
 namespace MAC {
 
@@ -60,24 +61,12 @@ void strtoMAC(u_char* mac, const char* str);
  */
 class EtherFrame {
  public:
-  /**
-   * @brief A Ethernet frame
-   *
-   */
-  u_char frame[ETHER_MAX_LEN];
+  struct __attribute__((__packed__)) {
+    ether_header header;
+    u_char payload[ETHER_MAX_LEN];
+    u_char crc[ETHER_CRC_LEN];
+  } frame;
 
-  /**
-   * @brief Header of the frame
-   *
-   * We cannot promise that it will match the header in frame
-   *
-   */
-  ether_header header;
-
-  /**
-   * @brief Length of the frame
-   *
-   */
   int len;
 
   EtherFrame();
@@ -90,8 +79,39 @@ class EtherFrame {
    */
   EtherFrame(const void* buf, int l);
 
-  u_char* getPayload() { return frame + ETHER_HDR_LEN; }
+  /**
+   * @brief Get the Frame object
+   *
+   * @return u_char* frame
+   */
+  u_char* getFrame() { return (u_char*)&frame; }
 
+  /**
+   * @brief Get the Payload object
+   *
+   * @return u_char* payload pointer
+   */
+  u_char* getPayload() { return frame.payload; }
+
+  /**
+   * @brief Get the Header object
+   *
+   * @return ether_header header
+   */
+  ether_header getHeader() { return frame.header; }
+
+  /**
+   * @brief Get the Length object
+   *
+   * @return int length
+   */
+  int getLength() { return len; }
+
+  /**
+   * @brief Get the Payload Length object
+   *
+   * @return int length
+   */
   int getPayloadLength() { return len - ETHER_HDR_LEN - ETHER_CRC_LEN; }
 
   /**
@@ -99,20 +119,7 @@ class EtherFrame {
    *
    * @param hdr the header
    */
-  void setHeader(ether_header hdr) {
-    header = hdr;
-    updateHeader();
-  }
-
-  /**
-   * @brief Update header. Always transfer this function when you change header
-   * directly.
-   *
-   */
-  void updateHeader() {
-    std::memcpy(frame, &header, ETHER_HDR_LEN);
-    return;
-  }
+  void setHeader(ether_header hdr) { frame.header = hdr; }
 
   /**
    * @brief Set the Payload object
@@ -120,8 +127,8 @@ class EtherFrame {
    * @param buf the payload buffer
    * @param l length of payload
    */
-  void setPayload(const void* buf, int l) {
-    std::memcpy(frame + ETHER_HDR_LEN, buf, l);
+  void setPayload(const u_char* buf, int l) {
+    std::memcpy(frame.payload, buf, l);
     len = l + ETHER_HDR_LEN + ETHER_CRC_LEN;
   }
 
@@ -129,7 +136,9 @@ class EtherFrame {
    * @brief Set the Checksum object (Not implemented)
    *
    */
-  void setChecksum() { ASSERT(false, "not implemented."); }
+  void setCRC(const u_char* crcBuf) {
+    std::memcpy(frame.crc, crcBuf, ETHER_CRC_LEN);
+  }
 
   /**
    * @brief Print the frame
@@ -137,6 +146,10 @@ class EtherFrame {
    * @param col show brief information if col is 0
    */
   void printFrame(int col = 0, int option = e_PRINT_ALL);
+
+  void ntohType() { frame.header.ether_type = ntohs(frame.header.ether_type); }
+
+  void htonType() { frame.header.ether_type = htons(frame.header.ether_type); }
 };
 
 #endif

@@ -1,5 +1,6 @@
 what
 biref
+show
 send
 ff:ff:ff:ff:ff:ff
 Hello, this is a test message.

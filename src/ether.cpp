@@ -44,9 +44,11 @@ std::string etherToStr(uint16_t type) {
 };
 
 EtherFrame::EtherFrame() {
-  std::memset(frame, 0, ETHER_MAX_LEN);
-  std::memset(header.ether_dhost, 0, ETHER_ADDR_LEN);
-  std::memset(header.ether_shost, 0, ETHER_ADDR_LEN);
+  frame.header.ether_type = 0;
+  std::memset(frame.header.ether_dhost, 0, ETHER_ADDR_LEN);
+  std::memset(frame.header.ether_shost, 0, ETHER_ADDR_LEN);
+  std::memset(frame.payload, 0, ETHER_MAX_LEN);
+  std::memset(frame.crc, 0, ETHER_CRC_LEN);
 }
 
 EtherFrame::EtherFrame(const void* buf, int l) : len(l) {
@@ -59,8 +61,7 @@ EtherFrame::EtherFrame(const void* buf, int l) : len(l) {
     len = 0;
     return;
   }
-  std::memcpy(frame, buf, len);
-  std::memcpy(&header, buf, ETHER_HDR_LEN);
+  std::memcpy(&frame, buf, len);
 }
 
 void EtherFrame::printFrame(int col, int option) {
@@ -71,15 +72,15 @@ void EtherFrame::printFrame(int col, int option) {
   }
 
   if ((option >> (b++)) & 1) {
-    MAC::printMAC(header.ether_shost, false);
+    MAC::printMAC(frame.header.ether_shost, false);
     printf(" > ");
-    MAC::printMAC(header.ether_dhost, false);
+    MAC::printMAC(frame.header.ether_dhost, false);
   }  // print mac
 
   if ((option >> (b++)) & 1) {
-    std::string s = etherToStr(header.ether_type);
+    std::string s = etherToStr(frame.header.ether_type);
     if (s == "")
-      printf("\ttype: 0x%04x", header.ether_type);
+      printf("\ttype: 0x%04x", frame.header.ether_type);
     else
       printf("\ttype: %s", s.c_str());
   }  // print type
@@ -96,7 +97,7 @@ void EtherFrame::printFrame(int col, int option) {
     else if (i != 0 && i % 8 == 0)
       printf("\t");
 
-    printf("%02x ", frame[i]);
+    printf("%02x ", frame.payload[i]);
   }
   printf("\n");
 }

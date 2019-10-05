@@ -19,7 +19,7 @@ int defaultCallback(const void* buf, int len, DeviceId id) {
 
 int fullCallback(const void* buf, int len, DeviceId id) {
   EtherFrame frame;
-  frame.setPayload(buf, len);
+  frame.setPayload((u_char*)buf, len);
   frame.printFrame(2, e_PRINT_NONE);
 
   if (showMsg) {

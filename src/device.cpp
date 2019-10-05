@@ -61,11 +61,10 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   }
 
   auto frame = EtherFrame(packet, header->len);
-  if (frame.len == 0) return;
-  frame.header.ether_type = ntohs(frame.header.ether_type);
-  frame.updateHeader();
+  if (frame.getLength() == 0) return;
 
-  if (frame.len) frame.printFrame();
+  frame.ntohType();
+  frame.printFrame();
 
   if (callback != nullptr) {
     int res = callback(frame.getPayload(), frame.getPayloadLength(), pa->id);
@@ -134,11 +133,10 @@ const u_char* Device::getMAC() { return mac; }
 int Device::sendFrame(EtherFrame& frame) {
   LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
 
-  frame.header.ether_type = htons(frame.header.ether_type);
-  frame.updateHeader();
+  frame.htonType();
 
   // send the ethernet frame
-  if (pcap_inject(pcap, frame.frame, frame.len) == -1) {
+  if (pcap_inject(pcap, frame.getFrame(), frame.getLength()) == -1) {
     pcap_perror(pcap, 0);
     // pcap_close(pcap);
     return -3;
@@ -263,8 +261,8 @@ int DeviceManager::sendFrame(DeviceId id, EtherFrame& frame) {
   for (auto& dev : devices) {
     if (dev->getId() == id) {
       found = 1;
-      dev->getMAC(frame.header.ether_shost);
-      frame.updateHeader();
+      dev->getMAC(frame.frame.header.ether_shost);
+
       int res = dev->sendFrame(frame);
       if (res < 0) {
         LOG_ERR("Sending frame failed. error code: %d", res);
@@ -290,7 +288,7 @@ int DeviceManager::sendFrame(const void* buf, int len, int ethtype,
 
   EtherFrame frame;
   frame.setHeader(hdr);
-  frame.setPayload(buf, len);
+  frame.setPayload((u_char*)buf, len);
   return sendFrame(id, frame);
 }
 
