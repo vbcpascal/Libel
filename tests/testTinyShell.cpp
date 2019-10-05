@@ -7,10 +7,13 @@
 
 std::string cmd;
 Device::DevicePtr devPtr = nullptr;
+bool showMsg = false;
 
 int defaultCallback(const void* buf, int len, DeviceId id) {
-  const char* cstr = (const char*)buf;
-  LOG_INFO("Message: %s", cstr);
+  if (showMsg) {
+    const char* cstr = (const char*)buf;
+    LOG_INFO("Message: %s", cstr);
+  }
   return 0;
 }
 
@@ -19,8 +22,10 @@ int fullCallback(const void* buf, int len, DeviceId id) {
   frame.setPayload(buf, len);
   frame.printFrame(2, e_PRINT_NONE);
 
-  const char* cstr = (const char*)buf;
-  LOG_INFO("Message: %s", cstr);
+  if (showMsg) {
+    const char* cstr = (const char*)buf;
+    LOG_INFO("Message: %s", cstr);
+  }
   return 0;
 }
 
@@ -52,6 +57,9 @@ int cmdHandler() {
           "  w what     Show basic information of currnet device.\n"
           "  l sniff    Begin to sniff on current device.\n"
           "  s send     Send an easy frame on current device.\n"
+          "  f full     Show full information when receiving a packet.\n"
+          "  b brief    Show brief information when receiving a packet.\n"
+          "  o show     Show/[Hide] frame detail sent."
           "  q exit     Exit.\n\n"
           "  otherwise  Change device. Unless you lie to me!\n");
     }
@@ -108,14 +116,16 @@ int cmdHandler() {
       }
 
       // local EtherFrame
-      EtherFrame frame;
-      ether_header hdr;
-      memcpy(hdr.ether_dhost, mac, ETHER_ADDR_LEN);
-      memcpy(hdr.ether_shost, devPtr->getMAC(), ETHER_ADDR_LEN);
-      hdr.ether_type = ETHERTYPE_IP;
-      frame.setHeader(hdr);
-      frame.setPayload(buf, len);
-      frame.printFrame(2);
+      if (showMsg) {
+        EtherFrame frame;
+        ether_header hdr;
+        memcpy(hdr.ether_dhost, mac, ETHER_ADDR_LEN);
+        memcpy(hdr.ether_shost, devPtr->getMAC(), ETHER_ADDR_LEN);
+        hdr.ether_type = ETHERTYPE_IP;
+        frame.setHeader(hdr);
+        frame.setPayload(buf, len);
+        frame.printFrame(2);
+      }
     }
 
     else if (cmd == "brief" || cmd == "b") {
@@ -130,6 +140,12 @@ int cmdHandler() {
 
     else if (cmd == "exit" || cmd == "q") {
       exit(0);
+    }
+
+    else if (cmd == "show" || cmd == "o") {
+      showMsg = !showMsg;
+      LOG_INFO("Show frame sent: %s", showMsg ? "Show" : "Hide");
+      continue;
     }
 
     else {

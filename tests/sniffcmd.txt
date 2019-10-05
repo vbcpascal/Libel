@@ -1,4 +1,5 @@
 what
 brief
+show
 sniff
 exit
