@@ -63,6 +63,7 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   auto frame = EtherFrame(packet, header->len);
   if (frame.len == 0) return;
   frame.header.ether_type = ntohs(frame.header.ether_type);
+  frame.updateHeader();
 
   printf("id: %d\t", pa->id);
   if (frame.len) frame.printFrame();
@@ -135,6 +136,7 @@ int Device::sendFrame(EtherFrame& frame) {
   LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
 
   frame.header.ether_type = htons(frame.header.ether_type);
+  frame.updateHeader();
 
   // send the ethernet frame
   if (pcap_inject(pcap, frame.frame, frame.len) == -1) {
