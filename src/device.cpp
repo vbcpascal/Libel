@@ -151,6 +151,10 @@ int Device::startSniffing() {
 
   sniffing = true;
   pcapArgs* pa = new pcapArgs(id, name, mac);
+  if (!pcap) {
+    LOG_ERR("No pcap.");
+    return -1;
+  }
   sniffingThread =
       std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)pa); });
   return 0;
