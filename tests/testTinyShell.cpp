@@ -9,7 +9,8 @@ std::string cmd;
 Device::DevicePtr devPtr = nullptr;
 
 int defaultCallback(const void* buf, int len, DeviceId id) {
-  // do nothing
+  const char* cstr = (const char*)buf;
+  LOG_INFO("Message: %s", cstr);
   return 0;
 }
 
@@ -35,6 +36,7 @@ void signalHandler(int signum) {
 void tstpHandler(int signum) { exit(0); }
 
 int cmdHandler() {
+  std::string dstMAC = "ff:ff:ff:ff:ff:ff";
   while (true) {
     printf(">>> ");
     fflush(stdout);
@@ -78,16 +80,23 @@ int cmdHandler() {
     }  // sniff
 
     else if (cmd == "send" || cmd == "s") {
-      std::string macStr, text;
+      std::string dMAC, text;
       u_char buf[512] = {0};
 
       printf("MAC address: ");
-      std::getline(std::cin, macStr);
+      std::getline(std::cin, dMAC);
+      if (dMAC == "") {
+        LOG_INFO("Got an empty line. Use last address instead: %s",
+                 dMAC.c_str());
+      } else {
+        dstMAC = dMAC;
+      }
+
       printf("Text: ");
       std::getline(std::cin, text);
 
       u_char mac[6];
-      MAC::strtoMAC(mac, macStr.c_str());
+      MAC::strtoMAC(mac, dstMAC.c_str());
 
       int len = text.length() + 1;
       if (len < ETH_ZLEN) len = ETH_ZLEN;

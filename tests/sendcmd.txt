@@ -1,0 +1,18 @@
+what
+biref
+send
+ff:ff:ff:ff:ff:ff
+Hello, this is a test message.
+send
+
+How are you these days?
+send
+
+Lab2 is too difficult for me.
+send
+
+But it is interesting indeed.
+send
+
+That's all. Bye.
+exit
