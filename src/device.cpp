@@ -84,9 +84,13 @@ void Device::badDevice() {
   id = -1;
 }
 
-Device::~Device() { stopSniffing(); }
+Device::~Device() {
+  stopSniffing();
+  if (pcap) pcap_close(pcap);
+}
 
-Device::Device(std::string name, bool sniff) : name(name), sniffing(false) {
+Device::Device(std::string name, bool sniff)
+    : name(name), pcap(nullptr), sniffing(false) {
   id = (max_id++);
 
   // get MAC
@@ -101,14 +105,14 @@ Device::Device(std::string name, bool sniff) : name(name), sniffing(false) {
   memset(pcap_errbuf, 0, PCAP_ERRBUF_SIZE);
   pcap = pcap_open_live(name.c_str(), MAX_FRAME_SIZE, false, FRAME_TIME_OUT,
                         pcap_errbuf);
-  if (!pcap) {
-    LOG_WARN("Cannot get pcap. name: \033[1m%s\033[0m", name.c_str());
-    badDevice();
-    return;
-  }
   if (pcap_errbuf[0] != '\0') {
     LOG_WARN("pcap_open_live error! name: \033[1m%s\033[0m: %s", name.c_str(),
              pcap_errbuf);
+    badDevice();
+    return;
+  }
+  if (!pcap) {
+    LOG_WARN("Cannot get pcap. name: \033[1m%s\033[0m", name.c_str());
     badDevice();
     return;
   }
@@ -131,13 +135,13 @@ int Device::sendFrame(EtherFrame& frame) {
   LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
 
   frame.header.ether_type = htons(frame.header.ether_type);
+
   // send the ethernet frame
   if (pcap_inject(pcap, frame.frame, frame.len) == -1) {
     pcap_perror(pcap, 0);
-    pcap_close(pcap);
+    // pcap_close(pcap);
     return -3;
   }
-  pcap_close(pcap);
   return 0;
 }
 
