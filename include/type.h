@@ -33,6 +33,8 @@
 #define DEFAULT_DEV_NAME "eth0"
 #endif
 
+using DeviceId = int;
+
 /**
  * @brief Process a frame upon receiving it.
  *
@@ -42,6 +44,8 @@
  * @return 0 on success, -1 on error.
  * @see addDevice
  */
-typedef int (*frameReceiveCallback)(const void*, int, int);
+using frameReceiveCallback = int (*)(const void*, DeviceId, int);
+
+// typedef int (*frameReceiveCallback)(const void*, int, int);
 
 #endif

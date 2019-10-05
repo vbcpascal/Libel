@@ -24,11 +24,11 @@
  * @param ethtype EtherType field value of this frame.
  * @param destmac MAC address of the destination.
  * @param id ID of the device(returned by `addDevice`) to send on.
- * @return 0 on success, -1 on error.
+ * @return int 0 on success, -1 on error.
  * @see addDevice
  */
 int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
-              int id);
+              DeviceId id);
 
 /**
  * @brief Register a callback function to be called each time an Ethernet II

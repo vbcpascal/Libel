@@ -56,9 +56,9 @@ class Device {
   /**
    * @brief Get the Id object
    *
-   * @return int the id
+   * @return DeviceId the id
    */
-  int getId();
+  DeviceId getId();
 
   /**
    * @brief Get the Name object
@@ -104,8 +104,8 @@ class Device {
   int stopSniffing();
 
  private:
-  static int max_id;
-  int id;
+  static DeviceId max_id;
+  DeviceId id;
   std::string name;
   u_char mac[ETHER_ADDR_LEN];
 
@@ -130,17 +130,17 @@ class DeviceManager {
    * @brief Add a new device
    *
    * @param name the name of device
-   * @return int id, -1 on error
+   * @return DeviceId id, -1 on error
    */
-  int addDevice(std::string name, bool sniff = true);
+  DeviceId addDevice(std::string name, bool sniff = true);
 
   /**
    * @brief Find a device
    *
    * @param name the name of device
-   * @return int id, -1 on error
+   * @return DeviceId id, -1 on error
    */
-  int findDevice(std::string name);
+  DeviceId findDevice(std::string name);
 
   /**
    * @brief Get the pointer of device according to id
@@ -148,7 +148,7 @@ class DeviceManager {
    * @param id id of device
    * @return DevicePtr pointer of device
    */
-  DevicePtr getDevicePtr(int id);
+  DevicePtr getDevicePtr(DeviceId id);
 
   /**
    * @brief Get the pointer of device according to id
@@ -172,7 +172,7 @@ class DeviceManager {
    * @param id the id of the device
    * @return int -1 on error
    */
-  int getMACAddr(u_char *mac, int id);
+  int getMACAddr(u_char *mac, DeviceId id);
 
   /**
    * @brief Send a frame
@@ -181,7 +181,20 @@ class DeviceManager {
    * @param frame the frame to send
    * @return int -1 on error
    */
-  int sendFrame(int id, EtherFrame &frame);
+  int sendFrame(DeviceId id, EtherFrame &frame);
+
+  /**
+   * @brief Encapsulate some data into an Ethernet II frame and send it.
+   *
+   * @param buf Pointer to the payload.
+   * @param len Length of the payload.
+   * @param ethtype EtherType field value of this frame.
+   * @param destmac MAC address of the destination.
+   * @param id ID of the device(returned by `addDevice`) to send on.
+   * @return int 0 on success, -1 on error.
+   */
+  int sendFrame(const void *buf, int len, int ethtype, const void *destmac,
+                DeviceId id);
 
   /**
    * @brief Keep receiving packages until all the threads end
@@ -201,7 +214,7 @@ extern frameReceiveCallback callback;
  * @param device Name of network device to send/receive packet on.
  * @return A non-negative _device-ID_ on success, -1 on error.
  */
-int addDevice(const char *device);
+DeviceId addDevice(const char *device);
 
 /**
  * Find a device added by `addDevice`.
@@ -210,7 +223,7 @@ int addDevice(const char *device);
  * @return A non-negative _device-ID_ on success, -1 if no such device
  * was found.
  */
-int findDevice(const char *device);
+DeviceId findDevice(const char *device);
 
 /**
  * @brief Keep receiving packages until all the threads end. You may use this at

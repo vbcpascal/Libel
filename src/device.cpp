@@ -6,11 +6,11 @@ DeviceManager deviceMgr;
 frameReceiveCallback callback;
 
 struct pcapArgs {
-  int id;
+  DeviceId id;
   std::string name;
   u_char mac[ETHER_ADDR_LEN];
 
-  pcapArgs(int id, std::string name, u_char* m) : id(id), name(name) {
+  pcapArgs(DeviceId id, std::string name, u_char* m) : id(id), name(name) {
     std::memcpy(mac, m, ETHER_ADDR_LEN);
   }
 };
@@ -77,7 +77,7 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
 
 //////////////////// Device ////////////////////
 
-int Device::max_id = 0;
+DeviceId Device::max_id = 0;
 
 void Device::badDevice() {
   --max_id;
@@ -117,7 +117,7 @@ Device::Device(std::string name, bool sniff) : name(name), sniffing(false) {
   if (sniff) startSniffing();
 }
 
-int Device::getId() { return id; }
+DeviceId Device::getId() { return id; }
 
 std::string Device::getName() { return name; }
 
@@ -163,7 +163,7 @@ int Device::stopSniffing() {
 
 //////////////////// DeviceManager ////////////////////
 
-int DeviceManager::addDevice(std::string name, bool sniff) {
+DeviceId DeviceManager::addDevice(std::string name, bool sniff) {
   // LOG_INFO("Add a new device, name: \033[33;1m%s\033[0m", name);
   if (findDevice(name) >= 0) {
     LOG_WARN("Device exists, no actions.");
@@ -171,7 +171,7 @@ int DeviceManager::addDevice(std::string name, bool sniff) {
   }
 
   DevicePtr dev = std::make_shared<Device>(name, sniff);
-  int id = dev->getId();
+  DeviceId id = dev->getId();
   if (id < 0) {
     return -1;
   }
@@ -188,8 +188,8 @@ int DeviceManager::addDevice(std::string name, bool sniff) {
   return id;
 }
 
-int DeviceManager::findDevice(std::string name) {
-  int id = -1;
+DeviceId DeviceManager::findDevice(std::string name) {
+  DeviceId id = -1;
   for (auto& dev : devices) {
     if (dev->getName() == name) {
       id = dev->getId();
@@ -199,7 +199,7 @@ int DeviceManager::findDevice(std::string name) {
   return id;
 }
 
-DevicePtr DeviceManager::getDevicePtr(int id) {
+DevicePtr DeviceManager::getDevicePtr(DeviceId id) {
   DevicePtr devPtr = nullptr;
   for (auto& dev : devices) {
     if (dev->getId() == id) {
@@ -229,7 +229,7 @@ int DeviceManager::addAllDevice(bool sniff) {
   pcap_findalldevs(&devsPtr, errbuf);
 
   while (devsPtr != nullptr) {
-    int id = addDevice(devsPtr->name, sniff);
+    DeviceId id = addDevice(devsPtr->name, sniff);
     if (id >= 0) ++cnt;
     devsPtr = devsPtr->next;
   }
@@ -237,7 +237,7 @@ int DeviceManager::addAllDevice(bool sniff) {
   return cnt;
 }
 
-int DeviceManager::getMACAddr(u_char* mac, int id) {
+int DeviceManager::getMACAddr(u_char* mac, DeviceId id) {
   int found = -1;
   for (auto& dev : devices) {
     if (dev->getId() == id) {
@@ -249,7 +249,7 @@ int DeviceManager::getMACAddr(u_char* mac, int id) {
   return found;
 }
 
-int DeviceManager::sendFrame(int id, EtherFrame& frame) {
+int DeviceManager::sendFrame(DeviceId id, EtherFrame& frame) {
   int found = -1;
   for (auto& dev : devices) {
     if (dev->getId() == id) {
@@ -268,6 +268,23 @@ int DeviceManager::sendFrame(int id, EtherFrame& frame) {
   return found;
 }
 
+int DeviceManager::sendFrame(const void* buf, int len, int ethtype,
+                             const void* destmac, DeviceId id) {
+  if (!ETHER_IS_VALID_LEN(len + ETHER_HDR_LEN)) {
+    LOG(ERR, "len is too large: %d.", len);
+    return -1;
+  }
+
+  ether_header hdr;
+  hdr.ether_type = (u_short)ethtype;
+  std::memcpy(hdr.ether_dhost, destmac, ETHER_ADDR_LEN);
+
+  EtherFrame frame;
+  frame.setHeader(hdr);
+  frame.setPayload(buf, len);
+  return sendFrame(id, frame);
+}
+
 int DeviceManager::keepReceiving() {
   for (auto& dev : devices) {
     if (dev->sniffingThread.joinable()) {
@@ -282,14 +299,14 @@ int DeviceManager::keepReceiving() {
 //////////////////// API ////////////////////
 
 int addDevice(const char* device) {
-  int id = -1;
+  DeviceId id = -1;
   id = Device::deviceMgr.addDevice(device);
 
   return id;
 }
 
 int findDevice(const char* device) {
-  int id = Device::deviceMgr.findDevice(device);
+  DeviceId id = Device::deviceMgr.findDevice(device);
   return id;
 }
 
