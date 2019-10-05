@@ -2,7 +2,7 @@
 #include "packetio.h"
 #include "type.h"
 
-int myCallback(const void* buf, int len, int id) {
+int myCallback(const void* buf, int len, DeviceId id) {
   EtherFrame frame;
   frame.setPayload(buf, len);
   // LOG(" CALLBACK FUNTION ", "frame printed below");
@@ -26,7 +26,7 @@ int main() {
   addDevice(devName.c_str());
 
   // find a device
-  int id = findDevice(devName.c_str());
+  DeviceId id = findDevice(devName.c_str());
   LOG("RES ", "find device. id: %d: ", id);
 
   // keep receiving packets from all devices

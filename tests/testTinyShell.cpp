@@ -8,8 +8,18 @@
 std::string cmd;
 Device::DevicePtr devPtr = nullptr;
 
-int defaultCallback(const void* buf, int len, int id) {
+int defaultCallback(const void* buf, int len, DeviceId id) {
   // do nothing
+  return 0;
+}
+
+int fullCallback(const void* buf, int len, DeviceId id) {
+  EtherFrame frame;
+  frame.setPayload(buf, len);
+  frame.printFrame(2, e_PRINT_NONE);
+
+  const char* cstr = (const char*)buf;
+  LOG_INFO("Message: %s", cstr);
   return 0;
 }
 
@@ -94,8 +104,19 @@ int cmdHandler() {
       memcpy(hdr.ether_dhost, mac, ETHER_ADDR_LEN);
       memcpy(hdr.ether_shost, devPtr->getMAC(), ETHER_ADDR_LEN);
       hdr.ether_type = ETHERTYPE_IP;
+      frame.setHeader(hdr);
       frame.setPayload(buf, len);
       frame.printFrame(2);
+    }
+
+    else if (cmd == "brief" || cmd == "b") {
+      setFrameReceiveCallback(defaultCallback);
+      continue;
+    }
+
+    else if (cmd == "full" || cmd == "f") {
+      setFrameReceiveCallback(fullCallback);
+      continue;
     }
 
     else if (cmd == "exit" || cmd == "q") {
@@ -111,6 +132,7 @@ int cmdHandler() {
       } else {
         LOG_ERR("Unknown device or command: %s", cmd.c_str());
       }
+      continue;
     }
   }
 }
