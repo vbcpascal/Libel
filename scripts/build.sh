@@ -7,7 +7,7 @@ realpath() {
 }
 
 SCRIPT_DIR="$(dirname ${BASH_SOURCE[0]})"
-SRC_DIR="$(realpath ${SCRIPT_DIR}/)"
+SRC_DIR="$(realpath ${SCRIPT_DIR}/../)"
 BUILD_DIR="${SRC_DIR}/build/"
 
 echo "SRC_DIR=${SRC_DIR}"
