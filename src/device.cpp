@@ -64,7 +64,7 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   if (frame.getLength() == 0) return;
 
   frame.ntohType();
-  frame.printFrame();
+  Printer::printEtherFrame(frame);
 
   if (callback != nullptr) {
     int res = callback(frame.getPayload(), frame.getPayloadLength(), pa->id);

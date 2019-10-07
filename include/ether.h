@@ -38,14 +38,6 @@ namespace MAC {
 std::string toString(const u_char* mac);
 
 /**
- * @brief A tool funtion to print MAC address
- *
- * @param mac MAC to print
- * @param newline
- */
-void printMAC(const u_char* mac, bool newline = true);
-
-/**
  * @brief Convert a string to MAC address
  *
  * @param mac dst MAC address
@@ -140,16 +132,32 @@ class EtherFrame {
     std::memcpy(frame.crc, crcBuf, ETHER_CRC_LEN);
   }
 
-  /**
-   * @brief Print the frame
-   *
-   * @param col show brief information if col is 0
-   */
-  void printFrame(int col = 0, int option = e_PRINT_ALL);
-
   void ntohType() { frame.header.ether_type = ntohs(frame.header.ether_type); }
 
   void htonType() { frame.header.ether_type = htons(frame.header.ether_type); }
 };
+
+namespace Printer {
+
+/**
+ * @brief Print a MAC address
+ *
+ * @param mac MAC address
+ * @param end string print at the end
+ */
+void printMAC(const u_char* mac, const std::string end = "\n");
+
+/**
+ * @brief Print a EtherFrame object
+ *
+ * @param ef EtherFrame object
+ * @param col column shown for frame payload. if col = 0, only brief information
+ * will be shown.
+ * @param option option
+ */
+void printEtherFrame(const EtherFrame& ef, int col = 0,
+                     int option = e_PRINT_ALL);
+
+}  // namespace Printer
 
 #endif

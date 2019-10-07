@@ -1,4 +1,5 @@
 #include "ether.h"
+
 #include <map>
 
 namespace MAC {
@@ -8,11 +9,6 @@ std::string toString(const u_char* mac) {
   sprintf(cstr, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3],
           mac[4], mac[5]);
   return std::string(cstr);
-}
-
-void printMAC(const u_char* mac, bool newline) {
-  printf("%s", toString(mac).c_str());
-  if (newline) printf("\n");
 }
 
 void strtoMAC(u_char* mac, const char* str) {
@@ -64,17 +60,24 @@ EtherFrame::EtherFrame(const void* buf, int l) : len(l) {
   std::memcpy(&frame, buf, len);
 }
 
-void EtherFrame::printFrame(int col, int option) {
-  int b = 0;
+namespace Printer {
+
+void printMAC(const u_char* mac, const std::string end) {
+  printf("%s%s", MAC::toString(mac).c_str(), end.c_str());
+  fflush(stdout);
+}
+
+void printEtherFrame(const EtherFrame& ef, int col, int option) {
+  int b = 0, len = ef.len;
+  auto& frame = ef.frame;
 
   if ((option >> (b++)) & 1) {
     printf("[ \033[33mPACKET\033[0m ] \t");
   }
 
   if ((option >> (b++)) & 1) {
-    MAC::printMAC(frame.header.ether_shost, false);
-    printf(" > ");
-    MAC::printMAC(frame.header.ether_dhost, false);
+    Printer::printMAC(frame.header.ether_shost, ">");
+    Printer::printMAC(frame.header.ether_dhost, "");
   }  // print mac
 
   if ((option >> (b++)) & 1) {
@@ -101,3 +104,5 @@ void EtherFrame::printFrame(int col, int option) {
   }
   printf("\n");
 }
+
+}  // namespace Printer

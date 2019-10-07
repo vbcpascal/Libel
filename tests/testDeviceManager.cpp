@@ -1,4 +1,5 @@
 #include "device.h"
+#include "ether.h"
 #include "packetio.h"
 #include "type.h"
 
@@ -6,7 +7,8 @@ int myCallback(const void* buf, int len, DeviceId id) {
   EtherFrame frame;
   frame.setPayload((u_char*)buf, len);
   // LOG(" CALLBACK FUNTION ", "frame printed below");
-  // frame.printFrame(2, e_PRINT_INTRO + e_PRINT_TYPE + e_PRINT_LEN);
+  // Printer::printEtherFrame(frame, 2, e_PRINT_INTRO + e_PRINT_TYPE +
+  // e_PRINT_LEN);
   return 0;
 }
 

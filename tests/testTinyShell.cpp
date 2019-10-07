@@ -1,9 +1,9 @@
+#include <csignal>
+
 #include "device.h"
 #include "ether.h"
 #include "packetio.h"
 #include "type.h"
-
-#include <csignal>
 
 std::string cmd;
 Device::DevicePtr devPtr = nullptr;
@@ -20,7 +20,7 @@ int defaultCallback(const void* buf, int len, DeviceId id) {
 int fullCallback(const void* buf, int len, DeviceId id) {
   EtherFrame frame;
   frame.setPayload((u_char*)buf, len);
-  frame.printFrame(2, e_PRINT_NONE);
+  Printer::printEtherFrame(frame, 2, e_PRINT_NONE);
 
   if (showMsg) {
     const char* cstr = (const char*)buf;
@@ -69,7 +69,7 @@ int cmdHandler() {
              devPtr->getName().c_str());
       u_char mac[6];
       devPtr->getMAC(mac);
-      MAC::printMAC(mac);
+      Printer::printMAC(mac);
       continue;
     }
 
@@ -124,7 +124,7 @@ int cmdHandler() {
         hdr.ether_type = ETHERTYPE_IP;
         frame.setHeader(hdr);
         frame.setPayload(buf, len);
-        frame.printFrame(2);
+        Printer::printEtherFrame(frame, 2);
       }
     }
 
