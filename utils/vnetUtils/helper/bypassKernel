@@ -1,6 +1,11 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(dirname ${BASH_SOURCE[0]})"
+pushd "${VNET_EXAMPLE_DIR}"
+
 ./vecho "\e[1;34m$0 $*\e[0m"
 ./vdo iptables -t filter -I FORWARD -j DROP
 ./vdo iptables -t filter -I INPUT -j DROP
 ./vdo iptables -t filter -I OUTPUT -j DROP
+
+popd

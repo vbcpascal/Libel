@@ -16,7 +16,10 @@ if [ `id -u` -ne 0 ]; then
     exit 1
 fi
 
-cd ../helper
+SCRIPT_DIR="$(dirname ${BASH_SOURCE[0]})"
+HELPER_DIR="$(realpath ${SCRIPT_DIR}/../helper)"
+
+pushd "${HELPER_DIR}"
 
 read namePref
 
@@ -46,3 +49,5 @@ for (( i = 0; i <= count; i++ ));
 do
     eval ./delNS \$ns$i
 done
+
+popd

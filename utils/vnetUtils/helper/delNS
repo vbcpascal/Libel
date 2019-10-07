@@ -1,7 +1,12 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(dirname ${BASH_SOURCE[0]})"
+pushd "${VNET_EXAMPLE_DIR}"
+
 ./vecho "\e[1;34m$0 $*\e[0m"
 if [[ "s${1: -3:3}" != "sns0" ]]; 
 then
     ./vdo ip netns del $1
 fi
+
+popd

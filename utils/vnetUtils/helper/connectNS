@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(dirname ${BASH_SOURCE[0]})"
+pushd "${VNET_EXAMPLE_DIR}"
+
 ./vecho "\e[1;34m$0 $*\e[0m"
 ./addVethPair $3 $4
 ./setNS $3 $1
@@ -8,3 +11,5 @@
 ./execNS $2 ./giveAddr $4 $5.2/24
 ./execNS $1 ./setRoute $5.0/24 $3
 ./execNS $2 ./setRoute $5.0/24 $4
+
+popd

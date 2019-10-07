@@ -17,7 +17,10 @@ then
     exit 1
 fi
 
-cd ../helper
+SCRIPT_DIR="$(dirname ${BASH_SOURCE[0]})"
+HELPER_DIR="$(realpath ${SCRIPT_DIR}/../helper)"
+
+pushd "${HELPER_DIR}"
 
 read namePref
 
@@ -65,3 +68,5 @@ do
 
     eval ./execNS \$ns$i ./setGRoute $target \$veth$i$j \$prefix$i$j.$suffix
 done
+
+popd
