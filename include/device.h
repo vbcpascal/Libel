@@ -6,9 +6,10 @@
  * @date 2019-10-02
  *
  */
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef DEVICE_H_
+#define DEVICE_H_
 
+#include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <pthread.h>
@@ -82,12 +83,19 @@ class Device {
   const u_char *getMAC();
 
   /**
+   * @brief Get the Ip object
+   *
+   * @return ip_addr ip of device
+   */
+  ip_addr getIp();
+
+  /**
    * @brief Send a frame on the device
    *
    * @param frame the frame will be sent
    * @return int 0 on success, -1 on error
    */
-  int sendFrame(EtherFrame &frame);
+  int sendFrame(Ether::EtherFrame &frame);
 
   /**
    * @brief start sniffing in this device
@@ -108,6 +116,7 @@ class Device {
   DeviceId id;
   std::string name;
   u_char mac[ETHER_ADDR_LEN];
+  ip_addr ip;
 
   pcap_t *pcap;
   bool sniffing;
@@ -124,6 +133,7 @@ using DevicePtr = std::shared_ptr<Device>;
 class DeviceManager {
  private:
   std::vector<DevicePtr> devices;
+  std::set<DeviceId> validId;
 
  public:
   /**
@@ -177,11 +187,33 @@ class DeviceManager {
   /**
    * @brief Send a frame
    *
+   * @param dev Device pointer
+   * @param frame the frame to send
+   * @return int -1 on error
+   */
+  int sendFrame(DevicePtr dev, Ether::EtherFrame &frame);
+
+  /**
+   * @brief Send a frame
+   *
    * @param id the device id to send
    * @param frame the frame to send
    * @return int -1 on error
    */
-  int sendFrame(DeviceId id, EtherFrame &frame);
+  int sendFrame(DeviceId id, Ether::EtherFrame &frame);
+
+  /**
+   * @brief
+   *
+   * @param buf
+   * @param len
+   * @param ethtype
+   * @param destmac
+   * @param dev
+   * @return int
+   */
+  int sendFrame(const void *buf, int len, int ethtype, const void *destmac,
+                DevicePtr dev);
 
   /**
    * @brief Encapsulate some data into an Ethernet II frame and send it.
@@ -233,4 +265,4 @@ DeviceId findDevice(const char *device);
  */
 int keepReceiving();
 
-#endif
+#endif  // DEVICE_H_

@@ -1,5 +1,6 @@
 #include "ether.h"
 
+#include <cstdint>
 #include <map>
 
 namespace MAC {
@@ -8,7 +9,8 @@ std::string toString(const u_char* mac) {
   char cstr[18] = "";
   sprintf(cstr, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3],
           mac[4], mac[5]);
-  return std::string(cstr);
+  std::string s(cstr);
+  return s;
 }
 
 void strtoMAC(u_char* mac, const char* str) {
@@ -39,6 +41,11 @@ std::string etherToStr(uint16_t type) {
   return s;
 };
 
+namespace Ether {
+
+const u_char broadcastMacAddr[6] = {255, 255, 255, 255, 255, 255};
+const u_char zeroMacAddr[6] = {0, 0, 0, 0, 0, 0};
+
 EtherFrame::EtherFrame() {
   frame.header.ether_type = 0;
   std::memset(frame.header.ether_dhost, 0, ETHER_ADDR_LEN);
@@ -60,6 +67,8 @@ EtherFrame::EtherFrame(const void* buf, int l) : len(l) {
   std::memcpy(&frame, buf, len);
 }
 
+}  // namespace Ether
+
 namespace Printer {
 
 void printMAC(const u_char* mac, const std::string end) {
@@ -67,7 +76,7 @@ void printMAC(const u_char* mac, const std::string end) {
   fflush(stdout);
 }
 
-void printEtherFrame(const EtherFrame& ef, int col, int option) {
+void printEtherFrame(const Ether::EtherFrame& ef, int col, int option) {
   int b = 0, len = ef.len;
   auto& frame = ef.frame;
 
@@ -94,13 +103,28 @@ void printEtherFrame(const EtherFrame& ef, int col, int option) {
 
   if (col <= 0) return;
 
+  u_char* frameBuf = new u_char[len];
+  memcpy(frameBuf, &frame, len);
   for (int i = 0; i < len; ++i) {
     if (i != 0 && i % (8 * col) == 0)
       printf("\n");
     else if (i != 0 && i % 8 == 0)
       printf("\t");
 
-    printf("%02x ", frame.payload[i]);
+    printf("%02x ", frameBuf[i]);
+  }
+  printf("\n");
+  free(frameBuf);
+}
+
+void print(const u_char* buf, int len, int col) {
+  for (int i = 0; i < len; ++i) {
+    if (i != 0 && i % (8 * col) == 0)
+      printf("\n");
+    else if (i != 0 && i % 8 == 0)
+      printf("\t");
+
+    printf("%02x ", buf[i]);
   }
   printf("\n");
 }

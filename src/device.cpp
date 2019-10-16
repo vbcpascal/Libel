@@ -15,7 +15,7 @@ struct pcapArgs {
   }
 };
 
-int getMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
+int initDeviceMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
 #ifdef __APPLE__
   ifaddrs* iflist;
   int found = -1;
@@ -23,7 +23,7 @@ int getMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
     for (ifaddrs* cur = iflist; cur; cur = cur->ifa_next) {
       if ((cur->ifa_addr->sa_family == AF_LINK) &&
           (strcmp(cur->ifa_name, if_name) == 0) && cur->ifa_addr) {
-        sockaddr_dl* sdl = (sockaddr_dl*)cur->ifa_addr;
+        auto sdl = reinterpret_cast<sockaddr_dl*>(cur->ifa_addr);
         memcpy(mac, LLADDR(sdl), sdl->sdl_alen);
         found = 1;
         break;
@@ -49,25 +49,39 @@ int getMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
 #endif
 }
 
+ip_addr initDeviceIPAddr(const char* if_name) {
+  ip_addr ipAddr;
+  ifaddrs* iflist;
+
+  if (getifaddrs(&iflist) == 0) {
+    for (ifaddrs* cur = iflist; cur; cur = cur->ifa_next) {
+      if ((cur->ifa_addr->sa_family == AF_INET) &&
+          (strcmp(cur->ifa_name, if_name) == 0) && cur->ifa_addr) {
+        auto sdl = reinterpret_cast<sockaddr_in*>(cur->ifa_addr);
+        ipAddr = sdl->sin_addr;
+        break;
+      }
+    }
+    freeifaddrs(iflist);
+  }
+
+  return ipAddr;
+}
+
 void getPacket(u_char* args, const struct pcap_pkthdr* header,
                const u_char* packet) {
   // args may be useless?(10.2)
   // NO!!(10.3)
-  pcapArgs* pa = (pcapArgs*)args;
+  pcapArgs* pa = reinterpret_cast<pcapArgs*>(args);
 
-  if (header->len != header->caplen) {
+  int len = header->len;
+  if (len != header->caplen) {
     LOG_ERR("Data Lost.");
     return;
   }
 
-  auto frame = EtherFrame(packet, header->len);
-  if (frame.getLength() == 0) return;
-
-  frame.ntohType();
-  Printer::printEtherFrame(frame);
-
   if (callback != nullptr) {
-    int res = callback(frame.getPayload(), frame.getPayloadLength(), pa->id);
+    int res = callback(packet, len, pa->id);
     if (res < 0) {
       LOG_ERR("Callback error!");
     }
@@ -93,8 +107,16 @@ Device::Device(std::string name, bool sniff)
   id = (max_id++);
 
   // get MAC
-  if (getMACAddr(mac, name.c_str()) < 0) {
+  if (initDeviceMACAddr(mac, name.c_str()) < 0) {
     LOG_WARN("get MAC address failed. name: \033[1m%s\033[0m", name.c_str());
+    badDevice();
+    return;
+  }
+
+  // get IP
+  ip = initDeviceIPAddr(name.c_str());
+  if (ip.s_addr == 0) {
+    LOG_WARN("get Ip address failed. name: \033[1m%s\033[0m", name.c_str());
     badDevice();
     return;
   }
@@ -102,6 +124,7 @@ Device::Device(std::string name, bool sniff)
   // obtain a PCAP descriptor
   char pcap_errbuf[PCAP_ERRBUF_SIZE];
   memset(pcap_errbuf, 0, PCAP_ERRBUF_SIZE);
+  // pcap = pcap_create(name.c_str(), pcap_errbuf);
   pcap = pcap_open_live(name.c_str(), MAX_FRAME_SIZE, false, FRAME_TIME_OUT,
                         pcap_errbuf);
   if (pcap_errbuf[0] != '\0') {
@@ -130,10 +153,13 @@ void Device::getMAC(u_char* dst_mac) {
 
 const u_char* Device::getMAC() { return mac; }
 
-int Device::sendFrame(EtherFrame& frame) {
-  LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
+ip_addr Device::getIp() { return ip; }
+
+int Device::sendFrame(Ether::EtherFrame& frame) {
+  // LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
 
   frame.htonType();
+  frame.padding();
 
   // send the ethernet frame
   if (pcap_inject(pcap, frame.getFrame(), frame.getLength()) == -1) {
@@ -153,8 +179,8 @@ int Device::startSniffing() {
     LOG_ERR("No pcap.");
     return -1;
   }
-  sniffingThread =
-      std::thread([&]() { pcap_loop(pcap, -1, getPacket, (u_char*)pa); });
+  sniffingThread = std::thread(
+      [=]() { pcap_loop(pcap, -1, getPacket, reinterpret_cast<u_char*>(pa)); });
   return 0;
 }
 
@@ -171,7 +197,6 @@ int Device::stopSniffing() {
 //////////////////// DeviceManager ////////////////////
 
 DeviceId DeviceManager::addDevice(std::string name, bool sniff) {
-  // LOG_INFO("Add a new device, name: \033[33;1m%s\033[0m", name);
   if (findDevice(name) >= 0) {
     LOG_WARN("Device exists, no actions.");
     return -1;
@@ -188,10 +213,10 @@ DeviceId DeviceManager::addDevice(std::string name, bool sniff) {
 
   devices.push_back(dev);
   LOG(INFO,
-      "id: %d, mac: %02x:%02x:%02x:%02x:%02x:%02x. name: "
-      "\033[33;1m%s\033[0m",
+      "id: %d, mac: %02x:%02x:%02x:%02x:%02x:%02x. ip: %s, "
+      "name: \033[33;1m%s\033[0m",
       id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
-      dev->getName().c_str());
+      inet_ntoa(dev->getIp()), dev->getName().c_str());
   return id;
 }
 
@@ -256,28 +281,31 @@ int DeviceManager::getMACAddr(u_char* mac, DeviceId id) {
   return found;
 }
 
-int DeviceManager::sendFrame(DeviceId id, EtherFrame& frame) {
+int DeviceManager::sendFrame(DevicePtr dev, Ether::EtherFrame& frame) {
+  dev->getMAC(frame.frame.header.ether_shost);
+  int res = dev->sendFrame(frame);
+  if (res < 0) {
+    LOG_ERR("Sending frame failed. error code: %d", res);
+    return -1;
+  }
+  // LOG_INFO("Sending frame succeed.");
+  return 0;
+}
+
+int DeviceManager::sendFrame(DeviceId id, Ether::EtherFrame& frame) {
   int found = -1;
   for (auto& dev : devices) {
     if (dev->getId() == id) {
       found = 1;
-      dev->getMAC(frame.frame.header.ether_shost);
-
-      int res = dev->sendFrame(frame);
-      if (res < 0) {
-        LOG_ERR("Sending frame failed. error code: %d", res);
-        return -1;
-      }
-      LOG_INFO("Sending frame succeed.");
-      break;
+      return sendFrame(dev, frame);
     }
   }
   return found;
 }
 
 int DeviceManager::sendFrame(const void* buf, int len, int ethtype,
-                             const void* destmac, DeviceId id) {
-  if (!ETHER_IS_VALID_LEN(len + ETHER_HDR_LEN)) {
+                             const void* destmac, DevicePtr dev) {
+  if ((len + ETHER_HDR_LEN) > ETHER_MAX_LEN) {
     LOG(ERR, "len is too large: %d.", len);
     return -1;
   }
@@ -286,10 +314,21 @@ int DeviceManager::sendFrame(const void* buf, int len, int ethtype,
   hdr.ether_type = (u_short)ethtype;
   std::memcpy(hdr.ether_dhost, destmac, ETHER_ADDR_LEN);
 
-  EtherFrame frame;
+  Ether::EtherFrame frame;
   frame.setHeader(hdr);
   frame.setPayload((u_char*)buf, len);
-  return sendFrame(id, frame);
+  return sendFrame(dev, frame);
+}
+
+int DeviceManager::sendFrame(const void* buf, int len, int ethtype,
+                             const void* destmac, DeviceId id) {
+  if ((len + ETHER_HDR_LEN) > ETHER_MAX_LEN) {
+    LOG(ERR, "len is too large: %d.", len);
+    return -1;
+  }
+
+  DevicePtr dev = getDevicePtr(id);
+  return sendFrame(buf, len, ethtype, destmac, dev);
 }
 
 int DeviceManager::keepReceiving() {

@@ -7,16 +7,20 @@
  *
  */
 
-#ifndef ETHER_H
-#define ETHER_H
+#ifndef ETHER_H_
+#define ETHER_H_
+
+#include <netinet/ip.h>
 
 #include <cstdint>
 #include <cstring>
 
 #include "type.h"
 
+#ifdef __APPLE__
 #ifndef ETH_ZLEN
 #define ETH_ZLEN 60
+#endif
 #endif
 
 // print frame option
@@ -28,6 +32,16 @@ constexpr int e_PRINT_LEN = 8;
 constexpr int e_PRINT_ALL = 127;
 
 namespace MAC {
+
+class macAddr {
+ public:
+  u_char addr[6];
+
+  macAddr() {
+    for (int i = 0; i < 6; ++i) addr[i] = 255;
+  }
+  macAddr(const u_char* _mac) { memcpy(addr, _mac, ETHER_ADDR_LEN); }
+};
 
 /**
  * @brief Convert a MAC address to cpp string
@@ -46,6 +60,11 @@ std::string toString(const u_char* mac);
 void strtoMAC(u_char* mac, const char* str);
 
 }  // namespace MAC
+
+namespace Ether {
+
+extern const u_char broadcastMacAddr[6];
+extern const u_char zeroMacAddr[6];
 
 /**
  * @brief Store a Ethernet frame
@@ -124,18 +143,13 @@ class EtherFrame {
     len = l + ETHER_HDR_LEN + ETHER_CRC_LEN;
   }
 
-  /**
-   * @brief Set the Checksum object (Not implemented)
-   *
-   */
-  void setCRC(const u_char* crcBuf) {
-    std::memcpy(frame.crc, crcBuf, ETHER_CRC_LEN);
-  }
+  void padding() { len = ETHER_MIN_LEN - 4; }
 
   void ntohType() { frame.header.ether_type = ntohs(frame.header.ether_type); }
 
   void htonType() { frame.header.ether_type = htons(frame.header.ether_type); }
 };
+}  // namespace Ether
 
 namespace Printer {
 
@@ -155,9 +169,10 @@ void printMAC(const u_char* mac, const std::string end = "\n");
  * will be shown.
  * @param option option
  */
-void printEtherFrame(const EtherFrame& ef, int col = 0,
+void printEtherFrame(const Ether::EtherFrame& ef, int col = 0,
                      int option = e_PRINT_ALL);
 
+void print(const u_char* buf, int len, int col = 2);
 }  // namespace Printer
 
-#endif
+#endif  // ETHER_H_

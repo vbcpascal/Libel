@@ -1,8 +1,6 @@
 #ifndef MASSERT_H_
 #define MASSERT_H_
 
-#define MACOS
-
 #define INFO "\033[32mINFO\033[0m"
 #define ERR "\033[31mERR \033[0m"
 #define WARN "\033[34mWARN\033[0m"

@@ -7,12 +7,13 @@
  *
  */
 
-#ifndef TYPE_H
-#define TYPE_H
+#ifndef TYPE_H_
+#define TYPE_H_
 
 #include <arpa/inet.h>
 #include <pcap/pcap.h>
 
+#include <chrono>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -24,6 +25,8 @@
 #include "massert.h"
 
 #ifdef __APPLE__
+#include <net/ethernet.h>
+#include <net/if_arp.h>
 #include <net/if_dl.h>
 #include <netinet/if_ether.h>
 #define DEFAULT_DEV_NAME "en0"
@@ -34,6 +37,7 @@
 #endif
 
 using DeviceId = int;
+using ip_addr = in_addr;
 
 /**
  * @brief Process a frame upon receiving it.
@@ -44,8 +48,19 @@ using DeviceId = int;
  * @return 0 on success, -1 on error.
  * @see addDevice
  */
-using frameReceiveCallback = int (*)(const void*, DeviceId, int);
+using frameReceiveCallback = int (*)(const void*, int, DeviceId);
 
-// typedef int (*frameReceiveCallback)(const void*, int, int);
+/**
+ * @brief Process an IP packet upon receiving it.
+ *
+ * @param buf Pointer to the packet.
+ * @param len Length of the packet.
+ * @return 0 on success, -1 on error.
+ * @see addDevice
+ */
+using IPPacketReceiveCallback = int (*)(const void*, int);
 
-#endif
+using commonReceiveCallback = int (*)(const void*, int, DeviceId);
+
+bool operator<(ip_addr a, ip_addr b);
+#endif  // TYPE_H_
