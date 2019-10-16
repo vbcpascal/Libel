@@ -5,6 +5,10 @@
 
 namespace MAC {
 
+bool macAddr::operator==(const macAddr& m) {
+  return isSameMacAddr(addr, m.addr);
+}
+
 std::string toString(const u_char* mac) {
   char cstr[18] = "";
   sprintf(cstr, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3],
@@ -18,6 +22,16 @@ void strtoMAC(u_char* mac, const char* str) {
   sscanf(str, "%x:%x:%x:%x:%x:%x", &tmp[0], &tmp[1], &tmp[2], &tmp[3], &tmp[4],
          &tmp[5]);
   for (int i = 0; i < 6; ++i) mac[i] = static_cast<u_char>(tmp[i]);
+}
+
+bool isSameMacAddr(const u_char* macA, const u_char* macB) {
+  for (int i = 0; i < 6; ++i)
+    if (macA[i] == macB[i]) return false;
+  return true;
+}
+
+bool isBroadcast(const u_char* mac) {
+  return isSameMacAddr(mac, Ether::broadcastMacAddr);
 }
 
 }  // namespace MAC

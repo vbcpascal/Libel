@@ -51,7 +51,6 @@ class ArpFrame {
 class ArpManager {
  public:
   std::map<ip_addr, MAC::macAddr> ipMacMap;
-  bool found;
   std::condition_variable cv;
   std::mutex cv_m;  // mutex for cv
 

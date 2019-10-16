@@ -11,19 +11,30 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
   if (frame.getLength() == 0) return 0;
 
   frame.ntohType();
+  auto hdr = frame.getHeader();
 
-  u_short type = frame.getHeader().ether_type;
-  auto iter = callbackMap.find(type);
+  // is me or broadcast?
+  auto dev = Device::deviceMgr.getDevicePtr(id);
+  if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_dhost) ||
+      MAC::isBroadcast(dev->getMAC())) {
+    u_short type = hdr.ether_type;
 
-  if (iter == callbackMap.end()) {
-    // LOG_ERR("Callback function not found");
-    // return -1;
+    auto iter = callbackMap.find(type);
+
+    if (iter == callbackMap.end()) {
+      // LOG_ERR("Callback function not found");
+      // return -1;
+      return 0;
+    } else {
+      if (iter->second)
+        return iter->second(frame.getPayload(), len, id);
+      else
+        return -1;
+    }
+  }
+  // TODO route it!
+  else {
     return 0;
-  } else {
-    if (iter->second)
-      return iter->second(frame.getPayload(), len, id);
-    else
-      return -1;
   }
 }
 

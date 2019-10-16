@@ -1,8 +1,8 @@
 #include <csignal>
 
+#include "api.h"
 #include "device.h"
 #include "ether.h"
-#include "packetio.h"
 #include "type.h"
 
 std::string cmd;
@@ -18,7 +18,7 @@ int defaultCallback(const void* buf, int len, DeviceId id) {
 }
 
 int fullCallback(const void* buf, int len, DeviceId id) {
-  EtherFrame frame;
+  Ether::EtherFrame frame;
   frame.setPayload((u_char*)buf, len);
   Printer::printEtherFrame(frame, 2, e_PRINT_NONE);
 
@@ -109,7 +109,7 @@ int cmdHandler() {
       int len = text.length() + 1;
       if (len < ETH_ZLEN) len = ETH_ZLEN;
       sprintf((char*)buf, "%s", text.c_str());
-      int res = sendFrame(buf, len, ETHERTYPE_IP, mac, devPtr->getId());
+      int res = api::sendFrame(buf, len, ETHERTYPE_IP, mac, devPtr->getId());
       if (res < 0) {
         LOG_ERR("Send failed");
         continue;
@@ -117,7 +117,7 @@ int cmdHandler() {
 
       // local EtherFrame
       if (showMsg) {
-        EtherFrame frame;
+        Ether::EtherFrame frame;
         ether_header hdr;
         memcpy(hdr.ether_dhost, mac, ETHER_ADDR_LEN);
         memcpy(hdr.ether_shost, devPtr->getMAC(), ETHER_ADDR_LEN);
@@ -129,12 +129,12 @@ int cmdHandler() {
     }
 
     else if (cmd == "brief" || cmd == "b") {
-      setFrameReceiveCallback(defaultCallback);
+      api::setFrameReceiveCallback(defaultCallback);
       continue;
     }
 
     else if (cmd == "full" || cmd == "f") {
-      setFrameReceiveCallback(fullCallback);
+      api::setFrameReceiveCallback(fullCallback);
       continue;
     }
 
@@ -165,7 +165,7 @@ int cmdHandler() {
 int main() {
   signal(SIGINT, signalHandler);
   signal(SIGTSTP, tstpHandler);
-  setFrameReceiveCallback(defaultCallback);
+  api::setFrameReceiveCallback(defaultCallback);
   int cnt = Device::deviceMgr.addAllDevice(false);
 
   if (cnt <= 0) {

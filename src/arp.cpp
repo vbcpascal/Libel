@@ -5,17 +5,19 @@ namespace Arp {
 ArpManager arpMgr;
 
 int arpCallBack(const void* buf, int len, DeviceId id) {
+  auto dev = Device::deviceMgr.getDevicePtr(id);
   ArpFrame frame(buf);
+
+  // if (MAC::isSameMacAddr(dev->getMAC(), frame.srcMac)) return 0;
+
   frame.ntohType();
   Printer::printArpFrame(frame);
   switch (frame.arpHdr.ar_op) {
     case ARPOP_REPLY: {
-      arpMgr.ipMacMap[frame.dstIp] = MAC::macAddr(frame.dstMac);
-      arpMgr.found = true;
+      arpMgr.ipMacMap[frame.srcIp] = MAC::macAddr(frame.dstMac);
       break;
     }
     case ARPOP_REQUEST: {
-      auto dev = Device::deviceMgr.getDevicePtr(id);
       arpMgr.sendReplyArp(dev, frame.srcMac, frame.srcIp);
       break;
     }
@@ -85,14 +87,15 @@ int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
   int found = -1;
   for (int i = maxRetry + 1; i != 0; --i, ++cnt) {
     if (cv.wait_for(lock, std::chrono::seconds(ARP_TIMEOUT), [&] {
+          printf("size: %lu\n", ipMacMap.size());
           auto iter = ipMacMap.find(dstIp);
           return iter != ipMacMap.end();
         })) {
       // LOG_INFO("wait_for finished.");
       auto iter = ipMacMap.find(dstIp);
       if (iter != ipMacMap.end()) {
-        break;
         found = 0;
+        break;
       }
     } else {
       LOG_WARN("Request timeout for arp seq %d, dstip = %s", cnt,

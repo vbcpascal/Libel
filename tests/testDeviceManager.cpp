@@ -1,10 +1,10 @@
+#include "api.h"
 #include "device.h"
 #include "ether.h"
-#include "packetio.h"
 #include "type.h"
 
 int myCallback(const void* buf, int len, DeviceId id) {
-  EtherFrame frame;
+  Ether::EtherFrame frame;
   frame.setPayload((u_char*)buf, len);
   // LOG(" CALLBACK FUNTION ", "frame printed below");
   // Printer::printEtherFrame(frame, 2, e_PRINT_INTRO + e_PRINT_TYPE +
@@ -13,7 +13,7 @@ int myCallback(const void* buf, int len, DeviceId id) {
 }
 
 int main() {
-  setFrameReceiveCallback(&myCallback);
+  api::setFrameReceiveCallback(myCallback);
 
   // add all device
   int cnt = Device::deviceMgr.addAllDevice();
