@@ -13,18 +13,26 @@ int main(int argc, char* argv[]) {
   api::setIPPacketReceiveCallback(myIpCallback);
   Device::deviceMgr.addAllDevice();
 
-  std::string srcStr, dstStr, msg;
-  std::cout << "Input an ip address to send packet: ";
-  std::getline(std::cin, srcStr);
-  std::cout << "Input destination ip address: ";
-  std::getline(std::cin, dstStr);
-  std::cout << "Input your message";
-  std::getline(std::cin, msg);
+  std::string srcStr, dstStr, msg, tmp;
 
-  ip_addr src, dst;
-  inet_aton(srcStr.c_str(), &src);
-  inet_aton(dstStr.c_str(), &dst);
-  api::sendIPPacket(src, dst, 17, msg.c_str(), msg.length());
+  while (true) {
+    std::cout << "Input an ip address to send packet: ";
+    std::getline(std::cin, tmp);
+    if (tmp != "") srcStr = tmp;
+    std::cout << "Input destination ip address: ";
+    std::getline(std::cin, tmp);
+    if (tmp != "") dstStr = tmp;
+    std::cout << "Input your message: ";
+    std::getline(std::cin, tmp);
+    if (tmp != "") msg = tmp;
+    std::cout << "length of messsage: " << msg.length() << std::endl;
+    std::cout << srcStr << " -> " << dstStr << " : " << msg << std::endl;
+
+    ip_addr src, dst;
+    inet_aton(srcStr.c_str(), &src);
+    inet_aton(dstStr.c_str(), &dst);
+    api::sendIPPacket(src, dst, 17, msg.c_str(), msg.length() + 1);
+  }
 
   Device::deviceMgr.keepReceiving();
   return 0;

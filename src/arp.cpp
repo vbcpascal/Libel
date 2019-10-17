@@ -14,7 +14,7 @@ int arpCallBack(const void* buf, int len, DeviceId id) {
   Printer::printArpFrame(frame);
   switch (frame.arpHdr.ar_op) {
     case ARPOP_REPLY: {
-      arpMgr.ipMacMap[frame.srcIp] = MAC::macAddr(frame.dstMac);
+      arpMgr.ipMacMap[frame.srcIp] = MAC::macAddr(frame.srcMac);
       break;
     }
     case ARPOP_REQUEST: {

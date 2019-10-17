@@ -36,11 +36,11 @@ void IpPacket::setDefaultHdr() {
 }
 
 int IpPacket::setData(const u_char *buf, int len) {
-  if (len > IP_MAXPACKET - hdr.ip_hl) {
+  if (len > IP_MAXPACKET - hdr.ip_hl * 4) {
     LOG_ERR("packet is to large.");
     return -1;
   }
-  totalLen() = len + hdr.ip_hl;
+  totalLen() = len + hdr.ip_hl * 4;
   memcpy(data, buf, len);
   return 0;
 }
@@ -108,9 +108,11 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
   ipPack.proto() = proto;
   ipPack.setData((u_char *)buf, len);
 
+  int packLen = ipPack.totalLen();
+
   ipPack.hton();
   ipPack.setChksum();
-  return Device::deviceMgr.sendFrame(&ipPack, ipPack.totalLen(), ETHERTYPE_IP,
+  return Device::deviceMgr.sendFrame(&ipPack, packLen, ETHERTYPE_IP,
                                      dstMac.addr, dev);
 }
 
