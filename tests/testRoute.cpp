@@ -1,10 +1,9 @@
 #include "api.h"
-#include "ip.h"
+#include "router.h"
 
 int myIpCallback(const void* buf, int len) {
   Ip::IpPacket ipp((u_char*)buf, len);
   Printer::printIpPacket(ipp);
-  // Printer::print((u_char*)buf, len, 14);
   return 0;
 }
 
@@ -13,14 +12,35 @@ int main(int argc, char* argv[]) {
   api::setIPPacketReceiveCallback(myIpCallback);
   api::addAllDevice();
 
-  std::string srcStr, dstStr, msg, tmp;
+  std::cout << "Set Routing table. input \"end\" to break.\n  [devname] "
+               "[destip] [mask] [mac]\n";
+  std::string devName, destStr, maskStr, macStr;
+  ip_addr destIp, maskIp;
+  Device::DevicePtr dev;
+  u_char mac[6];
+  while (std::cin >> devName) {
+    if (devName == "end") break;
+    std::cin >> destStr >> maskStr >> macStr;
+    if (!(dev = Device::deviceMgr.getDevicePtr(devName.c_str()))) {
+      LOG_ERR("No device: %s", devName.c_str());
+      continue;
+    }
+    inet_aton(destStr.c_str(), &destIp);
+    inet_aton(maskStr.c_str(), &maskIp);
+    MAC::strtoMAC(mac, macStr.c_str());
+    api::setRoutingTable(destIp, maskIp, mac, devName.c_str());
+    LOG_INFO("Add routing item succeed!")
+  }
 
+  fflush(stdin);
+  std::string srcStr, dstStr, msg, tmp;
   while (true) {
     std::cout << "Input an ip address to send packet: ";
-    std::getline(std::cin, tmp);
+    std::cin >> tmp;
     if (tmp != "") srcStr = tmp;
+    if (tmp == "end") break;
     std::cout << "Input destination ip address: ";
-    std::getline(std::cin, tmp);
+    std::cin >> tmp;
     if (tmp != "") dstStr = tmp;
     std::cout << "Input your message: ";
     std::getline(std::cin, tmp);
