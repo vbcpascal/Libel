@@ -52,6 +52,7 @@ class IpPacket {
 int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
                  const void* buf, int len);
 
+uint16_t getChecksum(const void* vdata, size_t length);
 int ipCallBack(const void* buf, int len, DeviceId id);
 extern IPPacketReceiveCallback callback;
 }  // namespace Ip

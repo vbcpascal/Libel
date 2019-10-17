@@ -4,58 +4,6 @@ namespace {
 bool sameSubnet(ip_addr src, ip_addr dst, ip_addr mask) {
   return (src.s_addr & mask.s_addr) == (dst.s_addr & mask.s_addr);
 }
-
-uint16_t chechksum(const void *vdata, size_t length) {
-  // Cast the data pointer to one that can be indexed.
-  char *data = (char *)vdata;
-
-  // Initialise the accumulator.
-  uint64_t acc = 0xffff;
-
-  // Handle any partial block at the start of the data.
-  unsigned int offset = ((uintptr_t)data) & 3;
-  if (offset) {
-    size_t count = 4 - offset;
-    if (count > length) count = length;
-    uint32_t word = 0;
-    memcpy(offset + (char *)&word, data, count);
-    acc += ntohl(word);
-    data += count;
-    length -= count;
-  }
-
-  // Handle any complete 32-bit blocks.
-  char *data_end = data + (length & ~3);
-  while (data != data_end) {
-    uint32_t word;
-    memcpy(&word, data, 4);
-    acc += ntohl(word);
-    data += 4;
-  }
-  length &= 3;
-
-  // Handle any partial block at the end of the data.
-  if (length) {
-    uint32_t word = 0;
-    memcpy(&word, data, length);
-    acc += ntohl(word);
-  }
-
-  // Handle deferred carries.
-  acc = (acc & 0xffffffff) + (acc >> 32);
-  while (acc >> 16) {
-    acc = (acc & 0xffff) + (acc >> 16);
-  }
-
-  // If the data began at an odd byte address
-  // then reverse the byte order to compensate.
-  if (offset & 1) {
-    acc = ((acc & 0xff00) >> 8) | ((acc & 0x00ff) << 8);
-  }
-
-  // Return the checksum in network byte order.
-  return htons(~acc);
-}
 }  // namespace
 
 namespace Ip {
@@ -64,10 +12,13 @@ IPPacketReceiveCallback callback = nullptr;
 
 // this is necessary for a common callback
 int ipCallBack(const void *buf, int len, DeviceId id) {
+  IpPacket ipp((u_char *)buf, len);
+  if (!ipp.chkChksum()) LOG_WARN("Checksum error.");
+  ipp.ntoh();
+
   if (callback) {
-    return callback(buf, len);
+    return callback(&ipp, len);
   } else {
-    IpPacket ipp((u_char *)buf, len);
     Printer::printIpPacket(ipp);
     return 0;
   }
@@ -96,11 +47,11 @@ int IpPacket::setData(const u_char *buf, int len) {
 
 void IpPacket::setChksum() {
   hdr.ip_sum = 0;
-  hdr.ip_sum = chechksum(&hdr, hdr.ip_hl);
+  hdr.ip_sum = getChecksum(&hdr, hdr.ip_hl * 4);
 }
 
 bool IpPacket::chkChksum() {
-  auto res = chechksum(&hdr, hdr.ip_hl);
+  auto res = getChecksum(&hdr, hdr.ip_hl * 4);
   return res == 0;
 }
 
@@ -163,6 +114,58 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
                                      dstMac.addr, dev);
 }
 
+uint16_t getChecksum(const void *vdata, size_t length) {
+  // Cast the data pointer to one that can be indexed.
+  char *data = (char *)vdata;
+
+  // Initialise the accumulator.
+  uint64_t acc = 0xffff;
+
+  // Handle any partial block at the start of the data.
+  unsigned int offset = ((uintptr_t)data) & 3;
+  if (offset) {
+    size_t count = 4 - offset;
+    if (count > length) count = length;
+    uint32_t word = 0;
+    memcpy(offset + (char *)&word, data, count);
+    acc += ntohl(word);
+    data += count;
+    length -= count;
+  }
+
+  // Handle any complete 32-bit blocks.
+  char *data_end = data + (length & ~3);
+  while (data != data_end) {
+    uint32_t word;
+    memcpy(&word, data, 4);
+    acc += ntohl(word);
+    data += 4;
+  }
+  length &= 3;
+
+  // Handle any partial block at the end of the data.
+  if (length) {
+    uint32_t word = 0;
+    memcpy(&word, data, length);
+    acc += ntohl(word);
+  }
+
+  // Handle deferred carries.
+  acc = (acc & 0xffffffff) + (acc >> 32);
+  while (acc >> 16) {
+    acc = (acc & 0xffff) + (acc >> 16);
+  }
+
+  // If the data began at an odd byte address
+  // then reverse the byte order to compensate.
+  if (offset & 1) {
+    acc = ((acc & 0xff00) >> 8) | ((acc & 0x00ff) << 8);
+  }
+
+  // Return the checksum in network byte order.
+  return htons(~acc);
+}
+
 }  // namespace Ip
 
 namespace Printer {
@@ -174,7 +177,7 @@ void printIpPacket(const Ip::IpPacket &ipp) {
   char srcIpStr[20], dstIpStr[20];
   ip_ntoa(srcIpStr, ipp.hdr.ip_src);
   ip_ntoa(dstIpStr, ipp.hdr.ip_dst);
-  printf(">> IP %s -> %s, len = %d, proto: %s\n", srcIpStr, dstIpStr,
-         ipp.hdr.ip_len, ipProtoNameMap[ipp.hdr.ip_p].c_str());
+  printf("\033[;1m>> IP\033[0m %s -> %s, len = %d, proto: %s\n", srcIpStr,
+         dstIpStr, ipp.hdr.ip_len, ipProtoNameMap[ipp.hdr.ip_p].c_str());
 }
 }  // namespace Printer

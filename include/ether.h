@@ -181,7 +181,7 @@ void printMAC(const u_char* mac, const std::string end = "\n");
 void printEtherFrame(const Ether::EtherFrame& ef, int col = 0,
                      int option = e_PRINT_ALL);
 
-void print(const u_char* buf, int len, int col = 2);
+void print(const u_char* buf, int len, int placeholder = 0);
 }  // namespace Printer
 
 #endif  // ETHER_H_

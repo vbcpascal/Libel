@@ -140,14 +140,21 @@ void printEtherFrame(const Ether::EtherFrame& ef, int col, int option) {
   free(frameBuf);
 }
 
-void print(const u_char* buf, int len, int col) {
-  for (int i = 0; i < len; ++i) {
+void print(const u_char* buf, int len, int placeholder) {
+  int col = 2;
+  int index = 0;
+  for (int i = 0; i < len + placeholder; ++i) {
     if (i != 0 && i % (8 * col) == 0)
       printf("\n");
     else if (i != 0 && i % 8 == 0)
       printf("\t");
 
-    printf("%02x ", buf[i]);
+    if (placeholder) {
+      printf("   ");
+      placeholder--;
+    } else {
+      printf("%02x ", buf[index++]);
+    }
   }
   printf("\n");
 }
