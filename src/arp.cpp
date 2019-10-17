@@ -87,7 +87,6 @@ int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
   int found = -1;
   for (int i = maxRetry + 1; i != 0; --i, ++cnt) {
     if (cv.wait_for(lock, std::chrono::seconds(ARP_TIMEOUT), [&] {
-          printf("size: %lu\n", ipMacMap.size());
           auto iter = ipMacMap.find(dstIp);
           return iter != ipMacMap.end();
         })) {
