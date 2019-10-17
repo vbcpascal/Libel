@@ -15,13 +15,37 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
   IpPacket ipp((u_char *)buf, len);
   if (!ipp.chkChksum()) LOG_WARN("Checksum error.");
   ipp.ntoh();
+  ip_addr dstIp = ipp.ipDst();
 
-  if (callback) {
-    return callback(&ipp, len);
-  } else {
-    Printer::printIpPacket(ipp);
-    return 0;
+  // is me?
+  if (Device::deviceMgr.haveDeviceWithIp(dstIp)) {
+    if (callback) {
+      return callback(&ipp, len);
+    } else {
+      Printer::printIpPacket(ipp);
+      return 0;
+    }
   }
+
+  // route it!
+  char tmpipstr[20];
+  MAC::macAddr dstMac;
+  Device::DevicePtr dev;
+  auto dstPair = Route::router.lookup(dstIp);
+  ip_ntoa(tmpipstr, dstIp);
+  if (!dstPair.first) {
+    LOG_WARN("No route for %s", tmpipstr);
+    return -1;
+  } else {
+    LOG_INFO("Route to \033[;1m%s\033[0m via \033[33m%s\033[0m", tmpipstr,
+             dev->getName().c_str());
+    dev = dstPair.first;
+    dstMac = dstPair.second;
+  }
+  int packLen = ipp.totalLen();
+  ipp.hton();
+  return Device::deviceMgr.sendFrame(&ipp, packLen, ETHERTYPE_IP, dstMac.addr,
+                                     dev);
 }
 
 IpPacket::IpPacket(const u_char *buf, int len) { memcpy(&hdr, buf, len); }

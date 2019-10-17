@@ -32,7 +32,7 @@ bool operator<(const Route& rl, const Route& rr) {
 }
 
 bool Route::haveIp(const ip_addr& ip) {
-  return !((ip.s_addr ^ ipPrefix.s_addr) >> slash);
+  return !((ip.s_addr ^ ipPrefix.s_addr) >> (32 - slash));
 }
 
 std::pair<Device::DevicePtr, MAC::macAddr> Router::lookup(const ip_addr& ip) {

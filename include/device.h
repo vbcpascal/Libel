@@ -53,7 +53,7 @@ class Device {
    * @param name the name of device
    * @param sniff whether begin to sniff after construct this device
    */
-  Device(std::string name, bool sniff = false);
+  explicit Device(std::string name, bool sniff = false);
 
   /**
    * @brief Get the Id object
@@ -194,6 +194,8 @@ class DeviceManager {
    * @return int -1 on error
    */
   int getMACAddr(u_char *mac, DeviceId id);
+
+  bool haveDeviceWithIp(const ip_addr &ip);
 
   /**
    * @brief Send a frame

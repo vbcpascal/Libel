@@ -270,6 +270,15 @@ DevicePtr DeviceManager::getDevicePtr(const ip_addr& _ip) {
   return devPtr;
 }
 
+bool DeviceManager::haveDeviceWithIp(const ip_addr& ip) {
+  for (auto& dev : devices) {
+    if (dev->getIp() == ip) {
+      return true;
+    }
+  }
+  return false;
+}
+
 int DeviceManager::addAllDevice(bool sniff) {
   int cnt = 0;
 
