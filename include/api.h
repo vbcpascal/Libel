@@ -81,4 +81,5 @@ int setIPPacketReceiveCallback(IPPacketReceiveCallback callback);
 int setRoutingTable(const in_addr dest, const in_addr mask,
                     const void* nextHopMAC, const char* device);
 
+int addAllDevice(bool sniff = false);
 }  // namespace api

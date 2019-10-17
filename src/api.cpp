@@ -83,4 +83,6 @@ int setRoutingTable(const in_addr dest, const in_addr mask,
   return Route::router.setTable(dest, mask, nm, dev);
 }
 
+int addAllDevice(bool sniff) { return Device::deviceMgr.addAllDevice(sniff); }
+
 }  // namespace api
