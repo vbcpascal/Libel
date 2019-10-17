@@ -128,8 +128,8 @@ std::map<u_short, std::string> arpOpTypeNameMap{
     {ARPOP_REPLY, "\033[36mREPLY\033[0m"}};
 
 void printArpFrame(const Arp::ArpFrame& af) {
-  printf("  ARP %s\t", arpOpTypeNameMap[af.arpHdr.ar_op].c_str());
-  printf("- MAC : %s -> %s\t", MAC::toString(af.srcMac).c_str(),
+  printf(">> ARP %s\t", arpOpTypeNameMap[af.arpHdr.ar_op].c_str());
+  printf("MAC : %s -> %s\t", MAC::toString(af.srcMac).c_str(),
          MAC::toString(af.dstMac).c_str());
   char srcIpStr[20], dstIpStr[20];
   strcpy(srcIpStr, inet_ntoa(af.srcIp));

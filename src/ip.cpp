@@ -1,5 +1,4 @@
 #include "ip.h"
-#define ip_ntoa(IPSTR, IP) strcpy(IPSTR, inet_ntoa(IP))
 
 namespace {
 bool sameSubnet(ip_addr src, ip_addr dst, ip_addr mask) {
@@ -60,6 +59,21 @@ uint16_t chechksum(const void *vdata, size_t length) {
 }  // namespace
 
 namespace Ip {
+
+IPPacketReceiveCallback callback = nullptr;
+
+// this is necessary for a common callback
+int ipCallBack(const void *buf, int len, DeviceId id) {
+  if (callback) {
+    return callback(buf, len);
+  } else {
+    IpPacket ipp((u_char *)buf, len);
+    Printer::printIpPacket(ipp);
+    return 0;
+  }
+}
+
+IpPacket::IpPacket(const u_char *buf, int len) { memcpy(&hdr, buf, len); }
 
 void IpPacket::setDefaultHdr() {
   hdr.ip_v = 4;         // version
@@ -150,3 +164,17 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
 }
 
 }  // namespace Ip
+
+namespace Printer {
+
+std::map<u_char, std::string> ipProtoNameMap{{6, "\033[35mTCP\033[0m"},
+                                             {17, "\033[36mUDP\033[0m"}};
+
+void printIpPacket(const Ip::IpPacket &ipp) {
+  char srcIpStr[20], dstIpStr[20];
+  ip_ntoa(srcIpStr, ipp.hdr.ip_src);
+  ip_ntoa(dstIpStr, ipp.hdr.ip_dst);
+  printf(">> IP %s -> %s, len = %d, proto: %s\n", srcIpStr, dstIpStr,
+         ipp.hdr.ip_len, ipProtoNameMap[ipp.hdr.ip_p].c_str());
+}
+}  // namespace Printer

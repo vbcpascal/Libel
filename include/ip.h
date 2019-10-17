@@ -25,8 +25,12 @@ class IpPacket {
  public:
   struct __attribute__((__packed__)) {
     ip hdr;
-    u_char* data[IP_MAXPACKET];
+    u_char data[IP_MAXPACKET];
   };
+
+  IpPacket() = default;
+  IpPacket(const u_char* buf, int len);
+
   void setDefaultHdr();
   int setData(const u_char* buf, int len);
 
@@ -48,7 +52,13 @@ class IpPacket {
 int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
                  const void* buf, int len);
 
+int ipCallBack(const void* buf, int len, DeviceId id);
+extern IPPacketReceiveCallback callback;
 }  // namespace Ip
+
+namespace Printer {
+void printIpPacket(const Ip::IpPacket& ipp);
+}
 
 /*
  * Internet Datagram Header

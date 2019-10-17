@@ -3,17 +3,20 @@
 #include "ether.h"
 #include "type.h"
 
+// It's useless unless you want to print a frame...
 int myCallback(const void* buf, int len, DeviceId id) {
   Ether::EtherFrame frame;
   frame.setPayload((u_char*)buf, len);
-  // LOG(" CALLBACK FUNTION ", "frame printed below");
-  // Printer::printEtherFrame(frame, 2, e_PRINT_INTRO + e_PRINT_TYPE +
-  // e_PRINT_LEN);
+  LOG(" CALLBACK FUNTION ", "frame printed below");
+  Printer::printEtherFrame(frame, 2,
+                           e_PRINT_INTRO + e_PRINT_TYPE + e_PRINT_LEN);
   return 0;
 }
 
-int main() {
-  api::setFrameReceiveCallback(myCallback);
+int main(int argc, char* argv[]) {
+  // choose one between next two
+  // api::setFrameReceiveCallback(myCallback);
+  api::init();
 
   // add all device
   int cnt = Device::deviceMgr.addAllDevice();
