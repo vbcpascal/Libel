@@ -31,7 +31,7 @@ void strtoMAC(u_char* mac, const char* str) {
 
 bool isSameMacAddr(const u_char* macA, const u_char* macB) {
   for (int i = 0; i < 6; ++i)
-    if (macA[i] == macB[i]) return false;
+    if (macA[i] != macB[i]) return false;
   return true;
 }
 

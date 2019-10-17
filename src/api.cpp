@@ -24,6 +24,8 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
   // dst is me or broadcast?
   if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_dhost) ||
       MAC::isBroadcast(dev->getMAC())) {
+    Printer::printEtherFrame(frame);
+
     u_short type = hdr.ether_type;
 
     auto iter = callbackMap.find(type);
