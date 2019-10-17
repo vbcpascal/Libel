@@ -43,11 +43,14 @@ class macAddr {
   macAddr(const u_char* _mac) { memcpy(addr, _mac, ETHER_ADDR_LEN); }
 
   bool operator==(const macAddr& m);
+  const macAddr& operator=(const macAddr& m);
 };
 
 bool isSameMacAddr(const u_char* macA, const u_char* macB);
 
 bool isBroadcast(const u_char* mac);
+
+bool isBroadcast(const macAddr& mac);
 
 /**
  * @brief Convert a MAC address to cpp string

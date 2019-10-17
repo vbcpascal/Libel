@@ -18,6 +18,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -90,6 +91,13 @@ class Device {
   ip_addr getIp();
 
   /**
+   * @brief Get the Subnet Mask object
+   *
+   * @return ip_addr subnet mask
+   */
+  ip_addr getSubnetMask();
+
+  /**
    * @brief Send a frame on the device
    *
    * @param frame the frame will be sent
@@ -117,6 +125,7 @@ class Device {
   std::string name;
   u_char mac[ETHER_ADDR_LEN];
   ip_addr ip;
+  ip_addr subnetMask;
 
   pcap_t *pcap;
   bool sniffing;
@@ -167,6 +176,8 @@ class DeviceManager {
    * @return DevicePtr pointer of device
    */
   DevicePtr getDevicePtr(std::string name);
+
+  DevicePtr getDevicePtr(const ip_addr &_ip);
 
   /**
    * @brief Try to add all devices

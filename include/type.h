@@ -63,4 +63,5 @@ using IPPacketReceiveCallback = int (*)(const void*, int);
 using commonReceiveCallback = int (*)(const void*, int, DeviceId);
 
 bool operator<(ip_addr a, ip_addr b);
+bool operator==(ip_addr a, ip_addr b);
 #endif  // TYPE_H_

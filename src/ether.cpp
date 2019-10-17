@@ -9,6 +9,11 @@ bool macAddr::operator==(const macAddr& m) {
   return isSameMacAddr(addr, m.addr);
 }
 
+const macAddr& macAddr::operator=(const macAddr& m) {
+  memcpy(addr, m.addr, ETHER_ADDR_LEN);
+  return *this;
+}
+
 std::string toString(const u_char* mac) {
   char cstr[18] = "";
   sprintf(cstr, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3],
@@ -32,6 +37,10 @@ bool isSameMacAddr(const u_char* macA, const u_char* macB) {
 
 bool isBroadcast(const u_char* mac) {
   return isSameMacAddr(mac, Ether::broadcastMacAddr);
+}
+
+bool isBroadcast(const macAddr& mac) {
+  return isSameMacAddr(mac.addr, Ether::broadcastMacAddr);
 }
 
 }  // namespace MAC

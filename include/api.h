@@ -1,5 +1,6 @@
 #include "arp.h"
 #include "device.h"
+#include "ip.h"
 #include "type.h"
 
 namespace api {
@@ -55,9 +56,7 @@ int setFrameReceiveCallback(frameReceiveCallback callback);
  * @return 0 on success, -1 on error.
  */
 int sendIPPacket(const struct in_addr src, const struct in_addr dest, int proto,
-                 const void* buf, int len) {
-  return 0;
-}
+                 const void* buf, int len);
 
 /**
  * @brief Register a callback function to be called each time an IP packet
@@ -67,7 +66,7 @@ int sendIPPacket(const struct in_addr src, const struct in_addr dest, int proto,
  * @return 0 on success, -1 on error.
  * @see IPPacketReceiveCallback
  */
-int setIPPacketReceiveCallback(IPPacketReceiveCallback callback) { return 0; }
+int setIPPacketReceiveCallback(IPPacketReceiveCallback callback);
 
 /**
  * @brief Manully add an item to routing table. Useful when talking with real
@@ -80,8 +79,6 @@ int setIPPacketReceiveCallback(IPPacketReceiveCallback callback) { return 0; }
  * @return 0 on success, -1 on error
  */
 int setRoutingTable(const in_addr dest, const in_addr mask,
-                    const void* nextHopMAC, const char* device) {
-  return 0;
-}
+                    const void* nextHopMAC, const char* device);
 
 }  // namespace api

@@ -49,8 +49,8 @@ int initDeviceMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
 #endif
 }
 
-ip_addr initDeviceIPAddr(const char* if_name) {
-  ip_addr ipAddr;
+std::pair<ip_addr, ip_addr> initDeviceIPAddr(const char* if_name) {
+  ip_addr ipAddr, mask;
   ifaddrs* iflist;
 
   if (getifaddrs(&iflist) == 0) {
@@ -59,13 +59,15 @@ ip_addr initDeviceIPAddr(const char* if_name) {
           (strcmp(cur->ifa_name, if_name) == 0) && cur->ifa_addr) {
         auto sdl = reinterpret_cast<sockaddr_in*>(cur->ifa_addr);
         ipAddr = sdl->sin_addr;
+        sdl = reinterpret_cast<sockaddr_in*>(cur->ifa_netmask);
+        mask = sdl->sin_addr;
         break;
       }
     }
     freeifaddrs(iflist);
   }
 
-  return ipAddr;
+  return std::make_pair(ipAddr, mask);
 }
 
 void getPacket(u_char* args, const struct pcap_pkthdr* header,
@@ -114,7 +116,9 @@ Device::Device(std::string name, bool sniff)
   }
 
   // get IP
-  ip = initDeviceIPAddr(name.c_str());
+  auto ipm = initDeviceIPAddr(name.c_str());
+  ip = ipm.first;
+  subnetMask = ipm.second;
   if (ip.s_addr == 0) {
     LOG_WARN("get Ip address failed. name: \033[1m%s\033[0m", name.c_str());
     badDevice();
@@ -154,6 +158,8 @@ void Device::getMAC(u_char* dst_mac) {
 const u_char* Device::getMAC() { return mac; }
 
 ip_addr Device::getIp() { return ip; }
+
+ip_addr Device::getSubnetMask() { return subnetMask; }
 
 int Device::sendFrame(Ether::EtherFrame& frame) {
   // LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
@@ -210,13 +216,13 @@ DeviceId DeviceManager::addDevice(std::string name, bool sniff) {
 
   u_char mac[ETHER_ADDR_LEN];
   dev->getMAC(mac);
-
   devices.push_back(dev);
-  LOG(INFO,
-      "id: %d, mac: %02x:%02x:%02x:%02x:%02x:%02x. ip: %s, "
-      "name: \033[33;1m%s\033[0m",
-      id, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5],
-      inet_ntoa(dev->getIp()), dev->getName().c_str());
+
+  char ipstr[20], maskstr[20];
+  strcpy(ipstr, inet_ntoa(dev->getIp()));
+  strcpy(maskstr, inet_ntoa(dev->getSubnetMask()));
+  LOG_INFO("id: %d, mac: %s, ip: %s, mask: %s, name: \033[33;1m%s\033[0m", id,
+           MAC::toString(mac).c_str(), ipstr, maskstr, dev->getName().c_str());
   return id;
 }
 
@@ -246,6 +252,17 @@ DevicePtr DeviceManager::getDevicePtr(std::string name) {
   DevicePtr devPtr = nullptr;
   for (auto& dev : devices) {
     if (dev->getName() == name) {
+      devPtr = dev;
+      break;
+    }
+  }
+  return devPtr;
+}
+
+DevicePtr DeviceManager::getDevicePtr(const ip_addr& _ip) {
+  DevicePtr devPtr = nullptr;
+  for (auto& dev : devices) {
+    if (dev->getIp() == _ip) {
       devPtr = dev;
       break;
     }
