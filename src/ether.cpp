@@ -5,11 +5,11 @@
 
 namespace MAC {
 
-bool macAddr::operator==(const macAddr& m) {
+bool MacAddr::operator==(const MacAddr& m) {
   return isSameMacAddr(addr, m.addr);
 }
 
-const macAddr& macAddr::operator=(const macAddr& m) {
+const MacAddr& MacAddr::operator=(const MacAddr& m) {
   memcpy(addr, m.addr, ETHER_ADDR_LEN);
   return *this;
 }
@@ -39,7 +39,7 @@ bool isBroadcast(const u_char* mac) {
   return isSameMacAddr(mac, Ether::broadcastMacAddr);
 }
 
-bool isBroadcast(const macAddr& mac) {
+bool isBroadcast(const MacAddr& mac) {
   return isSameMacAddr(mac.addr, Ether::broadcastMacAddr);
 }
 

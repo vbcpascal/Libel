@@ -33,24 +33,42 @@ constexpr int e_PRINT_ALL = 127;
 
 namespace MAC {
 
-class macAddr {
+/**
+ * @brief A class storing a MAC address
+ *
+ */
+class MacAddr {
  public:
   u_char addr[6];
 
-  macAddr() {
+  MacAddr() {
     for (int i = 0; i < 6; ++i) addr[i] = 255;
   }
-  macAddr(const u_char* _mac) { memcpy(addr, _mac, ETHER_ADDR_LEN); }
+  MacAddr(const u_char* _mac) { memcpy(addr, _mac, ETHER_ADDR_LEN); }
 
-  bool operator==(const macAddr& m);
-  const macAddr& operator=(const macAddr& m);
+  const MacAddr& operator=(const MacAddr& m);
+  bool operator==(const MacAddr& m);
 };
 
 bool isSameMacAddr(const u_char* macA, const u_char* macB);
 
+/**
+ * @brief Whether a mac address is broadcast
+ *
+ * @param mac mac address
+ * @return true is broadcast
+ * @return false is not broadcast
+ */
 bool isBroadcast(const u_char* mac);
 
-bool isBroadcast(const macAddr& mac);
+/**
+ * @brief Whether a mac address is broadcast
+ *
+ * @param mac mac address
+ * @return true is broadcast
+ * @return false is not broadcast
+ */
+bool isBroadcast(const MacAddr& mac);
 
 /**
  * @brief Convert a MAC address to cpp string
@@ -152,10 +170,23 @@ class EtherFrame {
     len = l + ETHER_HDR_LEN + ETHER_CRC_LEN;
   }
 
+  /**
+   * @brief Padding. You should always transfer this before you send a ether
+   * frame
+   *
+   */
   void padding() { len = ETHER_MIN_LEN - 4; }
 
+  /**
+   * @brief ntoh for Ether frame
+   *
+   */
   void ntohType() { frame.header.ether_type = ntohs(frame.header.ether_type); }
 
+  /**
+   * @brief hton for Ether frame
+   *
+   */
   void htonType() { frame.header.ether_type = htons(frame.header.ether_type); }
 };
 }  // namespace Ether
@@ -181,6 +212,13 @@ void printMAC(const u_char* mac, const std::string end = "\n");
 void printEtherFrame(const Ether::EtherFrame& ef, int col = 0,
                      int option = e_PRINT_ALL);
 
+/**
+ * @brief print a common payload data
+ *
+ * @param buf buffer to print
+ * @param len length to print
+ * @param placeholder number of placeholder
+ */
 void print(const u_char* buf, int len, int placeholder = 0);
 }  // namespace Printer
 

@@ -92,6 +92,12 @@ int setIPPacketReceiveCallback(IPPacketReceiveCallback callback);
 int setRoutingTable(const in_addr dest, const in_addr mask,
                     const void* nextHopMAC, const char* device);
 
+/**
+ * @brief Add all device of host
+ *
+ * @param sniff Start sniffing after open devices
+ * @return int number of devices added
+ */
 int addAllDevice(bool sniff = false);
 }  // namespace api
 

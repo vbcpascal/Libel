@@ -21,11 +21,11 @@ class RouteItem {
   ip_addr ipPrefix;
   int slash;
   Device::DevicePtr dev;
-  MAC::macAddr nextHopMac;
+  MAC::MacAddr nextHopMac;
 
   RouteItem() = default;
   RouteItem(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
-            const MAC::macAddr& _m);
+            const MAC::MacAddr& _m);
   bool haveIp(const ip_addr& ip) const;
 };
 
@@ -37,9 +37,9 @@ class Router {
  public:
   RoutingTable table;
 
-  std::pair<Device::DevicePtr, MAC::macAddr> lookup(const ip_addr& ip);
+  std::pair<Device::DevicePtr, MAC::MacAddr> lookup(const ip_addr& ip);
   int setTable(const in_addr& dst, const in_addr& mask,
-               const MAC::macAddr& nextHopMac, const Device::DevicePtr& dev);
+               const MAC::MacAddr& nextHopMac, const Device::DevicePtr& dev);
 };
 
 extern Router router;

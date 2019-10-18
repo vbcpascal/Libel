@@ -16,7 +16,7 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
   auto hdr = frame.getHeader();
   auto dev = Device::deviceMgr.getDevicePtr(id);
 
-  // src is me?
+  // MAC address: src is me?
   if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_shost)) {
     LOG_WARN("Ignore a packet, src is me! %s",
              MAC::toString(hdr.ether_shost).c_str());
@@ -24,7 +24,7 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
     return 0;
   }
 
-  // dst is me or broadcast?
+  // MAC address:  dst is me or broadcast?
   if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_dhost) ||
       MAC::isBroadcast(hdr.ether_dhost)) {
     u_short type = hdr.ether_type;
@@ -42,11 +42,7 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
     }
   }
 
-  LOG_WARN("Ignore a packet, dst: %s, my: %s",
-           MAC::toString(hdr.ether_dhost).c_str(),
-           MAC::toString(dev->getMAC()).c_str());
-  // ignore it;
-
+  // Ignore other frame
   return 0;
 }
 
@@ -84,7 +80,7 @@ int setIPPacketReceiveCallback(IPPacketReceiveCallback callback) {
 
 int setRoutingTable(const in_addr dest, const in_addr mask,
                     const void* nextHopMAC, const char* device) {
-  auto nm = MAC::macAddr((const u_char*)nextHopMAC);
+  auto nm = MAC::MacAddr((const u_char*)nextHopMAC);
   auto dev = Device::deviceMgr.getDevicePtr(std::string(device));
   return Route::router.setTable(dest, mask, nm, dev);
 }

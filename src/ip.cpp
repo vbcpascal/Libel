@@ -25,7 +25,7 @@ void ipToStr(const ip_addr &ip, char *ipstr) {
 int ipCallBack(const void *buf, int len, DeviceId id) {
   IpPacket ipp((u_char *)buf, len);
   if (!ipp.chkChksum()) LOG_WARN("Checksum error.");
-  ipp.ntoh();
+  ipp.ntohType();
   ip_addr dstIp = ipp.ipDst();
 
   // is me?
@@ -40,7 +40,7 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
 
   // route it!
   char tmpipstr[20];
-  MAC::macAddr dstMac;
+  MAC::MacAddr dstMac;
   Device::DevicePtr dev;
   auto dstPair = Route::router.lookup(dstIp);
   ipToStr(dstIp, tmpipstr);
@@ -54,7 +54,7 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
     dstMac = dstPair.second;
   }
   int packLen = ipp.totalLen();
-  ipp.hton();
+  ipp.htonType();
   return Device::deviceMgr.sendFrame(&ipp, packLen, ETHERTYPE_IP, dstMac.addr,
                                      dev);
 }
@@ -90,14 +90,14 @@ bool IpPacket::chkChksum() {
   return res == 0;
 }
 
-void IpPacket::hton() {
+void IpPacket::htonType() {
   hdr.ip_len = htons(hdr.ip_len);
   hdr.ip_id = htons(hdr.ip_id);
   hdr.ip_off = htons(hdr.ip_off);
   hdr.ip_sum = htons(hdr.ip_sum);
 }
 
-void IpPacket::ntoh() {
+void IpPacket::ntohType() {
   hdr.ip_len = ntohs(hdr.ip_len);
   hdr.ip_id = ntohs(hdr.ip_id);
   hdr.ip_off = ntohs(hdr.ip_off);
@@ -115,7 +115,7 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
     return -1;
   }
 
-  MAC::macAddr dstMac;
+  MAC::MacAddr dstMac;
   // get dest mac addr if in the same subnet
   if (sameSubnet(src, dest, dev->getSubnetMask())) {
     dstMac = Arp::arpMgr.getMacAddr(dev, dest);
@@ -147,7 +147,7 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
 
   int packLen = ipPack.totalLen();
 
-  ipPack.hton();
+  ipPack.htonType();
   ipPack.setChksum();
   return Device::deviceMgr.sendFrame(&ipPack, packLen, ETHERTYPE_IP,
                                      dstMac.addr, dev);

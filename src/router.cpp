@@ -19,7 +19,7 @@ namespace Route {
 Router router;
 
 RouteItem::RouteItem(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
-                     const MAC::macAddr& _m)
+                     const MAC::MacAddr& _m)
     : ipPrefix(_ip), slash(_s), dev(_d) {
   nextHopMac = _m;
 }
@@ -41,9 +41,9 @@ bool RouteItem::haveIp(const ip_addr& ip) const {
 #endif
 }
 
-std::pair<Device::DevicePtr, MAC::macAddr> Router::lookup(const ip_addr& ip) {
+std::pair<Device::DevicePtr, MAC::MacAddr> Router::lookup(const ip_addr& ip) {
   Device::DevicePtr dev = nullptr;
-  MAC::macAddr mac;
+  MAC::MacAddr mac;
   for (auto& d : table) {
     Printer::printRouteItem(d);
     if (d.haveIp(ip)) {
@@ -56,7 +56,7 @@ std::pair<Device::DevicePtr, MAC::macAddr> Router::lookup(const ip_addr& ip) {
 }
 
 int Router::setTable(const in_addr& dst, const in_addr& mask,
-                     const MAC::macAddr& nextHopMac,
+                     const MAC::MacAddr& nextHopMac,
                      const Device::DevicePtr& dev) {
   RouteItem r(dst, maskToSlash(mask), dev, nextHopMac);
   table.insert(r);

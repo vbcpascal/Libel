@@ -11,13 +11,16 @@ int arpCallBack(const void* buf, int len, DeviceId id) {
   frame.ntohType();
   Printer::printArpFrame(frame);
   switch (frame.arpHdr.ar_op) {
+    // any reply: add to ARP table
     case ARPOP_REPLY: {
-      arpMgr.ipMacMap[frame.srcIp] = MAC::macAddr(frame.srcMac);
+      arpMgr.ipMacMap[frame.srcIp] = MAC::MacAddr(frame.srcMac);
       Printer::printArpTable();
       break;
     }
+    // dstip is me? reply it!
     case ARPOP_REQUEST: {
-      arpMgr.sendReplyArp(dev, frame.srcMac, frame.srcIp);
+      if (frame.dstIp.s_addr == dev->getIp().s_addr)
+        arpMgr.sendReplyArp(dev, frame.srcMac, frame.srcIp);
       break;
     }
     default: {
@@ -49,11 +52,13 @@ void ArpFrame::ntohType() {
   arpHdr.ar_op = ntohs(arpHdr.ar_op);
 }
 
-MAC::macAddr ArpManager::getMacAddr(Device::DevicePtr dev, const ip_addr& dstIp,
+MAC::MacAddr ArpManager::getMacAddr(Device::DevicePtr dev, const ip_addr& dstIp,
                                     int maxRetry) {
+  // have it: tell you!
   auto iter = ipMacMap.find(dstIp);
   if (iter != ipMacMap.end()) return iter->second;
 
+  // well, ask it anyway
   LOG_INFO("Send ARP request to %s", inet_ntoa(dstIp));
   int res = sendRequestArp(dev, dstIp, maxRetry);
   if (res >= 0) {
@@ -62,15 +67,16 @@ MAC::macAddr ArpManager::getMacAddr(Device::DevicePtr dev, const ip_addr& dstIp,
     return iter->second;
   } else {
     LOG_WARN("MAC not found.");
-    return MAC::macAddr();
+    return MAC::MacAddr();
   }
 }
 
 int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
                                int maxRetry) {
   std::unique_lock<std::mutex> lock(cv_m);
-  // lock.lock();
+  lock.lock();
 
+  // pack a ARP frame
   ArpFrame frame;
   frame.setDefaultHdr(ARPOP_REQUEST);
   frame.srcIp = dev->getIp();
@@ -89,7 +95,6 @@ int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
           auto iter = ipMacMap.find(dstIp);
           return iter != ipMacMap.end();
         })) {
-      // LOG_INFO("wait_for finished.");
       auto iter = ipMacMap.find(dstIp);
       if (iter != ipMacMap.end()) {
         found = 0;
