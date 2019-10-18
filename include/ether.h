@@ -1,7 +1,7 @@
 /**
  * @file ether.h
  * @author guanzhichao
- * @brief File supporting a EtherFrame class.
+ * @brief Library supporting a EtherFrame class.
  * @version 0.1
  * @date 2019-10-02
  *

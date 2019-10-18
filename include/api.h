@@ -1,3 +1,14 @@
+/**
+ * @file api.h
+ * @author guanzhichao
+ * @brief Library supporting api for users.
+ * @version 0.1
+ * @date 2019-10-18
+ *
+ */
+#ifndef API_H_
+#define API_H_
+
 #include "arp.h"
 #include "device.h"
 #include "ip.h"
@@ -83,3 +94,5 @@ int setRoutingTable(const in_addr dest, const in_addr mask,
 
 int addAllDevice(bool sniff = false);
 }  // namespace api
+
+#endif

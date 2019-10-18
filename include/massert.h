@@ -1,3 +1,12 @@
+/**
+ * @file massert.h
+ * @author guanzhichao
+ * @brief Library supporting show message
+ * @version 0.1
+ * @date 2019-10-18
+ *
+ */
+
 #ifndef MASSERT_H_
 #define MASSERT_H_
 

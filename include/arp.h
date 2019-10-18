@@ -1,3 +1,12 @@
+/**
+ * @file arp.h
+ * @author guanzhichao
+ * @brief Library supporting sending and receiving ARP frame.
+ * @version 0.1
+ * @date 2019-10-18
+ *
+ */
+
 #ifndef ARP_H_
 #define ARP_H_
 

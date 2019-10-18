@@ -1,3 +1,12 @@
+/**
+ * @file router.h
+ * @author guanzhichao
+ * @brief Library supporting Router
+ * @version 0.1
+ * @date 2019-10-18
+ *
+ */
+
 #ifndef ROUTER_H_
 #define ROUTER_H_
 
