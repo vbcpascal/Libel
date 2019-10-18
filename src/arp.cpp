@@ -14,6 +14,7 @@ int arpCallBack(const void* buf, int len, DeviceId id) {
     // any reply: add to ARP table
     case ARPOP_REPLY: {
       arpMgr.ipMacMap[frame.srcIp] = MAC::MacAddr(frame.srcMac);
+      LOG_INFO("ARP table update");
       Printer::printArpTable();
       break;
     }
@@ -129,12 +130,12 @@ void ArpManager::sendReplyArp(Device::DevicePtr dev, const u_char* dstMac,
 namespace Printer {
 
 void printArpTable() {
-  printf("\033[;1m===== ARP Table =====\033[0m\n");
+  printf("\n\033[;1m============ ARP Table ============\033[0m\n");
   for (auto& i : Arp::arpMgr.ipMacMap) {
-    printf("\t%s\t%s\n", inet_ntoa(i.first),
+    printf("%s\t%s\n", inet_ntoa(i.first),
            MAC::toString(i.second.addr).c_str());
   }
-  printf("\n");
+  printf("\033[;1m===================================\033[0m\n\n");
 }
 
 std::map<u_short, std::string> arpOpTypeNameMap{

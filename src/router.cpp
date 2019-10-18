@@ -25,16 +25,28 @@ RouteItem::RouteItem(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
 }
 
 bool operator<(const RouteItem& rl, const RouteItem& rr) {
-  if (rl.slash > rr.slash) return true;
-  if (rl.ipPrefix < rr.ipPrefix) return true;
-  if (rl.dev < rr.dev) return true;
-  return false;
+  if (rl.slash > rr.slash)
+    return true;
+  else if (rl.slash < rr.slash)
+    return false;
+
+  if (rl.ipPrefix < rr.ipPrefix)
+    return true;
+  else if (rr.ipPrefix < rl.ipPrefix)
+    return false;
+
+  if (rl.dev < rr.dev)
+    return true;
+  else
+    return false;
 }
 
 bool RouteItem::haveIp(const ip_addr& ip) const {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
+  if (slash == 0) return true;
   return !((ip.s_addr ^ ipPrefix.s_addr) << (32 - slash));
 #elif __BYTE_ORDER == __BIG_ENDIAN
+  if (slash == 0) return true;
   return !((ip.s_addr ^ ipPrefix.s_addr) >> (32 - slash));
 #else
 #error "Please fix <bits/endian.h>"
@@ -45,7 +57,6 @@ std::pair<Device::DevicePtr, MAC::MacAddr> Router::lookup(const ip_addr& ip) {
   Device::DevicePtr dev = nullptr;
   MAC::MacAddr mac;
   for (auto& d : table) {
-    Printer::printRouteItem(d);
     if (d.haveIp(ip)) {
       dev = d.dev;
       mac = d.nextHopMac;
@@ -71,8 +82,14 @@ void printRouteItem(const Route::RouteItem& r) {
          MAC::toString(r.nextHopMac.addr).c_str(), r.dev->getName().c_str());
 }
 void printRouteTable() {
+  printf(
+      "\n====================== Routing Table "
+      "======================\n");
   for (auto& r : Route::router.table) {
     Printer::printRouteItem(r);
   }
+  printf(
+      "====================================="
+      "======================\n\n");
 }
 }  // namespace Printer

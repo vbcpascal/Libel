@@ -12,14 +12,14 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
   if (frame.getLength() == 0) return 0;
 
   frame.ntohType();
-  Printer::printEtherFrame(frame);
+  // Printer::printEtherFrame(frame);
   auto hdr = frame.getHeader();
   auto dev = Device::deviceMgr.getDevicePtr(id);
 
   // MAC address: src is me?
   if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_shost)) {
-    LOG_WARN("Ignore a packet, src is me! %s",
-             MAC::toString(hdr.ether_shost).c_str());
+    LOG_DBG("Ignore a packet, src is me! %s",
+            MAC::toString(hdr.ether_shost).c_str());
     // ignore it;
     return 0;
   }
