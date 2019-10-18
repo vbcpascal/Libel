@@ -55,11 +55,15 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
 uint16_t getChecksum(const void* vdata, size_t length);
 int ipCallBack(const void* buf, int len, DeviceId id);
 extern IPPacketReceiveCallback callback;
+
+std::string ipToStr(const ip_addr& ip);
+void ipToStr(const ip_addr& ip, char* ipstr);
 }  // namespace Ip
 
 namespace Printer {
+void printIp(const ip_addr& ip, bool newline = true);
 void printIpPacket(const Ip::IpPacket& ipp);
-}
+}  // namespace Printer
 
 /*
  * Internet Datagram Header

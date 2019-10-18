@@ -29,6 +29,7 @@ int main(int argc, char* argv[]) {
   Arp::arpMgr.getMacAddr(dev, ip, 5);
   printf("MAC address: ");
   Printer::printMAC(Arp::arpMgr.ipMacMap[ip].addr);
+  Printer::printArpTable();
 
   Device::deviceMgr.keepReceiving();
   return 0;

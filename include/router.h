@@ -17,7 +17,7 @@ class Route {
   Route() = default;
   Route(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
         const MAC::macAddr& _m);
-  bool haveIp(const ip_addr& ip);
+  bool haveIp(const ip_addr& ip) const;
 };
 
 bool operator<(const Route& rl, const Route& rr);
@@ -36,5 +36,10 @@ class Router {
 extern Router router;
 
 }  // namespace Route
+
+namespace Printer {
+void printRouteItem(const Route::Route& r);
+void printRouteTable();
+}  // namespace Printer
 
 #endif

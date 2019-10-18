@@ -11,21 +11,22 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
   auto frame = Ether::EtherFrame(buf, len);
   if (frame.getLength() == 0) return 0;
 
-  // Printer::printEtherFrame(frame);
-
   frame.ntohType();
+  Printer::printEtherFrame(frame);
   auto hdr = frame.getHeader();
   auto dev = Device::deviceMgr.getDevicePtr(id);
 
   // src is me?
   if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_shost)) {
+    LOG_WARN("Ignore a packet, src is me! %s",
+             MAC::toString(hdr.ether_shost).c_str());
     // ignore it;
     return 0;
   }
 
   // dst is me or broadcast?
   if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_dhost) ||
-      MAC::isBroadcast(dev->getMAC())) {
+      MAC::isBroadcast(hdr.ether_dhost)) {
     u_short type = hdr.ether_type;
 
     auto iter = callbackMap.find(type);
@@ -40,6 +41,11 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
         return -1;
     }
   }
+
+  LOG_WARN("Ignore a packet, dst: %s, my: %s",
+           MAC::toString(hdr.ether_dhost).c_str(),
+           MAC::toString(dev->getMAC()).c_str());
+  // ignore it;
 
   return 0;
 }

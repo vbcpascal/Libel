@@ -31,14 +31,21 @@ bool operator<(const Route& rl, const Route& rr) {
   return false;
 }
 
-bool Route::haveIp(const ip_addr& ip) {
+bool Route::haveIp(const ip_addr& ip) const {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+  return !((ip.s_addr ^ ipPrefix.s_addr) << (32 - slash));
+#elif __BYTE_ORDER == __BIG_ENDIAN
   return !((ip.s_addr ^ ipPrefix.s_addr) >> (32 - slash));
+#else
+#error "Please fix <bits/endian.h>"
+#endif
 }
 
 std::pair<Device::DevicePtr, MAC::macAddr> Router::lookup(const ip_addr& ip) {
   Device::DevicePtr dev = nullptr;
   MAC::macAddr mac;
-  for (auto d : table) {
+  for (auto& d : table) {
+    Printer::printRouteItem(d);
     if (d.haveIp(ip)) {
       dev = d.dev;
       mac = d.nextHopMac;
@@ -57,3 +64,15 @@ int Router::setTable(const in_addr& dst, const in_addr& mask,
 }
 
 }  // namespace Route
+
+namespace Printer {
+void printRouteItem(const Route::Route& r) {
+  printf("  %s\t%d\t%s\t%s\n", inet_ntoa(r.ipPrefix), r.slash,
+         MAC::toString(r.nextHopMac.addr).c_str(), r.dev->getName().c_str());
+}
+void printRouteTable() {
+  for (auto& r : Route::router.table) {
+    Printer::printRouteItem(r);
+  }
+}
+}  // namespace Printer

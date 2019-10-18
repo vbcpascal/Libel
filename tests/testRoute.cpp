@@ -10,7 +10,7 @@ int myIpCallback(const void* buf, int len) {
 int main(int argc, char* argv[]) {
   api::init();
   api::setIPPacketReceiveCallback(myIpCallback);
-  api::addAllDevice();
+  api::addAllDevice(true);
 
   std::cout << "Set Routing table. input \"end\" to break.\n  [devname] "
                "[destip] [mask] [mac]\n";
@@ -32,25 +32,29 @@ int main(int argc, char* argv[]) {
     LOG_INFO("Add routing item succeed!")
   }
 
+  Printer::printRouteTable();
+
   fflush(stdin);
   std::string srcStr, dstStr, msg, tmp;
   while (true) {
     std::cout << "Input an ip address to send packet: ";
     std::cin >> tmp;
-    if (tmp != "") srcStr = tmp;
+    if (tmp != " ") srcStr = tmp;
     if (tmp == "end") break;
     std::cout << "Input destination ip address: ";
     std::cin >> tmp;
-    if (tmp != "") dstStr = tmp;
+    if (tmp != " ") dstStr = tmp;
     std::cout << "Input your message: ";
-    std::getline(std::cin, tmp);
-    if (tmp != "") msg = tmp;
+    std::cin >> tmp;
+    if (tmp != " ") msg = tmp;
     std::cout << "length of messsage: " << msg.length() << std::endl;
     std::cout << srcStr << " -> " << dstStr << " : " << msg << std::endl;
 
     ip_addr src, dst;
     inet_aton(srcStr.c_str(), &src);
     inet_aton(dstStr.c_str(), &dst);
+    Printer::printIp(src);
+    Printer::printIp(dst);
     api::sendIPPacket(src, dst, 17, msg.c_str(), msg.length() + 1);
   }
 

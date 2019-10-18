@@ -10,6 +10,17 @@ namespace Ip {
 
 IPPacketReceiveCallback callback = nullptr;
 
+std::string ipToStr(const ip_addr &ip) {
+  char ipstr[20];
+  ipToStr(ip, ipstr);
+  return std::string(ipstr);
+}
+
+void ipToStr(const ip_addr &ip, char *ipstr) {
+  strcpy(ipstr, inet_ntoa(ip));
+  return;
+}
+
 // this is necessary for a common callback
 int ipCallBack(const void *buf, int len, DeviceId id) {
   IpPacket ipp((u_char *)buf, len);
@@ -32,7 +43,7 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
   MAC::macAddr dstMac;
   Device::DevicePtr dev;
   auto dstPair = Route::router.lookup(dstIp);
-  ip_ntoa(tmpipstr, dstIp);
+  ipToStr(dstIp, tmpipstr);
   if (!dstPair.first) {
     LOG_WARN("No route for %s", tmpipstr);
     return -1;
@@ -99,7 +110,7 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
   // get src device
   auto dev = Device::deviceMgr.getDevicePtr(src);
   if (!dev) {
-    ip_ntoa(tmpipstr, src);
+    ipToStr(src, tmpipstr);
     LOG_ERR("No device with ip %s", tmpipstr);
     return -1;
   }
@@ -108,15 +119,17 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
   // get dest mac addr if in the same subnet
   if (sameSubnet(src, dest, dev->getSubnetMask())) {
     dstMac = Arp::arpMgr.getMacAddr(dev, dest);
+    Printer::printArpTable();
     if (MAC::isBroadcast(dstMac)) {
       LOG_ERR("MAC address not found in subnet");
     }
+    return -1;
   } else {
     // to nexthop (HOW TO DO IT!!!)
     // wtf... is me?
     auto dstPair = Route::router.lookup(dest);
     if (!dstPair.first) {
-      ip_ntoa(tmpipstr, dest);
+      ipToStr(dest, tmpipstr);
       LOG_ERR("No route for %s", tmpipstr);
       return -1;
     } else {
@@ -196,13 +209,19 @@ uint16_t getChecksum(const void *vdata, size_t length) {
 
 namespace Printer {
 
+void printIp(const ip_addr &ip, bool newline) {
+  std::string s = Ip::ipToStr(ip);
+  printf("%s", s.c_str());
+  if (newline) printf("\n");
+}
+
 std::map<u_char, std::string> ipProtoNameMap{{6, "\033[35mTCP\033[0m"},
                                              {17, "\033[36mUDP\033[0m"}};
 
 void printIpPacket(const Ip::IpPacket &ipp) {
   char srcIpStr[20], dstIpStr[20];
-  ip_ntoa(srcIpStr, ipp.hdr.ip_src);
-  ip_ntoa(dstIpStr, ipp.hdr.ip_dst);
+  Ip::ipToStr(ipp.hdr.ip_src, srcIpStr);
+  Ip::ipToStr(ipp.hdr.ip_dst, dstIpStr);
   printf("\033[;1m>> IP\033[0m %s -> %s, len = %d, proto: %s\n", srcIpStr,
          dstIpStr, ipp.hdr.ip_len, ipProtoNameMap[ipp.hdr.ip_p].c_str());
 }

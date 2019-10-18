@@ -66,6 +66,7 @@ extern ArpManager arpMgr;
 }  // namespace Arp
 
 namespace Printer {
-void printArpFrame(const Arp::ArpFrame& af);
-}
+void printArpTable();
+void printArpFrame(const Arp::ArpFrame& af, bool sender = false);
+}  // namespace Printer
 #endif

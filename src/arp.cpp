@@ -8,13 +8,12 @@ int arpCallBack(const void* buf, int len, DeviceId id) {
   auto dev = Device::deviceMgr.getDevicePtr(id);
   ArpFrame frame(buf);
 
-  // if (MAC::isSameMacAddr(dev->getMAC(), frame.srcMac)) return 0;
-
   frame.ntohType();
   Printer::printArpFrame(frame);
   switch (frame.arpHdr.ar_op) {
     case ARPOP_REPLY: {
       arpMgr.ipMacMap[frame.srcIp] = MAC::macAddr(frame.srcMac);
+      Printer::printArpTable();
       break;
     }
     case ARPOP_REQUEST: {
@@ -79,13 +78,13 @@ int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
   std::memcpy(frame.srcMac, dev->getMAC(), ETHER_ADDR_LEN);
   std::memcpy(frame.dstMac, Ether::zeroMacAddr, ETHER_ADDR_LEN);
   frame.htonType();
-  Device::deviceMgr.sendFrame(&frame, sizeof(ArpFrame), ETHERTYPE_ARP,
-                              Ether::broadcastMacAddr, dev);
 
   // wait ...
   int cnt = 0;
   int found = -1;
   for (int i = maxRetry + 1; i != 0; --i, ++cnt) {
+    Device::deviceMgr.sendFrame(&frame, sizeof(ArpFrame), ETHERTYPE_ARP,
+                                Ether::broadcastMacAddr, dev);
     if (cv.wait_for(lock, std::chrono::seconds(ARP_TIMEOUT), [&] {
           auto iter = ipMacMap.find(dstIp);
           return iter != ipMacMap.end();
@@ -115,6 +114,7 @@ void ArpManager::sendReplyArp(Device::DevicePtr dev, const u_char* dstMac,
   frame.dstIp = dstIp;
   std::memcpy(frame.srcMac, dev->getMAC(), ETHER_ADDR_LEN);
   std::memcpy(frame.dstMac, dstMac, ETHER_ADDR_LEN);
+  Printer::printArpFrame(frame, true);
   frame.htonType();
   Device::deviceMgr.sendFrame(&frame, sizeof(ArpFrame), ETHERTYPE_ARP, dstMac,
                               dev);
@@ -123,12 +123,22 @@ void ArpManager::sendReplyArp(Device::DevicePtr dev, const u_char* dstMac,
 
 namespace Printer {
 
+void printArpTable() {
+  printf("\033[;1m===== ARP Table =====\033[0m\n");
+  for (auto& i : Arp::arpMgr.ipMacMap) {
+    printf("\t%s\t%s\n", inet_ntoa(i.first),
+           MAC::toString(i.second.addr).c_str());
+  }
+  printf("\n");
+}
+
 std::map<u_short, std::string> arpOpTypeNameMap{
     {ARPOP_REQUEST, "\033[35mRequest\033[0m"},
     {ARPOP_REPLY, "\033[36mREPLY\033[0m"}};
 
-void printArpFrame(const Arp::ArpFrame& af) {
-  printf(">> ARP %s\t", arpOpTypeNameMap[af.arpHdr.ar_op].c_str());
+void printArpFrame(const Arp::ArpFrame& af, bool sender) {
+  printf("%s ARP %s\t", (sender ? "--" : ">>"),
+         arpOpTypeNameMap[af.arpHdr.ar_op].c_str());
   printf("MAC : %s -> %s\t", MAC::toString(af.srcMac).c_str(),
          MAC::toString(af.dstMac).c_str());
   char srcIpStr[20], dstIpStr[20];

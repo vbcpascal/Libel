@@ -11,7 +11,7 @@ int myIpCallback(const void* buf, int len) {
 int main(int argc, char* argv[]) {
   api::init();
   api::setIPPacketReceiveCallback(myIpCallback);
-  api::addAllDevice();
+  api::addAllDevice(true);
 
   std::string srcStr, dstStr, msg, tmp;
 
@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Input an ip address to send packet: ";
     std::getline(std::cin, tmp);
     if (tmp != "") srcStr = tmp;
+    if (tmp == "end") break;
     std::cout << "Input destination ip address: ";
     std::getline(std::cin, tmp);
     if (tmp != "") dstStr = tmp;

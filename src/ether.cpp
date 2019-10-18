@@ -49,13 +49,13 @@ std::string etherToStr(uint16_t type) {
   std::string s;
   switch (type) {
     case ETHERTYPE_IP:
-      s = "IPV4  ";
+      s = "IPV4 ";
       break;
     case ETHERTYPE_IPV6:
-      s = "IPV6  ";
+      s = "IPV6 ";
       break;
-    case ETHERTYPE_VLAN:
-      s = "VLAN  ";
+    case ETHERTYPE_ARP:
+      s = "ARP  ";
       break;
     default:
       s = "";
