@@ -18,20 +18,20 @@ namespace Route {
 
 Router router;
 
-Route::Route(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
-             const MAC::macAddr& _m)
+RouteItem::RouteItem(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
+                     const MAC::macAddr& _m)
     : ipPrefix(_ip), slash(_s), dev(_d) {
   nextHopMac = _m;
 }
 
-bool operator<(const Route& rl, const Route& rr) {
+bool operator<(const RouteItem& rl, const RouteItem& rr) {
   if (rl.slash > rr.slash) return true;
   if (rl.ipPrefix < rr.ipPrefix) return true;
   if (rl.dev < rr.dev) return true;
   return false;
 }
 
-bool Route::haveIp(const ip_addr& ip) const {
+bool RouteItem::haveIp(const ip_addr& ip) const {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
   return !((ip.s_addr ^ ipPrefix.s_addr) << (32 - slash));
 #elif __BYTE_ORDER == __BIG_ENDIAN
@@ -58,7 +58,7 @@ std::pair<Device::DevicePtr, MAC::macAddr> Router::lookup(const ip_addr& ip) {
 int Router::setTable(const in_addr& dst, const in_addr& mask,
                      const MAC::macAddr& nextHopMac,
                      const Device::DevicePtr& dev) {
-  Route r(dst, maskToSlash(mask), dev, nextHopMac);
+  RouteItem r(dst, maskToSlash(mask), dev, nextHopMac);
   table.insert(r);
   return 0;
 }
@@ -66,7 +66,7 @@ int Router::setTable(const in_addr& dst, const in_addr& mask,
 }  // namespace Route
 
 namespace Printer {
-void printRouteItem(const Route::Route& r) {
+void printRouteItem(const Route::RouteItem& r) {
   printf("  %s\t%d\t%s\t%s\n", inet_ntoa(r.ipPrefix), r.slash,
          MAC::toString(r.nextHopMac.addr).c_str(), r.dev->getName().c_str());
 }

@@ -7,22 +7,22 @@
 
 namespace Route {
 
-class Route {
+class RouteItem {
  public:
   ip_addr ipPrefix;
   int slash;
   Device::DevicePtr dev;
   MAC::macAddr nextHopMac;
 
-  Route() = default;
-  Route(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
-        const MAC::macAddr& _m);
+  RouteItem() = default;
+  RouteItem(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
+            const MAC::macAddr& _m);
   bool haveIp(const ip_addr& ip) const;
 };
 
-bool operator<(const Route& rl, const Route& rr);
+bool operator<(const RouteItem& rl, const RouteItem& rr);
 
-using RoutingTable = std::set<Route>;
+using RoutingTable = std::set<RouteItem>;
 
 class Router {
  public:
@@ -38,7 +38,7 @@ extern Router router;
 }  // namespace Route
 
 namespace Printer {
-void printRouteItem(const Route::Route& r);
+void printRouteItem(const Route::RouteItem& r);
 void printRouteTable();
 }  // namespace Printer
 
