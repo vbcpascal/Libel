@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     inet_aton(dstStr.c_str(), &dst);
     Printer::printIp(src);
     Printer::printIp(dst);
-    api::sendIPPacket(src, dst, 17, msg.c_str(), msg.length() + 1);
+    api::sendIPPacket(src, dst, IPPROTO_UDP, msg.c_str(), msg.length() + 1);
   }
 
   Device::deviceMgr.keepReceiving();

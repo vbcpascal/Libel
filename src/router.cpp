@@ -18,27 +18,22 @@ namespace Route {
 
 Router router;
 
-RouteItem::RouteItem(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
-                     const MAC::MacAddr& _m)
-    : ipPrefix(_ip), slash(_s), dev(_d) {
+RouteItem::RouteItem(const ip_addr& _ip, const ip_addr& _mask,
+                     const Device::DevicePtr& _d, const MAC::MacAddr& _m)
+    : ipPrefix(_ip), subNetMask(_mask), dev(_d) {
   nextHopMac = _m;
 }
 
 bool operator<(const RouteItem& rl, const RouteItem& rr) {
-  if (rl.slash > rr.slash) return true;
+  if (maskToSlash(rl.subNetMask) > maskToSlash(rr.subNetMask)) return true;
   if (rl.ipPrefix < rr.ipPrefix) return true;
   if (rl.dev < rr.dev) return true;
   return false;
 }
 
 bool RouteItem::haveIp(const ip_addr& ip) const {
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-  return !((ip.s_addr ^ ipPrefix.s_addr) << (32 - slash));
-#elif __BYTE_ORDER == __BIG_ENDIAN
-  return !((ip.s_addr ^ ipPrefix.s_addr) >> (32 - slash));
-#else
-#error "Please fix <bits/endian.h>"
-#endif
+  return (ip.s_addr & subNetMask.s_addr) ==
+         (ipPrefix.s_addr & subNetMask.s_addr);
 }
 
 std::pair<Device::DevicePtr, MAC::MacAddr> Router::lookup(const ip_addr& ip) {
@@ -58,7 +53,7 @@ std::pair<Device::DevicePtr, MAC::MacAddr> Router::lookup(const ip_addr& ip) {
 int Router::setTable(const in_addr& dst, const in_addr& mask,
                      const MAC::MacAddr& nextHopMac,
                      const Device::DevicePtr& dev) {
-  RouteItem r(dst, maskToSlash(mask), dev, nextHopMac);
+  RouteItem r(dst, mask, dev, nextHopMac);
   table.insert(r);
   return 0;
 }
@@ -67,7 +62,7 @@ int Router::setTable(const in_addr& dst, const in_addr& mask,
 
 namespace Printer {
 void printRouteItem(const Route::RouteItem& r) {
-  printf("  %s\t%d\t%s\t%s\n", inet_ntoa(r.ipPrefix), r.slash,
+  printf("  %s\t%d\t%s\t%s\n", inet_ntoa(r.ipPrefix), maskToSlash(r.subNetMask),
          MAC::toString(r.nextHopMac.addr).c_str(), r.dev->getName().c_str());
 }
 void printRouteTable() {

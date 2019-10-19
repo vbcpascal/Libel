@@ -19,13 +19,13 @@ namespace Route {
 class RouteItem {
  public:
   ip_addr ipPrefix;
-  int slash;
+  ip_addr subNetMask;
   Device::DevicePtr dev;
   MAC::MacAddr nextHopMac;
 
   RouteItem() = default;
-  RouteItem(const ip_addr& _ip, int _s, const Device::DevicePtr& _d,
-            const MAC::MacAddr& _m);
+  RouteItem(const ip_addr& _ip, const ip_addr& _mask,
+            const Device::DevicePtr& _d, const MAC::MacAddr& _m);
   bool haveIp(const ip_addr& ip) const;
 };
 

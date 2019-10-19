@@ -12,6 +12,7 @@
 #define IP_H_
 
 #include <netinet/ip.h>
+#include <sys/socket.h>
 
 #include "arp.h"
 #include "router.h"

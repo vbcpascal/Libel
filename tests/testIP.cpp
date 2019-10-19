@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     ip_addr src, dst;
     inet_aton(srcStr.c_str(), &src);
     inet_aton(dstStr.c_str(), &dst);
-    api::sendIPPacket(src, dst, 17, msg.c_str(), msg.length() + 1);
+    api::sendIPPacket(src, dst, IPPROTO_UDP, msg.c_str(), msg.length() + 1);
   }
 
   Device::deviceMgr.keepReceiving();

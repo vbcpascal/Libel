@@ -215,8 +215,8 @@ void printIp(const ip_addr &ip, bool newline) {
   if (newline) printf("\n");
 }
 
-std::map<u_char, std::string> ipProtoNameMap{{6, "\033[35mTCP\033[0m"},
-                                             {17, "\033[36mUDP\033[0m"}};
+std::map<u_char, std::string> ipProtoNameMap{
+    {IPPROTO_TCP, "\033[35mTCP\033[0m"}, {IPPROTO_UDP, "\033[36mUDP\033[0m"}};
 
 void printIpPacket(const Ip::IpPacket &ipp) {
   char srcIpStr[20], dstIpStr[20];
