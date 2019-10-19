@@ -14,10 +14,11 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Set Routing table. input \"end\" to break.\n  [devname] "
                "[destip] [mask] [mac]\n";
-  std::string devName, destStr, maskStr, macStr;
+  std::string devName, destStr, maskStr, macStr, cmd;
   ip_addr destIp, maskIp;
   Device::DevicePtr dev;
   u_char mac[6];
+
   while (std::cin >> devName) {
     if (devName == "end") break;
     std::cin >> destStr >> maskStr >> macStr;
@@ -34,7 +35,6 @@ int main(int argc, char* argv[]) {
 
   Printer::printRouteTable();
 
-  fflush(stdin);
   std::string srcStr, dstStr, msg, tmp;
   while (true) {
     std::cout << "Input an ip address to send packet: ";
@@ -53,8 +53,6 @@ int main(int argc, char* argv[]) {
     ip_addr src, dst;
     inet_aton(srcStr.c_str(), &src);
     inet_aton(dstStr.c_str(), &dst);
-    Printer::printIp(src);
-    Printer::printIp(dst);
     api::sendIPPacket(src, dst, IPPROTO_UDP, msg.c_str(), msg.length() + 1);
   }
 

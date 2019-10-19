@@ -103,7 +103,7 @@ void ipToStr(const ip_addr& ip, char* ipstr);
 
 namespace Printer {
 void printIp(const ip_addr& ip, bool newline = true);
-void printIpPacket(const Ip::IpPacket& ipp);
+void printIpPacket(const Ip::IpPacket& ipp, bool sender = false);
 }  // namespace Printer
 
 /*

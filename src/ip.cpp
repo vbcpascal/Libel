@@ -41,7 +41,7 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
   // route it!
   char tmpipstr[20];
   MAC::MacAddr dstMac;
-  Device::DevicePtr dev;
+  Device::DevicePtr dev = Device::deviceMgr.getDevicePtr(id);
   auto dstPair = Route::router.lookup(dstIp);
   ipToStr(dstIp, tmpipstr);
   if (!dstPair.first) {
@@ -119,7 +119,6 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
   // get dest mac addr if in the same subnet
   if (sameSubnet(src, dest, dev->getSubnetMask())) {
     dstMac = Arp::arpMgr.getMacAddr(dev, dest);
-    Printer::printArpTable();
     if (MAC::isBroadcast(dstMac)) {
       LOG_ERR("MAC address not found in subnet");
     }
@@ -218,11 +217,12 @@ void printIp(const ip_addr &ip, bool newline) {
 std::map<u_char, std::string> ipProtoNameMap{
     {IPPROTO_TCP, "\033[35mTCP\033[0m"}, {IPPROTO_UDP, "\033[36mUDP\033[0m"}};
 
-void printIpPacket(const Ip::IpPacket &ipp) {
+void printIpPacket(const Ip::IpPacket &ipp, bool sender) {
   char srcIpStr[20], dstIpStr[20];
   Ip::ipToStr(ipp.hdr.ip_src, srcIpStr);
   Ip::ipToStr(ipp.hdr.ip_dst, dstIpStr);
-  printf("\033[;1m>> IP\033[0m %s -> %s, len = %d, proto: %s\n", srcIpStr,
-         dstIpStr, ipp.hdr.ip_len, ipProtoNameMap[ipp.hdr.ip_p].c_str());
+  printf("\033[;1m%s IP\033[0m %s -> %s, len = %d, proto: %s\n",
+         (sender ? "--" : ">>"), srcIpStr, dstIpStr, ipp.hdr.ip_len,
+         ipProtoNameMap[ipp.hdr.ip_p].c_str());
 }
 }  // namespace Printer

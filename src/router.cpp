@@ -25,10 +25,21 @@ RouteItem::RouteItem(const ip_addr& _ip, const ip_addr& _mask,
 }
 
 bool operator<(const RouteItem& rl, const RouteItem& rr) {
-  if (maskToSlash(rl.subNetMask) > maskToSlash(rr.subNetMask)) return true;
-  if (rl.ipPrefix < rr.ipPrefix) return true;
-  if (rl.dev < rr.dev) return true;
-  return false;
+  int ls = maskToSlash(rl.subNetMask), rs = maskToSlash(rr.subNetMask);
+  if (ls > rs)
+    return true;
+  else if (ls < rs)
+    return false;
+
+  if (rl.ipPrefix < rr.ipPrefix)
+    return true;
+  else if (rr.ipPrefix < rl.ipPrefix)
+    return false;
+
+  if (rl.dev < rr.dev)
+    return true;
+  else
+    return false;
 }
 
 bool RouteItem::haveIp(const ip_addr& ip) const {
@@ -40,7 +51,6 @@ std::pair<Device::DevicePtr, MAC::MacAddr> Router::lookup(const ip_addr& ip) {
   Device::DevicePtr dev = nullptr;
   MAC::MacAddr mac;
   for (auto& d : table) {
-    Printer::printRouteItem(d);
     if (d.haveIp(ip)) {
       dev = d.dev;
       mac = d.nextHopMac;
@@ -66,8 +76,14 @@ void printRouteItem(const Route::RouteItem& r) {
          MAC::toString(r.nextHopMac.addr).c_str(), r.dev->getName().c_str());
 }
 void printRouteTable() {
+  printf(
+      "\n====================== Routing Table "
+      "======================\n");
   for (auto& r : Route::router.table) {
     Printer::printRouteItem(r);
   }
+  printf(
+      "====================================="
+      "======================\n\n");
 }
 }  // namespace Printer

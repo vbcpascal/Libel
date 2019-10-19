@@ -51,4 +51,10 @@
 #define LOG_WARN(...) LOG(WARN, ##__VA_ARGS__)
 #define LOG_INFO(...) LOG(INFO, ##__VA_ARGS__)
 
+#ifdef DEBUG_INFO
+#define LOG_DBG(...) LOG(DBG, ##__VA_ARGS__)
+#else
+#define LOG_DBG(...)
+#endif
+
 #endif
