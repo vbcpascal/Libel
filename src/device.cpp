@@ -85,7 +85,7 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   if (callback != nullptr) {
     int res = callback(packet, len, pa->id);
     if (res < 0) {
-      LOG_ERR("Callback error!");
+      // LOG_ERR("Callback error!");
     }
   }
 }
@@ -165,7 +165,7 @@ int Device::sendFrame(Ether::EtherFrame& frame) {
   // LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
 
   frame.htonType();
-  frame.padding();
+  // frame.padding();
 
   // send the ethernet frame
   if (pcap_inject(pcap, frame.getFrame(), frame.getLength()) == -1) {
@@ -292,6 +292,7 @@ int DeviceManager::addAllDevice(bool sniff) {
     devsPtr = devsPtr->next;
   }
 
+  pcap_freealldevs(devsPtr);
   return cnt;
 }
 

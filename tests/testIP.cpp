@@ -4,7 +4,6 @@
 int myIpCallback(const void* buf, int len) {
   Ip::IpPacket ipp((u_char*)buf, len);
   Printer::printIpPacket(ipp);
-  // Printer::print((u_char*)buf, len, 14);
   return 0;
 }
 

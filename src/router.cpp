@@ -3,40 +3,28 @@
 namespace SDP {
 
 int sdpCallBack(const void* buf, int len, DeviceId id) {
-  int pLen = ((int*)buf)[0];
-  DEFINE_SDPPACKET(sdpp, pLen);
-  memcpy(&sdpp, buf, sizeof(sdpp));
-  Printer::printSDP(sdpp);
+  uint8_t pLen = ((uint8_t*)buf)[0];
+  DEFINE_SDPPACKET(sdppGet, pLen);
+  memcpy(&sdppGet, buf, SDPP_SIZE(pLen));
+  Printer::printSDP(sdppGet);
 
   SDPItemVector sis;
 
+  // get the SDP items
   for (int i = 0; i < pLen; ++i) {
-    sis.push_back(SDPItem(sdpp.data[i].IpPrefix,
-                          Route::slashToMask(sdpp.data[i].slash),
-                          sdpp.data[i].dist));
+    sis.push_back(SDPItem(sdppGet.data[i].IpPrefix,
+                          Route::slashToMask(sdppGet.data[i].slash),
+                          sdppGet.data[i].dist));
   }
 
-  Route::router.update(sis, MAC::MacAddr(sdpp.mac),
+  // update routing table
+  Route::router.update(sis, MAC::MacAddr(sdppGet.mac),
                        Device::deviceMgr.getDevicePtr(id));
 
-  // receive an "isnew"
-  if (sdpp.flag & SDPFLAG_ISNEW) {
-    int size = Route::router.table.size();
-    DEFINE_SDPPACKET(sdpp, size);
-    sdpp.flag = 0;
-    sdpp.len = size;
-
-    int cnt = 0;
-    for (auto& i : Route::router.table) {
-      sdpp.data[cnt].IpPrefix = i.ipPrefix;
-      sdpp.data[cnt].slash = Route::maskToSlash(i.subNetMask);
-      sdpp.data[cnt].dist = i.dist + 1;
-      cnt++;
-    }
-
-    Printer::printSDP(sdpp);
-    Device::deviceMgr.sendFrame(&sdpp, sizeof(sdpp), ETHERTYPE_SDP, sdpp.mac,
-                                id);
+  // if receive an frame with "isnew" flag
+  if (sdppGet.flag & SDPFLAG_ISNEW) {
+    auto dev = Device::deviceMgr.getDevicePtr(id);
+    Route::router.sendRoutingTable(0, dev, sdppGet.mac);
   }
 
   return 0;
@@ -48,17 +36,18 @@ namespace Route {
 
 Router router;
 
-std::pair<Device::DevicePtr, MAC::MacAddr> Router::lookup(const ip_addr& ip) {
+RouteItem Router::lookup(const ip_addr& ip) {
+  RouteItem resRi;
   Device::DevicePtr dev = nullptr;
   MAC::MacAddr mac;
-  for (auto& d : table) {
-    if (d.haveIp(ip)) {
-      dev = d.dev;
-      mac = d.nextHopMac;
+  resRi.ipPrefix.s_addr = 0;
+  for (auto& ri : table) {
+    if (ri.haveIp(ip)) {
+      resRi = ri;
       break;
     }
   }
-  return std::make_pair(dev, mac);
+  return resRi;
 }
 
 int Router::setTable(const in_addr& dst, const in_addr& mask,
@@ -84,12 +73,29 @@ int Router::setItem(const RouteItem& ri) {
 }
 
 void Router::init() {
-  SDP::SDPItemVector sis;
   for (auto& d : Device::deviceMgr.devices) {
-    SDP::SDPItem s(d->getIp(), d->getSubnetMask(), 0);
-    sis.push_back(s);
+    table.insert(
+        RouteItem(d->getIp(), d->getSubnetMask(), d, d->getMAC(), 0, true));
   }
-  SDP::sdpMgr.sendSDPPackets(sis, SDPFLAG_ISNEW);
+  Printer::printRouteTable();
+  sendRoutingTable(SDPFLAG_ISNEW, {}, {});
+}
+
+void Router::sendRoutingTable(int flag,
+                              std::optional<Device::DevicePtr> withDev,
+                              std::optional<MAC::MacAddr> toMac) {
+  SDP::SDPItemVector sis;
+
+  for (auto& ri : table) {
+    sis.push_back(SDP::SDPItem(ri.ipPrefix, ri.subNetMask, ri.dist));
+  }
+
+  if (withDev) {
+    MAC::MacAddr mac = toMac.value_or(MAC::MacAddr(Ether::broadcastMacAddr));
+    SDP::sdpMgr.sendSDPPacketsTo(sis, flag, withDev.value(), mac);
+  } else {
+    SDP::sdpMgr.sendSDPPackets(sis, flag, nullptr);
+  }
 }
 
 void Router::update(const SDP::SDPItemVector& sis, const MAC::MacAddr mac,
@@ -104,31 +110,25 @@ void Router::update(const SDP::SDPItemVector& sis, const MAC::MacAddr mac,
     bool handled = false;
     // already exist
     for (auto& ri : table) {
-      if (prefix == ri.ipPrefix && mask == ri.subNetMask && d < ri.dist) {
-        ri.nextHopMac = mac;
-        ri.dev = dev;
-        updateSis.push_back(SDP::SDPItem(prefix, mask, d));
+      if (prefix == ri.ipPrefix && mask == ri.subNetMask) {
+        if (d < ri.dist) {
+          ri.nextHopMac = mac;
+          ri.dev = dev;
+          updateSis.push_back(SDP::SDPItem(prefix, mask, d));
+        }
         handled = true;
         break;
       }
     }
     if (handled) continue;
 
-    // not my subnet
-    for (auto& d : Device::deviceMgr.devices) {
-      if (prefix.s_addr == (d->getIp().s_addr & d->getSubnetMask().s_addr) &&
-          mask == d->getSubnetMask())
-        handled = true;
-    }
-    if (handled) continue;
-
-    // then add to the router
-    table.insert(RouteItem(prefix, mask, dev, mac, d));
+    // else add to the router
+    table.insert(RouteItem(prefix, mask, dev, mac, d, false));
     updateSis.push_back(SDP::SDPItem(prefix, mask, d));
   }
 
+  LOG_INFO("Update routing items: %zu", updateSis.size());
   Printer::printRouteTable();
-
   SDP::sdpMgr.sendSDPPackets(updateSis, SDPFLAG_INCREMENT, dev);
 }
 
@@ -136,19 +136,20 @@ void Router::update(const SDP::SDPItemVector& sis, const MAC::MacAddr mac,
 
 namespace Printer {
 void printRouteItem(const Route::RouteItem& r) {
-  printf("  %s\t%d\t%s\t%s\n", inet_ntoa(r.ipPrefix),
+  printf("  %s/%d  \t%s\t%s\t%s(%d)\n", inet_ntoa(r.ipPrefix),
          Route::maskToSlash(r.subNetMask),
-         MAC::toString(r.nextHopMac.addr).c_str(), r.dev->getName().c_str());
+         MAC::toString(r.nextHopMac.addr).c_str(), r.dev->getName().c_str(),
+         (r.isDev ? "dev" : "via"), r.dist);
 }
 void printRouteTable() {
   printf(
-      "\n====================== Routing Table "
-      "======================\n");
+      "\n========================= Routing Table "
+      "=========================\n");
   for (auto& r : Route::router.table) {
     Printer::printRouteItem(r);
   }
   printf(
-      "====================================="
+      "==========================================="
       "======================\n\n");
 }
 }  // namespace Printer

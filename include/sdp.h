@@ -25,19 +25,23 @@
   std::vector<uint8_t> p_##data(sizeof(SDPPacket) + len * 8); \
   auto& p = *reinterpret_cast<SDPPacket*>(p_##data.data())
 
+#define SDPP_SIZE(len) (8 + 8 * len)
+
 namespace Route {
 
 class RouteItem {
  public:
   ip_addr ipPrefix;
   ip_addr subNetMask;
+  bool isDev;  // or via
   mutable Device::DevicePtr dev;
   mutable MAC::MacAddr nextHopMac;
   int dist;
 
   RouteItem() = default;
   RouteItem(const ip_addr& _ip, const ip_addr& _mask,
-            const Device::DevicePtr& _d, const MAC::MacAddr& _m, int _dist = 0);
+            const Device::DevicePtr& _d, const MAC::MacAddr& _m, int _dist = 0,
+            bool is_dev = false);
   bool haveIp(const ip_addr& ip) const;
 };
 
@@ -77,6 +81,29 @@ using SDPItemVector = std::vector<SDPItem>;
 
 class SDPManager {
  public:
+  /**
+   * @brief Send a set of SDP items *with Dev* *to Mac*
+   *
+   * Used only when a new device added into network
+   *
+   * @param sis SDP items
+   * @param flag flag
+   * @param withDev send by only device
+   * @param toMac send to the specific mac
+   */
+  void sendSDPPacketsTo(const SDPItemVector& sis, int flag,
+                        Device::DevicePtr withDev, MAC::MacAddr toMac);
+
+  /**
+   * @brief Send a set of SDP items to neibours for all devices / without
+   * specific dev
+   *
+   * Used most of time
+   *
+   * @param sis SDP items
+   * @param flag flag
+   * @param withoutDev send by without this device. nullptr for all devices
+   */
   void sendSDPPackets(const SDPItemVector& sis, int flag = 0,
                       Device::DevicePtr withoutDev = nullptr);
 };

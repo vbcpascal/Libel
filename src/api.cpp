@@ -32,8 +32,9 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
     auto iter = callbackMap.find(type);
 
     if (iter == callbackMap.end()) {
-      LOG_ERR("Callback function not found");
-      return -1;
+      // LOG_ERR("Callback function not found");
+      // return -1;
+      return 0;
     } else {
       if (iter->second)
         return iter->second(frame.getPayload(), len - ETHER_HDR_LEN, id);

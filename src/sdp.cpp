@@ -4,8 +4,8 @@ namespace Route {
 
 RouteItem::RouteItem(const ip_addr& _ip, const ip_addr& _mask,
                      const Device::DevicePtr& _d, const MAC::MacAddr& _m,
-                     int _dist)
-    : subNetMask(_mask), dev(_d), dist(_dist) {
+                     int _dist, bool is_dev)
+    : subNetMask(_mask), isDev(is_dev), dev(_d), dist(_dist) {
   ipPrefix.s_addr = _ip.s_addr & _mask.s_addr;
   nextHopMac = _m;
 }
@@ -56,27 +56,54 @@ namespace SDP {
 
 SDPManager sdpMgr;
 
-void SDPManager::sendSDPPackets(const std::vector<SDPItem>& sis, int flag,
-                                Device::DevicePtr withoutDev) {
+void SDPManager::sendSDPPacketsTo(const SDPItemVector& sis, int flag,
+                                  Device::DevicePtr withDev,
+                                  MAC::MacAddr toMac) {
   int size = sis.size();
-  ASSERT(size > MAX_SDP_DATA_LEN, "Too large Routing table: %d", size);
-  DEFINE_SDPPACKET(sdpp, size);
-  sdpp.flag = flag;
-  sdpp.len = size;
+  if (size == 0) return;
+
+  ASSERT(size <= MAX_SDP_DATA_LEN, "Too large Routing table: %d", size);
+  DEFINE_SDPPACKET(sdppSend, size);
+  sdppSend.flag = flag;
+  sdppSend.len = size;
 
   int cnt = 0;
   for (auto& i : sis) {
-    sdpp.data[cnt].IpPrefix = i.ipPrefix;
-    sdpp.data[cnt].slash = Route::maskToSlash(i.subNetMask);
-    sdpp.data[cnt].dist = i.dist + 1;
+    sdppSend.data[cnt].IpPrefix = i.ipPrefix;
+    sdppSend.data[cnt].slash = Route::maskToSlash(i.subNetMask);
+    sdppSend.data[cnt].dist = i.dist + 1;
+    cnt++;
+  }
+
+  withDev->getMAC(sdppSend.mac);
+  Printer::printSDP(sdppSend, true);
+  Device::deviceMgr.sendFrame(&sdppSend, SDPP_SIZE(size), ETHERTYPE_SDP,
+                              toMac.addr, withDev);
+}
+
+void SDPManager::sendSDPPackets(const std::vector<SDPItem>& sis, int flag,
+                                Device::DevicePtr withoutDev) {
+  int size = sis.size();
+  if (size == 0) return;
+
+  ASSERT(size <= MAX_SDP_DATA_LEN, "Too large Routing table: %d", size);
+  DEFINE_SDPPACKET(sdppSend, size);
+  sdppSend.flag = flag;
+  sdppSend.len = size;
+
+  int cnt = 0;
+  for (auto& i : sis) {
+    sdppSend.data[cnt].IpPrefix = i.ipPrefix;
+    sdppSend.data[cnt].slash = Route::maskToSlash(i.subNetMask);
+    sdppSend.data[cnt].dist = i.dist + 1;
     cnt++;
   }
 
   for (auto& dev : Device::deviceMgr.devices) {
     if (dev == withoutDev) continue;
-    dev->getMAC(sdpp.mac);
-    Printer::printSDP(sdpp);
-    Device::deviceMgr.sendFrame(&sdpp, sizeof(sdpp), ETHERTYPE_SDP,
+    dev->getMAC(sdppSend.mac);
+    Printer::printSDP(sdppSend, true);
+    Device::deviceMgr.sendFrame(&sdppSend, SDPP_SIZE(size), ETHERTYPE_SDP,
                                 Ether::broadcastMacAddr, dev);
   }
 }

@@ -43,35 +43,33 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
   MAC::MacAddr dstMac;
   Device::DevicePtr dev;
   ipToStr(dstIp, tmpipstr);
-  bool found = false;
 
-  // in my subnet
-  for (auto &d : Device::deviceMgr.devices) {
-    if (sameSubnet(d->getIp(), dstIp, d->getSubnetMask())) {
-      dev = d;
-      dstMac = Arp::arpMgr.getMacAddr(d, dstIp);
-      if (MAC::isBroadcast(dstMac)) {
-        LOG_ERR("MAC address not found in subnet");
-        return -1;
-      }
-      found = true;
-      break;
-    }
+  // lookup routing table -->
+  Route::RouteItem ri;
+  ri = Route::router.lookup(dstIp);
+  if (ri.ipPrefix.s_addr == 0) {
+    LOG_WARN("No route for %s", tmpipstr);
+    return -1;
   }
 
-  // lookup routing table
-  if (!found) {
-    auto dstPair = Route::router.lookup(dstIp);
-    if (!dstPair.first) {
-      LOG_WARN("No route for %s", tmpipstr);
+  // > in my subnet
+  if (ri.isDev) {
+    dev = ri.dev;
+    dstMac = Arp::arpMgr.getMacAddr(dev, dstIp);
+    if (MAC::isBroadcast(dstMac)) {
+      LOG_ERR("MAC address not found in subnet");
       return -1;
-    } else {
-      LOG_INFO("Route to \033[;1m%s\033[0m via \033[33m%s\033[0m", tmpipstr,
-               dev->getName().c_str());
-      dev = dstPair.first;
-      dstMac = dstPair.second;
     }
   }
+
+  // > route
+  else {
+    dev = ri.dev;
+    dstMac = ri.nextHopMac;
+    LOG_INFO("Route to \033[;1m%s\033[0m via \033[33m%s\033[0m", tmpipstr,
+             dev->getName().c_str());
+  }
+
   int packLen = ipp.totalLen();
   ipp.htonType();
   return Device::deviceMgr.sendFrame(&ipp, packLen, ETHERTYPE_IP, dstMac.addr,
@@ -135,6 +133,7 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
   }
 
   MAC::MacAddr dstMac;
+
   // get dest mac addr if in the same subnet
   if (sameSubnet(src, dest, dev->getSubnetMask())) {
     dstMac = Arp::arpMgr.getMacAddr(dev, dest);
@@ -142,16 +141,18 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
       LOG_ERR("MAC address not found in subnet");
       return -1;
     }
-  } else {
-    // to nexthop (HOW TO DO IT!!!)
-    // wtf... is me?
-    auto dstPair = Route::router.lookup(dest);
-    if (!dstPair.first) {
+  }
+
+  // to nexthop (HOW TO DO IT!!!)
+  // wtf... is me?
+  else {
+    auto ri = Route::router.lookup(dest);
+    if (ri.ipPrefix.s_addr == 0) {
       ipToStr(dest, tmpipstr);
       LOG_ERR("No route for %s", tmpipstr);
       return -1;
     } else {
-      dstMac = dstPair.second;
+      dstMac = ri.nextHopMac;
     }
   }
 
