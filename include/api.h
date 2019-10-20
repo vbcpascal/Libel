@@ -99,6 +99,12 @@ int setRoutingTable(const in_addr dest, const in_addr mask,
  * @return int number of devices added
  */
 int addAllDevice(bool sniff = false);
+
+/**
+ * @brief Initial router
+ *
+ */
+void initRouter();
 }  // namespace api
 
 #endif

@@ -38,20 +38,39 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
     }
   }
 
-  // route it!
+  // route it! -->
   char tmpipstr[20];
   MAC::MacAddr dstMac;
-  Device::DevicePtr dev = Device::deviceMgr.getDevicePtr(id);
-  auto dstPair = Route::router.lookup(dstIp);
+  Device::DevicePtr dev;
   ipToStr(dstIp, tmpipstr);
-  if (!dstPair.first) {
-    LOG_WARN("No route for %s", tmpipstr);
-    return -1;
-  } else {
-    LOG_INFO("Route to \033[;1m%s\033[0m via \033[33m%s\033[0m", tmpipstr,
-             dev->getName().c_str());
-    dev = dstPair.first;
-    dstMac = dstPair.second;
+  bool found = false;
+
+  // in my subnet
+  for (auto &d : Device::deviceMgr.devices) {
+    if (sameSubnet(d->getIp(), dstIp, d->getSubnetMask())) {
+      dev = d;
+      dstMac = Arp::arpMgr.getMacAddr(d, dstIp);
+      if (MAC::isBroadcast(dstMac)) {
+        LOG_ERR("MAC address not found in subnet");
+        return -1;
+      }
+      found = true;
+      break;
+    }
+  }
+
+  // lookup routing table
+  if (!found) {
+    auto dstPair = Route::router.lookup(dstIp);
+    if (!dstPair.first) {
+      LOG_WARN("No route for %s", tmpipstr);
+      return -1;
+    } else {
+      LOG_INFO("Route to \033[;1m%s\033[0m via \033[33m%s\033[0m", tmpipstr,
+               dev->getName().c_str());
+      dev = dstPair.first;
+      dstMac = dstPair.second;
+    }
   }
   int packLen = ipp.totalLen();
   ipp.htonType();
@@ -85,7 +104,7 @@ void IpPacket::setChksum() {
   hdr.ip_sum = getChecksum(&hdr, hdr.ip_hl * 4);
 }
 
-bool IpPacket::chkChksum() {
+int IpPacket::chkChksum() {
   auto res = getChecksum(&hdr, hdr.ip_hl * 4);
   return res == 0;
 }
@@ -121,8 +140,8 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
     dstMac = Arp::arpMgr.getMacAddr(dev, dest);
     if (MAC::isBroadcast(dstMac)) {
       LOG_ERR("MAC address not found in subnet");
+      return -1;
     }
-    return -1;
   } else {
     // to nexthop (HOW TO DO IT!!!)
     // wtf... is me?

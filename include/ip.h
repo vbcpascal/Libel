@@ -46,8 +46,12 @@ class IpPacket {
   // use this after hton
   void setChksum();
 
-  // use this before ntoh
-  bool chkChksum();
+  /**
+   * @brief Check Checksum. Use this before ntoh
+   *
+   * @return int 1 on right. 0 on error. -1 on SDP
+   */
+  int chkChksum();
 
   /**
    * @brief hton for ip packet

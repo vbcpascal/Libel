@@ -54,6 +54,7 @@ int init() {
   setFrameReceiveCallback(callbackDispatcher);
   setCallback(ETHERTYPE_ARP, Arp::arpCallBack);
   setCallback(ETHERTYPE_IP, Ip::ipCallBack);
+  setCallback(ETHERTYPE_SDP, SDP::sdpCallBack);
   return 0;
 }
 
@@ -87,4 +88,5 @@ int setRoutingTable(const in_addr dest, const in_addr mask,
 
 int addAllDevice(bool sniff) { return Device::deviceMgr.addAllDevice(sniff); }
 
+void initRouter() { Route::router.init(); }
 }  // namespace api

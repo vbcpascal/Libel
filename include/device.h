@@ -140,11 +140,10 @@ using DevicePtr = std::shared_ptr<Device>;
  *
  */
 class DeviceManager {
- private:
+ public:
   std::vector<DevicePtr> devices;
   std::set<DeviceId> validId;
 
- public:
   /**
    * @brief Add a new device
    *

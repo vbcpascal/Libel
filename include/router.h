@@ -13,23 +13,13 @@
 #include <set>
 
 #include "device.h"
+#include "sdp.h"
+
+namespace SDP {
+int sdpCallBack(const void* buf, int len, DeviceId id);
+}
 
 namespace Route {
-
-class RouteItem {
- public:
-  ip_addr ipPrefix;
-  ip_addr subNetMask;
-  Device::DevicePtr dev;
-  MAC::MacAddr nextHopMac;
-
-  RouteItem() = default;
-  RouteItem(const ip_addr& _ip, const ip_addr& _mask,
-            const Device::DevicePtr& _d, const MAC::MacAddr& _m);
-  bool haveIp(const ip_addr& ip) const;
-};
-
-bool operator<(const RouteItem& rl, const RouteItem& rr);
 
 using RoutingTable = std::set<RouteItem>;
 
@@ -40,6 +30,10 @@ class Router {
   std::pair<Device::DevicePtr, MAC::MacAddr> lookup(const ip_addr& ip);
   int setTable(const in_addr& dst, const in_addr& mask,
                const MAC::MacAddr& nextHopMac, const Device::DevicePtr& dev);
+  int setItem(const RouteItem& ri);
+  void init();
+  void update(const SDP::SDPItemVector& sis, const MAC::MacAddr mac,
+              const Device::DevicePtr dev);
 };
 
 extern Router router;

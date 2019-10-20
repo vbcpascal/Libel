@@ -36,6 +36,8 @@
 #define DEFAULT_DEV_NAME "eth0"
 #endif
 
+#define ETHERTYPE_SDP 0x2333
+
 using DeviceId = int;
 using ip_addr = in_addr;
 
