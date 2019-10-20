@@ -85,7 +85,7 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   if (callback != nullptr) {
     int res = callback(packet, len, pa->id);
     if (res < 0) {
-      // LOG_ERR("Callback error!");
+      LOG_ERR("Callback error!");
     }
   }
 }

@@ -50,25 +50,12 @@ RouteItem Router::lookup(const ip_addr& ip) {
   return resRi;
 }
 
-int Router::setTable(const in_addr& dst, const in_addr& mask,
-                     const MAC::MacAddr& nextHopMac,
-                     const Device::DevicePtr& dev) {
-  RouteItem r(dst, mask, dev, nextHopMac);
-  table.insert(r);
-  return 0;
-}
+int Router::addItem(const RouteItem& ri) {
+  SDP::SDPItemVector sis;
 
-int Router::setItem(const RouteItem& ri) {
-  for (auto& i : table) {
-    if (i.subNetMask == ri.subNetMask) {
-      if (i.haveIp(ri.ipPrefix) && ri.haveIp(i.ipPrefix)) {
-        table.erase(i);
-        table.insert(ri);
-        return 1;
-      }
-    }
-  }
-  table.insert(ri);
+  sis.push_back(SDP::SDPItem(ri.ipPrefix, ri.subNetMask, 1));
+  update(sis, ri.nextHopMac, ri.dev);
+
   return 0;
 }
 

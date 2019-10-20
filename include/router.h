@@ -28,10 +28,15 @@ class Router {
  public:
   RoutingTable table;
 
+  /**
+   * @brief look up a routing item for ip
+   *
+   * @param ip ip to look up
+   * @return RouteItem routing item
+   */
   RouteItem lookup(const ip_addr& ip);
-  int setTable(const in_addr& dst, const in_addr& mask,
-               const MAC::MacAddr& nextHopMac, const Device::DevicePtr& dev);
-  int setItem(const RouteItem& ri);
+
+  int addItem(const RouteItem& ri);
 
   /**
    * @brief Init a router: add local device and tell neibours

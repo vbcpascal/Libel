@@ -24,7 +24,7 @@ int callbackDispatcher(const void* buf, int len, DeviceId id) {
     return 0;
   }
 
-  // MAC address:  dst is me or broadcast?
+  // MAC address: dst is me or broadcast?
   if (MAC::isSameMacAddr(dev->getMAC(), hdr.ether_dhost) ||
       MAC::isBroadcast(hdr.ether_dhost)) {
     u_short type = hdr.ether_type;
@@ -84,7 +84,7 @@ int setRoutingTable(const in_addr dest, const in_addr mask,
                     const void* nextHopMAC, const char* device) {
   auto nm = MAC::MacAddr((const u_char*)nextHopMAC);
   auto dev = Device::deviceMgr.getDevicePtr(std::string(device));
-  return Route::router.setTable(dest, mask, nm, dev);
+  return Route::router.addItem(Route::RouteItem(dest, mask, dev, nm));
 }
 
 int addAllDevice(bool sniff) { return Device::deviceMgr.addAllDevice(sniff); }
