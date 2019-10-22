@@ -5,8 +5,8 @@
 
 namespace MAC {
 
-bool MacAddr::operator==(const MacAddr& m) {
-  return isSameMacAddr(addr, m.addr);
+bool operator==(const MacAddr& ml, const MacAddr& mr) {
+  return isSameMacAddr(ml.addr, mr.addr);
 }
 
 const MacAddr& MacAddr::operator=(const MacAddr& m) {

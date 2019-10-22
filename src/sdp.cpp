@@ -3,15 +3,19 @@
 namespace Route {
 
 RouteItem::RouteItem(const ip_addr& _ip, const ip_addr& _mask,
-                     const Device::DevicePtr& _d, const MAC::MacAddr& _m,
-                     int _dist, bool is_dev)
-    : subNetMask(_mask), isDev(is_dev), dev(_d), dist(_dist) {
+                     const Device::DevicePtr& _dev, const MAC::MacAddr& _mac,
+                     int _dist, bool _isDev, int _metric)
+    : subNetMask(_mask),
+      isDev(_isDev),
+      dev(_dev),
+      dist(_dist),
+      metric(_metric) {
   ipPrefix.s_addr = _ip.s_addr & _mask.s_addr;
-  nextHopMac = _m;
+  nextHopMac = _mac;
 }
 
 bool operator<(const RouteItem& rl, const RouteItem& rr) {
-  int ls = maskToSlash(rl.subNetMask), rs = maskToSlash(rr.subNetMask);
+  int ls = maskToPflen(rl.subNetMask), rs = maskToPflen(rr.subNetMask);
   if (ls > rs)
     return true;
   else if (ls < rs)
@@ -30,22 +34,22 @@ bool RouteItem::haveIp(const ip_addr& ip) const {
          (ipPrefix.s_addr & subNetMask.s_addr);
 }
 
-int maskToSlash(const in_addr& mask) {
-  int slash = 0;
+int maskToPflen(const in_addr& mask) {
+  int pflen = 0;
   auto n = mask.s_addr;
   while (n) {
     n = n & (n - 1);
-    slash++;
+    pflen++;
   }
-  return slash;
+  return pflen;
 }
 
-ip_addr slashToMask(int slash) {
+ip_addr pflenToMask(int pflen) {
   ip_addr ip;
-  if (slash == 0) {
+  if (pflen == 0) {
     ip.s_addr = 0;
   } else {
-    ip.s_addr = ntohl(~0 << (32 - slash));
+    ip.s_addr = ntohl(~0 << (32 - pflen));
   }
   return ip;
 }
@@ -70,8 +74,9 @@ void SDPManager::sendSDPPacketsTo(const SDPItemVector& sis, int flag,
   int cnt = 0;
   for (auto& i : sis) {
     sdppSend.data[cnt].IpPrefix = i.ipPrefix;
-    sdppSend.data[cnt].slash = Route::maskToSlash(i.subNetMask);
+    sdppSend.data[cnt].pflen = Route::maskToPflen(i.subNetMask);
     sdppSend.data[cnt].dist = i.dist + 1;
+    sdppSend.data[cnt].itemFlag |= (i.toDel ? SDP_ITEMFLAG_DEL : 0);
     cnt++;
   }
 
@@ -94,8 +99,9 @@ void SDPManager::sendSDPPackets(const std::vector<SDPItem>& sis, int flag,
   int cnt = 0;
   for (auto& i : sis) {
     sdppSend.data[cnt].IpPrefix = i.ipPrefix;
-    sdppSend.data[cnt].slash = Route::maskToSlash(i.subNetMask);
+    sdppSend.data[cnt].pflen = Route::maskToPflen(i.subNetMask);
     sdppSend.data[cnt].dist = i.dist + 1;
+    sdppSend.data[cnt].itemFlag |= (i.toDel ? SDP_ITEMFLAG_DEL : 0);
     cnt++;
   }
 
@@ -114,8 +120,9 @@ void printSDP(const SDP::SDPPacket& sdpp, bool sender) {
   printf("\033[;1m%s SDP\033[0m len: %d, from %s\n", (sender ? "--" : ">>"),
          sdpp.len, MAC::toString(sdpp.mac).c_str());
   for (int i = 0; i < sdpp.len; ++i) {
-    printf(" |  %s/%d\t(dist: %d)\n", inet_ntoa(sdpp.data[i].IpPrefix),
-           sdpp.data[i].slash, sdpp.data[i].dist);
+    printf(" |  %s/%d\t(dist: %d)\t%s\n", inet_ntoa(sdpp.data[i].IpPrefix),
+           sdpp.data[i].pflen, sdpp.data[i].dist,
+           sdpp.data[i].itemFlag & SDP_ITEMFLAG_DEL ? "DEL" : "");
   }
 }
 }  // namespace Printer

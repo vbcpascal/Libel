@@ -75,7 +75,7 @@ MAC::MacAddr ArpManager::getMacAddr(Device::DevicePtr dev, const ip_addr& dstIp,
 int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
                                int maxRetry) {
   std::unique_lock<std::mutex> lock(cv_m);
-  lock.lock();
+  // lock.lock();
 
   // pack a ARP frame
   ArpFrame frame;

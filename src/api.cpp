@@ -84,7 +84,8 @@ int setRoutingTable(const in_addr dest, const in_addr mask,
                     const void* nextHopMAC, const char* device) {
   auto nm = MAC::MacAddr((const u_char*)nextHopMAC);
   auto dev = Device::deviceMgr.getDevicePtr(std::string(device));
-  return Route::router.addItem(Route::RouteItem(dest, mask, dev, nm));
+  return Route::router.addItem(
+      Route::RouteItem(dest, mask, dev, nm, 1, false, SDP_METRIC_NODEL));
 }
 
 int addAllDevice(bool sniff) { return Device::deviceMgr.addAllDevice(sniff); }

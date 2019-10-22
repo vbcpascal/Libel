@@ -10,6 +10,7 @@
 #ifndef ROUTER_H_
 #define ROUTER_H_
 
+#include <cstdlib>
 #include <optional>
 #include <set>
 
@@ -27,6 +28,7 @@ using RoutingTable = std::set<RouteItem>;
 class Router {
  public:
   RoutingTable table;
+  std::thread loopThread;
 
   /**
    * @brief look up a routing item for ip
@@ -36,6 +38,12 @@ class Router {
    */
   RouteItem lookup(const ip_addr& ip);
 
+  /**
+   * @brief add an item to routing table
+   *
+   * @param ri routing item
+   * @return int 0 on succeed, but always succeed
+   */
   int addItem(const RouteItem& ri);
 
   /**
@@ -68,6 +76,8 @@ class Router {
    */
   void update(const SDP::SDPItemVector& sis, const MAC::MacAddr mac,
               const Device::DevicePtr dev);
+
+  void routerWorkingLoop();
 };
 
 extern Router router;

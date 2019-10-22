@@ -194,6 +194,13 @@ class DeviceManager {
    */
   int getMACAddr(u_char *mac, DeviceId id);
 
+  /**
+   * @brief Find out whether devices have ip
+   *
+   * @param ip ip
+   * @return true yes
+   * @return false no
+   */
   bool haveDeviceWithIp(const ip_addr &ip);
 
   /**

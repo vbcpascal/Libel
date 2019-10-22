@@ -47,9 +47,9 @@ class MacAddr {
   MacAddr(const u_char* _mac) { memcpy(addr, _mac, ETHER_ADDR_LEN); }
 
   const MacAddr& operator=(const MacAddr& m);
-  bool operator==(const MacAddr& m);
 };
 
+bool operator==(const MacAddr& ml, const MacAddr& mr);
 bool isSameMacAddr(const u_char* macA, const u_char* macB);
 
 /**
