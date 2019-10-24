@@ -16,10 +16,13 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include <condition_variable>
 #include <cstring>
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
+#include <queue>
 #include <set>
 #include <string>
 #include <vector>
@@ -44,6 +47,12 @@ class Device {
    *
    */
   std::thread sniffingThread;
+
+  /**
+   * @brief thread sending
+   *
+   */
+  std::thread sendingThread;
 
   ~Device();
 
@@ -120,17 +129,23 @@ class Device {
   int stopSniffing();
 
  private:
-  static DeviceId max_id;
-  DeviceId id;
-  std::string name;
-  u_char mac[ETHER_ADDR_LEN];
-  ip_addr ip;
-  ip_addr subnetMask;
+  static DeviceId max_id;      // max id in devices
+  DeviceId id;                 // unique id for deivce
+  std::string name;            // name of device
+  u_char mac[ETHER_ADDR_LEN];  // mac address of device
+  ip_addr ip;                  // ip of device
+  ip_addr subnetMask;          // subnet mask of device
 
-  pcap_t *pcap;
-  bool sniffing;
+  pcap_t *pcap;   // a pcap struct pointer
+  bool sniffing;  // is sniffing
 
-  void badDevice();
+  std::queue<Ether::EtherFrame> sender;  // frame queue to send
+  void badDevice();    // delete and release id when get a bad device
+  int startSending();  // start a thread to send
+
+  std::condition_variable cv;
+  std::mutex cv_m;
+  void senderLoop();
 };
 
 using DevicePtr = std::shared_ptr<Device>;

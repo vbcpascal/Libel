@@ -175,7 +175,9 @@ class EtherFrame {
    * frame
    *
    */
-  void padding() { len = ETHER_MIN_LEN - 4; }
+  void padding() {
+    if (len < ETHER_MIN_LEN - 4) len = ETHER_MIN_LEN - 4;
+  }
 
   /**
    * @brief ntoh for Ether frame

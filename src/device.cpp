@@ -145,6 +145,7 @@ Device::Device(std::string name, bool sniff)
 
   // start sniffing
   if (sniff) startSniffing();
+  startSending();
 }
 
 DeviceId Device::getId() { return id; }
@@ -162,17 +163,7 @@ ip_addr Device::getIp() { return ip; }
 ip_addr Device::getSubnetMask() { return subnetMask; }
 
 int Device::sendFrame(Ether::EtherFrame& frame) {
-  // LOG_INFO("Sending Frame in device %s with id %d.", name.c_str(), id);
-
-  frame.htonType();
-  // frame.padding();
-
-  // send the ethernet frame
-  if (pcap_inject(pcap, frame.getFrame(), frame.getLength()) == -1) {
-    pcap_perror(pcap, 0);
-    // pcap_close(pcap);
-    return -3;
-  }
+  sender.push(frame);
   return 0;
 }
 
@@ -198,6 +189,31 @@ int Device::stopSniffing() {
   if (pthread_cancel(pthread)) return -1;
   sniffingThread.detach();
   return 0;
+}
+
+int Device::startSending() {
+  sendingThread = std::thread([&]() { senderLoop(); });
+  sendingThread.detach();
+  return 0;
+}
+
+void Device::senderLoop() {
+  std::unique_lock<std::mutex> lk(cv_m);
+
+  while (true) {
+    cv.wait(lk, [&]() { return sender.size() > 0; });
+    while (sender.size()) {
+      auto frame = sender.front();
+      sender.pop();
+      frame.htonType();
+
+      // send the ethernet frame
+      if (pcap_inject(pcap, frame.getFrame(), frame.getLength()) == -1) {
+        pcap_perror(pcap, 0);
+        LOG_ERR("Send frame failed.");
+      }
+    }
+  }
 }
 
 //////////////////// DeviceManager ////////////////////
