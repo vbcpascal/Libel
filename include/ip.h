@@ -103,6 +103,7 @@ extern IPPacketReceiveCallback callback;
 
 std::string ipToStr(const ip_addr& ip);
 void ipToStr(const ip_addr& ip, char* ipstr);
+void ipCopy(ip_addr& dst, const ip_addr& src);
 }  // namespace Ip
 
 namespace Printer {

@@ -163,7 +163,10 @@ ip_addr Device::getIp() { return ip; }
 ip_addr Device::getSubnetMask() { return subnetMask; }
 
 int Device::sendFrame(Ether::EtherFrame& frame) {
+  std::unique_lock<std::mutex> lck(sender_m);
   sender.push(frame);
+  lck.unlock();
+  senderCv.notify_all();
   return 0;
 }
 
@@ -198,10 +201,10 @@ int Device::startSending() {
 }
 
 void Device::senderLoop() {
-  std::unique_lock<std::mutex> lk(cv_m);
+  std::unique_lock<std::mutex> lk(sender_m);
 
   while (true) {
-    cv.wait(lk, [&]() { return sender.size() > 0; });
+    senderCv.wait(lk, [&]() { return sender.size() > 0; });
     while (sender.size()) {
       auto frame = sender.front();
       sender.pop();
@@ -213,6 +216,7 @@ void Device::senderLoop() {
         LOG_ERR("Send frame failed.");
       }
     }
+    lk.unlock();
   }
 }
 

@@ -143,8 +143,8 @@ class Device {
   void badDevice();    // delete and release id when get a bad device
   int startSending();  // start a thread to send
 
-  std::condition_variable cv;
-  std::mutex cv_m;
+  std::condition_variable senderCv;
+  std::mutex sender_m;
   void senderLoop();
 };
 

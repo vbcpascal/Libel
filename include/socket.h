@@ -10,63 +10,73 @@
 #ifndef SOCKET_H_
 #define SOCKET_H_
 
+#include <errno.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "massert.h"
-#include "type.h"
+#include <vector>
 
-#if 0 
-/**
- * @see [POSIX.1-2017:socket](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/socket.html)
- */
-int __wrap_socket(int domain, int type, int protocol);
-/**
- * @see [POSIX.1-2017:bind](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/bind.html)
- */
-int __wrap_bind(int socket, const struct sockaddr *address,
-                socklen_t address_len);
-/**
- * @see [POSIX.1-2017:listen](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/listen.html)
- */
-int __wrap_listen(int socket, int backlog);
-/**
- * @see [POSIX.1-2017:connect](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/connect.html)
- */
-int __wrap_connect(int socket, const struct sockaddr *address,
-                   socklen_t address_len);
-/**
- * @see [POSIX.1-2017:accept](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/accept.html)
- */
-int __wrap_accept(int socket, struct sockaddr *address, socklen_t *address_len);
-/**
- * @see [POSIX.1-2017:read](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/read.html)
- */
-ssize_t __wrap_read(int fildes, void *buf, size_t nbyte);
-/**
- * @see [POSIX.1-2017:write](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/write.html)
- */
-ssize_t __wrap_write(int fildes, const void *buf, size_t nbyte);
-/**
- * @see [POSIX.1-2017:close](http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/close.html)
- */
-ssize_t __wrap_close(int fildes);
-/**
- * @see [POSIX.1-2017:getaddrinfo]
-(http://pubs.opengroup.org/onlinepubs/
- * 9699919799/functions/getaddrinfo.html)
- */
-int __wrap_getaddrinfo(const char *node, const char *service,
-                       const struct addrinfo *hints, struct addrinfo **res);
+#include "ip.h"
+#include "router.h"
+#include "socketaddr.h"
+#include "tcp.h"
 
-#endif
+namespace Socket {
+constexpr int MSL = 2;
+
+class Socket {
+ public:
+  // basic information of a socket
+  int fd;  // file description id
+  SocketAddr src;
+  SocketAddr dst;
+  Tcp::TcpWorker tcpWorker;
+
+  // information set when created
+  int domain;    // only AF_INET supported
+  int type;      // only SOCK_STREAM supported
+  int protocol;  // such as HTTP
+
+  // lock for basic information
+  std::mutex mu;
+
+ public:
+  Socket(int domain, int type, int protocol, int fd);
+  Socket(const Socket& s);
+  int bind(const sockaddr* address, socklen_t address_len);
+  int listen(int backlog);
+  int accept(sockaddr* address, socklen_t* address_len);
+  int connect(const sockaddr* address, socklen_t address_len);
+  ssize_t read(u_char* buf, size_t nbyte);
+  ssize_t write(const u_char* buf, size_t nbyte);
+  ssize_t send(const Tcp::TcpItem& ti);
+  int close();
+};
+
+class SocketManager {
+ public:
+  int nextFd = 1024;
+  std::vector<Socket> socketList;
+  std::map<ip_addr, int> nextPort;
+
+  Socket* getSocket(int fd);
+  Socket* getSocket(const SocketAddr src, const SocketAddr dst);
+  Socket* getListeningSocket(const SocketAddr src);
+  int socket(int domain, int type, int protocol);
+  int bind(int socket, const sockaddr* address, socklen_t address_len);
+  int listen(int socket, int backlog);
+  int accept(int socket, sockaddr* address, socklen_t* address_len);
+  int connect(int socket, const sockaddr* address, socklen_t address_len);
+  ssize_t read(int fildes, u_char* buf, size_t nbyte);
+  ssize_t write(int fildes, const u_char* buf, size_t nbyte);
+  int close(int fildes);
+};
+
+extern SocketManager sockmgr;
+
+int tcpDispatcher(const void* buf, int len);
+
+}  // namespace Socket
+
 #endif

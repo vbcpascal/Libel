@@ -3,6 +3,95 @@
 #include <unordered_map>
 #include <variant>
 
+bool initialed = false;
+
+void checkInitial() {
+  if (!initialed) api::init();
+}
+
+int __wrap_socket(int domain, int type, int protocol) {
+  checkInitial();
+  return Socket::sockmgr.socket(domain, type, protocol);
+}
+
+int __wrap_bind(int socket, const struct sockaddr* address,
+                socklen_t address_len) {
+  checkInitial();
+  return Socket::sockmgr.bind(socket, address, address_len);
+}
+
+int __wrap_listen(int socket, int backlog) {
+  checkInitial();
+  return Socket::sockmgr.listen(socket, backlog);
+}
+
+int __wrap_connect(int socket, const struct sockaddr* address,
+                   socklen_t address_len) {
+  checkInitial();
+  return Socket::sockmgr.connect(socket, address, address_len);
+}
+
+int __wrap_accept(int socket, struct sockaddr* address,
+                  socklen_t* address_len) {
+  checkInitial();
+  return Socket::sockmgr.accept(socket, address, address_len);
+}
+
+ssize_t __wrap_read(int fildes, void* buf, size_t nbyte) {
+  checkInitial();
+  return Socket::sockmgr.read(fildes, reinterpret_cast<u_char*>(buf), nbyte);
+}
+
+ssize_t __wrap_write(int fildes, const void* buf, size_t nbyte) {
+  checkInitial();
+  return Socket::sockmgr.write(fildes, reinterpret_cast<const u_char*>(buf),
+                               nbyte);
+}
+
+ssize_t __wrap_close(int fildes) {
+  checkInitial();
+  return Socket::sockmgr.close(fildes);
+}
+
+int __wrap_getaddrinfo(const char* node, const char* service,
+                       const struct addrinfo* hints, struct addrinfo** res) {
+  checkInitial();
+  if (!node && !service) return EAI_NONAME;
+  if (hints) {
+    if (hints->ai_family != AF_INET) return EAI_FAMILY;
+    if ((hints->ai_socktype != SOCK_STREAM) ||
+        (hints->ai_protocol != IPPROTO_TCP))
+      return EAI_SOCKTYPE;
+    if (hints->ai_flags != 0) return EAI_BADFLAGS;
+  }
+
+  sockaddr_in* addr = new sockaddr_in;
+  addr->sin_family = AF_INET;
+  if (inet_aton(node, &(addr->sin_addr)) == 0) return EAI_NONAME;
+  addr->sin_port = atoi(service);
+  if (addr->sin_port == 0) EAI_NONAME;
+
+  addrinfo* rp = new addrinfo;
+  rp->ai_family = AF_INET;
+  rp->ai_socktype = SOCK_STREAM;
+  rp->ai_protocol = IPPROTO_TCP;
+  rp->ai_addrlen = INET_ADDRSTRLEN;
+  rp->ai_addr = reinterpret_cast<sockaddr*>(addr);
+  rp->ai_next = NULL;
+
+  *res = rp;
+  return 0;
+}
+
+void __wrap_freeaddrinfo(struct addrinfo* res) {
+  for (auto rp = res; rp != NULL;) {
+    auto nxt = rp->ai_next;
+    delete rp->ai_addr;
+    delete rp;
+    rp = nxt;
+  }
+}
+
 namespace api {
 
 std::unordered_map<u_short, commonReceiveCallback> callbackMap;
@@ -56,6 +145,7 @@ int init() {
   setCallback(ETHERTYPE_ARP, Arp::arpCallBack);
   setCallback(ETHERTYPE_IP, Ip::ipCallBack);
   setCallback(ETHERTYPE_SDP, SDP::sdpCallBack);
+  setIPPacketReceiveCallback(Socket::tcpDispatcher);
   return 0;
 }
 

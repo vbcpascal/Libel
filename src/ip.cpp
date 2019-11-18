@@ -10,6 +10,10 @@ namespace Ip {
 
 IPPacketReceiveCallback callback = nullptr;
 
+void ipCopy(ip_addr &dst, const ip_addr &src) {
+  memcpy(&dst, &src, sizeof(ip_addr));
+}
+
 std::string ipToStr(const ip_addr &ip) {
   char ipstr[20];
   ipToStr(ip, ipstr);

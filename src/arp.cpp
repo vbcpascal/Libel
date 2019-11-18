@@ -14,6 +14,7 @@ int arpCallBack(const void* buf, int len, DeviceId id) {
     // any reply: add to ARP table
     case ARPOP_REPLY: {
       arpMgr.ipMacMap[frame.srcIp] = MAC::MacAddr(frame.srcMac);
+      arpMgr.cv.notify_all();
       LOG_INFO("ARP table update");
       Printer::printArpTable();
       break;
