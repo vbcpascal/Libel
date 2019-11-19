@@ -6,7 +6,7 @@ int sdpCallBack(const void* buf, int len, DeviceId id) {
   uint8_t pLen = ((uint8_t*)buf)[0];
   DEFINE_SDPPACKET(sdppGet, pLen);
   memcpy(&sdppGet, buf, SDPP_SIZE(pLen));
-  Printer::printSDP(sdppGet);
+  // Printer::printSDP(sdppGet);
 
   SDPItemVector sis;
 
@@ -139,9 +139,9 @@ void Router::update(const SDP::SDPItemVector& sis, const MAC::MacAddr mac,
     }
   }
 
-  LOG_INFO("Update routing items: %zu", updateSis.size());
+  // LOG_INFO("Update routing items: %zu", updateSis.size());
   if (updateSis.size() == 0) return;
-  Printer::printRouteTable();
+  // Printer::printRouteTable();
   SDP::sdpMgr.sendSDPPackets(updateSis, SDPFLAG_INCREMENT, dev);
 }
 
@@ -149,7 +149,7 @@ void Router::routerWorkingLoop() {
   while (true) {
     std::this_thread::sleep_for(
         std::chrono::seconds(ROUTE_LOOP_INTERVAL + std::rand() % 10));
-    LOG_INFO("Sending a routing table to neibours")
+    // LOG_INFO("Sending a routing table to neighbours")
     sendRoutingTable(0, {}, {});
 
     // update metric
@@ -174,7 +174,7 @@ void Router::routerWorkingLoop() {
         ++iter;
       }
     }
-    Printer::printRouteTable();
+    // Printer::printRouteTable();
     SDP::sdpMgr.sendSDPPackets(updateSis, 0);
   }
 }

@@ -110,7 +110,7 @@ Device::Device(std::string name, bool sniff)
 
   // get MAC
   if (initDeviceMACAddr(mac, name.c_str()) < 0) {
-    LOG_WARN("get MAC address failed. name: \033[1m%s\033[0m", name.c_str());
+    // LOG_WARN("get MAC address failed. name: \033[1m%s\033[0m", name.c_str());
     badDevice();
     return;
   }
@@ -201,9 +201,10 @@ int Device::startSending() {
 }
 
 void Device::senderLoop() {
-  std::unique_lock<std::mutex> lk(sender_m);
+  std::unique_lock<std::mutex> lk(sender_m, std::defer_lock);
 
   while (true) {
+    lk.lock();
     senderCv.wait(lk, [&]() { return sender.size() > 0; });
     while (sender.size()) {
       auto frame = sender.front();

@@ -6,55 +6,58 @@
 bool initialed = false;
 
 void checkInitial() {
-  if (!initialed) api::init();
+  if (!initialed) {
+    api::init();
+    initialed = true;
+  }
 }
 
-int __wrap_socket(int domain, int type, int protocol) {
+namespace api {
+
+namespace socket {
+int socket(int domain, int type, int protocol) {
   checkInitial();
   return Socket::sockmgr.socket(domain, type, protocol);
 }
 
-int __wrap_bind(int socket, const struct sockaddr* address,
-                socklen_t address_len) {
+int bind(int socket, const struct sockaddr* address, socklen_t address_len) {
   checkInitial();
   return Socket::sockmgr.bind(socket, address, address_len);
 }
 
-int __wrap_listen(int socket, int backlog) {
+int listen(int socket, int backlog) {
   checkInitial();
   return Socket::sockmgr.listen(socket, backlog);
 }
 
-int __wrap_connect(int socket, const struct sockaddr* address,
-                   socklen_t address_len) {
+int connect(int socket, const struct sockaddr* address, socklen_t address_len) {
   checkInitial();
   return Socket::sockmgr.connect(socket, address, address_len);
 }
 
-int __wrap_accept(int socket, struct sockaddr* address,
-                  socklen_t* address_len) {
+int accept(int socket, struct sockaddr* address, socklen_t* address_len) {
   checkInitial();
   return Socket::sockmgr.accept(socket, address, address_len);
 }
 
-ssize_t __wrap_read(int fildes, void* buf, size_t nbyte) {
+ssize_t read(int fildes, void* buf, size_t nbyte) {
   checkInitial();
   return Socket::sockmgr.read(fildes, reinterpret_cast<u_char*>(buf), nbyte);
 }
 
-ssize_t __wrap_write(int fildes, const void* buf, size_t nbyte) {
+ssize_t write(int fildes, const void* buf, size_t nbyte) {
   checkInitial();
   return Socket::sockmgr.write(fildes, reinterpret_cast<const u_char*>(buf),
                                nbyte);
 }
 
-ssize_t __wrap_close(int fildes) {
+ssize_t close(int fildes) {
   checkInitial();
   return Socket::sockmgr.close(fildes);
 }
 
-int __wrap_getaddrinfo(const char* node, const char* service,
-                       const struct addrinfo* hints, struct addrinfo** res) {
+int getaddrinfo(const char* node, const char* service,
+                const struct addrinfo* hints, struct addrinfo** res) {
   checkInitial();
   if (!node && !service) return EAI_NONAME;
   if (hints) {
@@ -83,7 +86,7 @@ int __wrap_getaddrinfo(const char* node, const char* service,
   return 0;
 }
 
-void __wrap_freeaddrinfo(struct addrinfo* res) {
+void freeaddrinfo(struct addrinfo* res) {
   for (auto rp = res; rp != NULL;) {
     auto nxt = rp->ai_next;
     delete rp->ai_addr;
@@ -91,8 +94,7 @@ void __wrap_freeaddrinfo(struct addrinfo* res) {
     rp = nxt;
   }
 }
-
-namespace api {
+}  // namespace socket
 
 std::unordered_map<u_short, commonReceiveCallback> callbackMap;
 
@@ -146,6 +148,8 @@ int init() {
   setCallback(ETHERTYPE_IP, Ip::ipCallBack);
   setCallback(ETHERTYPE_SDP, SDP::sdpCallBack);
   setIPPacketReceiveCallback(Socket::tcpDispatcher);
+  addAllDevice(true);
+  initRouter();
   return 0;
 }
 
@@ -155,7 +159,7 @@ int sendFrame(const void* buf, int len, int ethtype, const void* destmac,
 }
 
 int setFrameReceiveCallback(frameReceiveCallback callback) {
-  LOG_INFO("Set new callback function.");
+  // LOG_INFO("Set new callback function.");
   Device::callback = callback;
   return 0;
 }

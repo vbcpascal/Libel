@@ -79,6 +79,9 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
     }
   }
 
+  LOG_INFO("Socket %s:%d try to connect %s.", Ip::ipToStr(src.ip).c_str(),
+           src.port, dstSaddr.toStr().c_str());
+
   // send SYN
   Tcp::TcpSegment ts(src.port, dstSaddr.port);
 
@@ -237,23 +240,24 @@ int Socket::close() {
 
 //================= SocketManager =================//
 
-Socket* SocketManager::getSocket(int fd) {
+SocketPtr SocketManager::getSocket(int fd) {
   for (auto& i : socketList) {
-    if (i.fd == fd) return &i;
+    if (i->fd == fd) return i;
   }
   return nullptr;
 }
 
-Socket* SocketManager::getSocket(const SocketAddr src, const SocketAddr dst) {
+SocketPtr SocketManager::getSocket(const SocketAddr src, const SocketAddr dst) {
   for (auto& i : socketList) {
-    if (i.src == src && i.dst == dst) return &i;
+    if (i->src == src && i->dst == dst) return i;
   }
   return nullptr;
 }
 
-Socket* SocketManager::getListeningSocket(const SocketAddr src) {
+SocketPtr SocketManager::getListeningSocket(const SocketAddr src) {
   for (auto& i : socketList) {
-    if (i.src == src && i.tcpWorker.getSt() == Tcp::TcpState::LISTEN) return &i;
+    if (i->src == src && i->tcpWorker.getSt() == Tcp::TcpState::LISTEN)
+      return i;
   }
   return nullptr;
 }
@@ -263,8 +267,9 @@ int SocketManager::socket(int domain, int type, int protocol) {
   if (domain != AF_INET) RET_SETERRNO(EAFNOSUPPORT);
   if (type != SOCK_STREAM) RET_SETERRNO(EPROTOTYPE);
   if (protocol != IPPROTO_TCP) RET_SETERRNO(EPROTONOSUPPORT);
-  Socket s(domain, type, protocol, nextFd++);
-  return s.fd;
+  auto sock = std::make_shared<Socket>(domain, type, protocol, nextFd++);
+  socketList.push_back(sock);
+  return sock->fd;
 }
 
 int SocketManager::bind(int socket, const struct sockaddr* address,
@@ -272,46 +277,48 @@ int SocketManager::bind(int socket, const struct sockaddr* address,
   auto addr_in = reinterpret_cast<const struct sockaddr_in*>(address);
   if (!addr_in) RET_SETERRNO(EADDRNOTAVAIL);
   if (addr_in->sin_family != AF_INET) RET_SETERRNO(EAFNOSUPPORT);
+#ifdef __APPLE__
   if (addr_in->sin_len != INET_ADDRSTRLEN) RET_SETERRNO(EINVAL);
+#endif
   // if (getSocket(address)) RET_SETERRNO(EADDRINUSE);
-  Socket* s = getSocket(socket);
+  SocketPtr s = getSocket(socket);
   if (!s) RET_SETERRNO(EBADF);
   return s->bind(address, address_len);
 }
 
 int SocketManager::listen(int socket, int backlog) {
-  Socket* s = getSocket(socket);
+  SocketPtr s = getSocket(socket);
   if (!s) RET_SETERRNO(EBADF);
   return s->listen(backlog);
 }
 
 int SocketManager::accept(int socket, sockaddr* address,
                           socklen_t* address_len) {
-  Socket* s = getSocket(socket);
+  SocketPtr s = getSocket(socket);
   if (!s) RET_SETERRNO(EBADF);
   return s->accept(address, address_len);
 }
 
 int SocketManager::connect(int socket, const sockaddr* address,
                            socklen_t address_len) {
-  Socket* s = getSocket(socket);
+  SocketPtr s = getSocket(socket);
   if (!s) RET_SETERRNO(EBADF);
   return s->connect(address, address_len);
 }
 
 ssize_t SocketManager::read(int fildes, u_char* buf, size_t nbyte) {
-  Socket* s = getSocket(fildes);
+  SocketPtr s = getSocket(fildes);
   if (!s) RET_SETERRNO(EBADF);
   return s->read(buf, nbyte);
 }
 ssize_t SocketManager::write(int fildes, const u_char* buf, size_t nbyte) {
-  Socket* s = getSocket(fildes);
+  SocketPtr s = getSocket(fildes);
   if (!s) RET_SETERRNO(EBADF);
   return s->write(buf, nbyte);
 }
 
 int SocketManager::close(int fildes) {
-  Socket* s = getSocket(fildes);
+  SocketPtr s = getSocket(fildes);
   if (!s) RET_SETERRNO(EBADF);
   return s->close();
 }
@@ -328,7 +335,7 @@ int tcpDispatcher(const void* buf, int len) {
   dstSaddr.port = ts.hdr.th_dport;
   Tcp::TcpItem ti(ts, ipp.ipSrc(), ipp.ipDst());
 
-  Socket* sock;
+  SocketPtr sock;
   if (Tcp::ISTYPE_SYN(ts.hdr))
     sock = sockmgr.getListeningSocket(dstSaddr);
   else

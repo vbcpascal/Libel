@@ -19,6 +19,7 @@ TcpState TcpWorker::getSt() {
 }
 
 void TcpWorker::setSt(TcpState newst) {
+  LOG_INFO("Change State to: \033[33;1m%s\033[0m", stateToStr(newst).c_str());
   st.store(newst);
   criticalSt.store(newst);
   return;
@@ -30,6 +31,8 @@ TcpState TcpWorker::getCriticalSt() {
 }
 
 void TcpWorker::setCriticalSt(TcpState newst) {
+  LOG_INFO("Change Critical State to: \033[33;1m%s\033[0m",
+           stateToStr(newst).c_str());
   criticalSt.store(newst);
   return;
 }
@@ -42,11 +45,13 @@ ssize_t TcpWorker::send(const TcpItem& ti) {
    *
    * See also: senderLoop
    */
+  LOG_INFO("Send a TCP segment");
+  Printer::printTcpItem(ti);
 
   auto currSeq = ti.ts.hdr.th_seq;
   {  // push the segment to sendList
     std::unique_lock<std::shared_mutex> lock(sendlst_m);
-    ASSERT_EQ(sendList.size(), 0, "sendList is not empty");
+    // ASSERT_EQ(sendList.size(), 0, "sendList is not empty");
     sendList.push(ti);
     lock.unlock();
   }

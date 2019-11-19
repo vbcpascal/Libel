@@ -40,12 +40,16 @@ struct SocketAddr {
     Ip::ipCopy(addr_in->sin_addr, ip);
     addr_in->sin_family = AF_INET;
     addr_in->sin_port = port;
+#ifdef __APPLE__
     addr_in->sin_len = INET_ADDRSTRLEN;
+#endif
   }
 
   bool operator==(const SocketAddr& sa) {
     return ip.s_addr == sa.ip.s_addr && port == sa.port;
   }
+
+  std::string toStr() { return Ip::ipToStr(ip) + ":" + std::to_string(port); }
 };
 }  // namespace Socket
 #endif

@@ -43,7 +43,6 @@ class Socket {
 
  public:
   Socket(int domain, int type, int protocol, int fd);
-  Socket(const Socket& s);
   int bind(const sockaddr* address, socklen_t address_len);
   int listen(int backlog);
   int accept(sockaddr* address, socklen_t* address_len);
@@ -53,16 +52,17 @@ class Socket {
   ssize_t send(const Tcp::TcpItem& ti);
   int close();
 };
+using SocketPtr = std::shared_ptr<Socket>;
 
 class SocketManager {
  public:
   int nextFd = 1024;
-  std::vector<Socket> socketList;
+  std::vector<SocketPtr> socketList;
   std::map<ip_addr, int> nextPort;
 
-  Socket* getSocket(int fd);
-  Socket* getSocket(const SocketAddr src, const SocketAddr dst);
-  Socket* getListeningSocket(const SocketAddr src);
+  SocketPtr getSocket(int fd);
+  SocketPtr getSocket(const SocketAddr src, const SocketAddr dst);
+  SocketPtr getListeningSocket(const SocketAddr src);
   int socket(int domain, int type, int protocol);
   int bind(int socket, const sockaddr* address, socklen_t address_len);
   int listen(int socket, int backlog);

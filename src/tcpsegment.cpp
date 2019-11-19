@@ -82,3 +82,12 @@ TCP_TYPE_MAP
 bool TYPE_NONE(tcphdr t) { return t.th_flags == 0; }
 
 }  // namespace Tcp
+
+namespace Printer {
+void printTcpItem(const Tcp::TcpItem& ti) {
+  Socket::SocketAddr srcSaddr(ti.srcIp, ti.ts.hdr.th_sport);
+  Socket::SocketAddr dstSaddr(ti.dstIp, ti.ts.hdr.th_dport);
+  printf("TCP Segment: %s -> %s, flags=%d\n", srcSaddr.toStr().c_str(),
+         dstSaddr.toStr().c_str(), ti.ts.hdr.th_flags);
+}
+}  // namespace Printer

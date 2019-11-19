@@ -16,33 +16,21 @@
 #include "tcp.h"
 #include "type.h"
 
-extern "C" {
-
-int __wrap_socket(int domain, int type, int protocol);
-
-int __wrap_bind(int socket, const struct sockaddr *address,
-                socklen_t address_len);
-
-int __wrap_listen(int socket, int backlog);
-
-int __wrap_connect(int socket, const struct sockaddr *address,
-                   socklen_t address_len);
-
-int __wrap_accept(int socket, struct sockaddr *address, socklen_t *address_len);
-
-ssize_t __wrap_read(int fildes, void *buf, size_t nbyte);
-
-ssize_t __wrap_write(int fildes, const void *buf, size_t nbyte);
-
-ssize_t __wrap_close(int fildes);
-
-int __wrap_getaddrinfo(const char *node, const char *service,
-                       const struct addrinfo *hints, struct addrinfo **res);
-
-void __wrap_freeaddrinfo(struct addrinfo *res);
-}
-
 namespace api {
+
+namespace socket {
+int socket(int domain, int type, int protocol);
+int bind(int socket, const struct sockaddr *address, socklen_t address_len);
+int listen(int socket, int backlog);
+int connect(int socket, const struct sockaddr *address, socklen_t address_len);
+int accept(int socket, struct sockaddr *address, socklen_t *address_len);
+ssize_t read(int fildes, void *buf, size_t nbyte);
+ssize_t write(int fildes, const void *buf, size_t nbyte);
+ssize_t close(int fildes);
+int getaddrinfo(const char *node, const char *service,
+                const struct addrinfo *hints, struct addrinfo **res);
+void freeaddrinfo(struct addrinfo *res);
+}  // namespace socket
 
 /**
  * @brief Set the Callback with specific type

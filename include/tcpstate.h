@@ -12,28 +12,32 @@
 #ifndef TCPSTATE_H_
 #define TCPSTATE_H_
 
-#include <netinet/tcp_fsm.h>
-
 #include "massert.h"
 #include "type.h"
 
 namespace Tcp {
 
+#define TCP_STATE_SET \
+  X(INVAL)            \
+  X(CLOSED)           \
+  X(LISTEN)           \
+  X(SYN_SENT)         \
+  X(SYN_RECEIVED)     \
+  X(ESTABLISHED)      \
+  X(CLOSE_WAIT)       \
+  X(FIN_WAIT_1)       \
+  X(CLOSING)          \
+  X(LAST_ACK)         \
+  X(FIN_WAIT_2)       \
+  X(TIMED_WAIT)
+
 enum class TcpState : int {
-  INVAL = -1,
-  CLOSED = 0,
-  LISTEN,
-  SYN_SENT,
-  SYN_RECEIVED,
-  ESTABLISHED,
-  CLOSE_WAIT,
-  FIN_WAIT_1,
-  CLOSING,
-  LAST_ACK,
-  FIN_WAIT_2,
-  TIMED_WAIT,
+#define X(STATENAME) STATENAME,
+  TCP_STATE_SET
+#undef X
 };
 
+std::string stateToStr(TcpState st);
 }  // namespace Tcp
 
 #endif

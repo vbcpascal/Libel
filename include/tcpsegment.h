@@ -78,7 +78,7 @@ bool TYPE_NONE(tcphdr t);
 }  // namespace Tcp
 
 namespace Printer {
-void printTcpSegment(const Tcp::TcpSegment& ts);
+void printTcpItem(const Tcp::TcpItem& ts);
 }
 
 #endif

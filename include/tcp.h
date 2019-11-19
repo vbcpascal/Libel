@@ -12,9 +12,6 @@
 
 #include <netdb.h>
 #include <netinet/tcp.h>
-#include <netinet/tcp_fsm.h>
-#include <netinet/tcp_seq.h>
-#include <netinet/tcp_timer.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 

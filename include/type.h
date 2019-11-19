@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #include <pcap/pcap.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cstdint>
 #include <cstdio>

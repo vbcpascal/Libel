@@ -81,7 +81,7 @@ void SDPManager::sendSDPPacketsTo(const SDPItemVector& sis, int flag,
   }
 
   withDev->getMAC(sdppSend.mac);
-  Printer::printSDP(sdppSend, true);
+  // Printer::printSDP(sdppSend, true);
   Device::deviceMgr.sendFrame(&sdppSend, SDPP_SIZE(size), ETHERTYPE_SDP,
                               toMac.addr, withDev);
 }
@@ -108,7 +108,7 @@ void SDPManager::sendSDPPackets(const std::vector<SDPItem>& sis, int flag,
   for (auto& dev : Device::deviceMgr.devices) {
     if (dev == withoutDev) continue;
     dev->getMAC(sdppSend.mac);
-    Printer::printSDP(sdppSend, true);
+    // Printer::printSDP(sdppSend, true);
     Device::deviceMgr.sendFrame(&sdppSend, SDPP_SIZE(size), ETHERTYPE_SDP,
                                 Ether::broadcastMacAddr, dev);
   }
