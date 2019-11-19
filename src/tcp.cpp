@@ -60,7 +60,7 @@ ssize_t TcpWorker::send(const TcpItem& ti) {
 
   {  // wait for sender
     std::shared_lock<std::shared_mutex> lock(seq_m);
-    seqCv.wait(lock, [&]() { return seq.rcv_nxt > currSeq; });
+    seqCv.wait(lock, [&]() { return seq.snd_una > currSeq; });
     lock.unlock();
 
     std::unique_lock<std::mutex> aslock(abanseq_m);
