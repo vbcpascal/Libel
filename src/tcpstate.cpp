@@ -8,6 +8,9 @@ std::string stateToStr(TcpState st) {
     return #STATENAME;
     TCP_STATE_SET
 #undef X
+    default:
+      return "";
   }
+  return "";
 }
 }  // namespace Tcp

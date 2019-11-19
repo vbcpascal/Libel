@@ -68,7 +68,7 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
   dst = dstSaddr;
 
   // set src ip and port (if not bind)
-  auto addr_in = dstSaddr.ip;
+  auto addr_in = dst.ip;
   if (src.ip.s_addr == 0) {
     Device::DevicePtr dev = Route::router.lookup(addr_in).dev;
     src.ip = dev->getIp();
@@ -83,15 +83,15 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
   }
 
   LOG_INFO("Socket %s:%d try to connect %s.", Ip::ipToStr(src.ip).c_str(),
-           src.port, dstSaddr.toStr().c_str());
+           src.port, dst.toStr().c_str());
 
   // send SYN
-  Tcp::TcpSegment ts(src.port, dstSaddr.port);
+  Tcp::TcpSegment ts(src.port, dst.port);
 
   {  // CLOSED --[send SYN]--> SYN_SENT
     ts.setFlags(TH_SYN);
     ts.setSeq(tcpWorker.seq, 1);
-    Tcp::TcpItem ti(ts, src.ip, dstSaddr.ip);
+    Tcp::TcpItem ti(ts, src.ip, dst.ip);
     tcpWorker.setSt(Tcp::TcpState::SYN_SENT);
 
     if (this->send(ti) < 0) {
@@ -102,7 +102,8 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
 
   // ^ STN_SENT --[rcv SYN/ACK, snd ACK]--> ESTAB
   if (tcpWorker.getCriticalSt() == Tcp::TcpState::ESTABLISHED) {
-    auto ti = Tcp::buildAckItem(src, dstSaddr, tcpWorker.seq);
+    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq, tcpWorker.seq_m);
+    Printer::printTcpItem(ti);
     tcpWorker.setSt(Tcp::TcpState::ESTABLISHED);
     this->send(ti);
     return 0;
@@ -113,7 +114,7 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
     ts.setFlags(TH_ACK + TH_SYN);
     ts.setSeq(tcpWorker.seq, 1);
     ts.setAck(tcpWorker.seq.sndAckWithLen(1));
-    Tcp::TcpItem ti(ts, addr_in, dstSaddr.ip);
+    Tcp::TcpItem ti(ts, addr_in, dst.ip);
     tcpWorker.setSt(Tcp::TcpState::SYN_RECEIVED);
 
     if (this->send(ti) < 0) {
@@ -179,7 +180,7 @@ int Socket::close() {
   // ^ FIN_WAIT_1 --[rcv FIN/ACK, snd ACK]--> TIME_WAIT
   if (tcpWorker.getSt() == Tcp::TcpState::FIN_WAIT_1 &&
       tcpWorker.getCriticalSt() == Tcp::TcpState::TIMED_WAIT) {
-    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq);
+    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq, tcpWorker.seq_m);
     tcpWorker.setSt(Tcp::TcpState::TIMED_WAIT);
     this->send(ti);
   }
@@ -193,7 +194,7 @@ int Socket::close() {
   // ^ FIN_WAIT_2 --[rcv FIN, snd ACK]--> TIME_WAIT
   if (tcpWorker.getSt() == Tcp::TcpState::FIN_WAIT_2 &&
       tcpWorker.getCriticalSt() == Tcp::TcpState::TIMED_WAIT) {
-    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq);
+    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq, tcpWorker.seq_m);
     tcpWorker.setSt(Tcp::TcpState::TIMED_WAIT);
     this->send(ti);
   }
@@ -201,7 +202,7 @@ int Socket::close() {
   // ^ FIN_WAIT_1 --[rcv FIN, snd ACK]--> CLOSING
   if (tcpWorker.getSt() == Tcp::TcpState::FIN_WAIT_1 &&
       tcpWorker.getCriticalSt() == Tcp::TcpState::CLOSING) {
-    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq);
+    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq, tcpWorker.seq_m);
     tcpWorker.setSt(Tcp::TcpState::TIMED_WAIT);
     this->send(ti);
   }
@@ -331,13 +332,13 @@ SocketManager sockmgr;
 int tcpDispatcher(const void* buf, int len) {
   Ip::IpPacket ipp((u_char*)buf, len);
   SocketAddr srcSaddr, dstSaddr;
-  srcSaddr.ip = ipp.ipSrc();
-  dstSaddr.ip = ipp.ipDst();
+  srcSaddr.ip = ipp.hdr.ip_src;
+  dstSaddr.ip = ipp.hdr.ip_dst;
   LOG_ERR("%d %d", len, ipp.hdr.ip_hl);
   Tcp::TcpSegment ts((u_char*)ipp.data, len - ipp.hdr.ip_hl * 4);
   srcSaddr.port = ts.hdr.th_sport;
   dstSaddr.port = ts.hdr.th_dport;
-  Tcp::TcpItem ti(ts, ipp.ipSrc(), ipp.ipDst());
+  Tcp::TcpItem ti(ts, ipp.hdr.ip_src, ipp.hdr.ip_dst);
   // Printer::printIpPacket(ipp);
   Printer::printTcpItem(ti);
 

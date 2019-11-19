@@ -11,6 +11,7 @@
 #define TCPSEGMENT_H_
 
 #include <netinet/tcp.h>
+#include <shared_mutex>
 
 #include "ip.h"
 #include "socketaddr.h"
@@ -57,14 +58,15 @@ struct TcpItem {
 };
 
 TcpItem buildAckItem(Socket::SocketAddr src, Socket::SocketAddr dst,
-                     Sequence::SeqSet& ss, std::optional<tcp_seq>(ackSeq) = {});
+                     Sequence::SeqSet& ss, std::shared_mutex& seq_m,
+                     std::optional<tcp_seq>(ackSeq) = {});
 
-#define TCP_TYPE_MAP          \
-  X(SYN, TH_SYN)              \
-  X(ACK, TH_ACK)              \
-  X(FIN, TH_FIN)              \
-  X(SYN_ACK, TH_SYN + TH_ACK) \
-  X(FIN_ACK, TH_FIN + TH_ACK)
+#define TCP_TYPE_MAP            \
+  X(SYN, TH_SYN)                \
+  X(ACK, TH_ACK)                \
+  X(FIN, TH_FIN)                \
+  X(SYN_ACK, (TH_SYN + TH_ACK)) \
+  X(FIN_ACK, (TH_FIN + TH_ACK))
 
 #define X(TCPNAME, TCPFLAG) bool ISTYPE_##TCPNAME(tcphdr t);
 TCP_TYPE_MAP

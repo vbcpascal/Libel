@@ -30,7 +30,7 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
   IpPacket ipp((u_char *)buf, len);
   if (!ipp.chkChksum()) LOG_WARN("Checksum error.");
   ipp.ntohType();
-  ip_addr dstIp = ipp.ipDst();
+  ip_addr dstIp = ipp.hdr.ip_dst;
 
   // is me?
   if (Device::deviceMgr.haveDeviceWithIp(dstIp)) {
@@ -73,7 +73,7 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
              dev->getName().c_str());
   }
 
-  int packLen = ipp.totalLen();
+  int packLen = ipp.hdr.ip_len;
   ipp.htonType();
   return Device::deviceMgr.sendFrame(&ipp, packLen, ETHERTYPE_IP, dstMac.addr,
                                      dev);
@@ -95,7 +95,7 @@ int IpPacket::setData(const u_char *buf, int len) {
     LOG_ERR("packet is to large.");
     return -1;
   }
-  totalLen() = len + hdr.ip_hl * 4;
+  hdr.ip_len = len + hdr.ip_hl * 4;
   memcpy(data, buf, len);
   return 0;
 }
@@ -162,12 +162,12 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
   // packet
   Ip::IpPacket ipPack;
   ipPack.setDefaultHdr();
-  ipPack.ipSrc() = src;
-  ipPack.ipDst() = dest;
-  ipPack.proto() = proto;
+  ipPack.hdr.ip_src = src;
+  ipPack.hdr.ip_dst = dest;
+  ipPack.hdr.ip_p = proto;
   ipPack.setData((u_char *)buf, len);
 
-  int packLen = ipPack.totalLen();
+  int packLen = ipPack.hdr.ip_len;
   // Printer::printIpPacket(ipPack, true);
 
   ipPack.htonType();

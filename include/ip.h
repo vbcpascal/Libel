@@ -64,34 +64,6 @@ class IpPacket {
    *
    */
   void ntohType();
-
-  /**
-   * @brief Totol length (Reference)
-   *
-   * @return u_short& length
-   */
-  u_short& totalLen() { return hdr.ip_len; }
-
-  /**
-   * @brief Src ip address (Reference)
-   *
-   * @return ip_addr& ip
-   */
-  ip_addr& ipSrc() { return hdr.ip_src; }
-
-  /**
-   * @brief Dst ip address (Reference)
-   *
-   * @return ip_addr& ip
-   */
-  ip_addr& ipDst() { return hdr.ip_dst; }
-
-  /**
-   * @brief Protocol of ip packet (Reference)
-   *
-   * @return u_char& protocol
-   */
-  u_char& proto() { return hdr.ip_p; }
 };
 
 int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,

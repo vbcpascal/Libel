@@ -1,11 +1,16 @@
 #include "tcp.h"
 
-#define POP_NOTIFY(lck)  \
+#define SENDLST_POP(lck) \
   {                      \
     lck.lock();          \
     sendList.pop();      \
     lck.unlock();        \
-    sendCv.notify_all(); \
+  }
+
+#define SENDLST_POP_NOTIFY(lck) \
+  {                             \
+    SENDLST_POP(lck);           \
+    sendCv.notify_all();        \
   }
 
 namespace Tcp {
@@ -113,7 +118,7 @@ void TcpWorker::senderLoop() {
       // send next segment if nonblock
       retransCnt = tcpMaxRetrans;
       currSeq = 0;
-      POP_NOTIFY(sendLock);
+      SENDLST_POP(sendLock);
       continue;
     }
 
@@ -130,7 +135,7 @@ void TcpWorker::senderLoop() {
         abanseqLock.lock();
         abandonedSeq.insert(currSeq);
         abanseqLock.unlock();
-        POP_NOTIFY(sendLock);
+        SENDLST_POP(sendLock);
         currSeq = 0;
       } else {
         retransCnt--;
@@ -144,7 +149,7 @@ void TcpWorker::senderLoop() {
 ssize_t TcpWorker::read(u_char* buf, size_t nby) {
   std::unique_lock<std::shared_mutex> lock(recvbuf_m);
   // TODO: if closed?
-  recvCv.wait(lock, [&] { return recvBuf.size() > nby; });
+  recvCv.wait(lock, [&] { return recvBuf.size() > static_cast<int>(nby); });
   recvBuf.read(buf, nby);
   return nby;
 }
@@ -161,7 +166,7 @@ void TcpWorker::handler(TcpItem& recvti) {
   // send duplicate ACK if rcving a larger sequence number
   if (syned.load() && hdr.th_seq > seq.rcv_nxt) {
     LOG_INFO("Send an old ACK");
-    auto ti = buildAckItem(srcSaddr, dstSaddr, seq, seq.rcv_nxt);
+    auto ti = buildAckItem(srcSaddr, dstSaddr, seq, seq_m, seq.rcv_nxt);
     this->send(ti);
     return;
   }
@@ -169,8 +174,8 @@ void TcpWorker::handler(TcpItem& recvti) {
   // send old ACK if rcving a smaller sequence number
   if (syned.load() && hdr.th_seq < seq.rcv_nxt) {
     LOG_INFO("Send a duplicated ACK");
-    auto ti =
-        buildAckItem(srcSaddr, dstSaddr, seq, hdr.th_seq + recvti.ts.dataLen);
+    auto ti = buildAckItem(srcSaddr, dstSaddr, seq, seq_m,
+                           hdr.th_seq + recvti.ts.dataLen);
     this->send(ti);
     return;
   }
@@ -179,8 +184,9 @@ void TcpWorker::handler(TcpItem& recvti) {
     case TcpState::LISTEN: {
       // LISTEN --[rcv SYN, snd SYN/ACK]--> SYN_RCVD > `accept`
       if (ISTYPE_SYN(hdr)) {
-        if (backlog == 0 || pendings.size() < backlog) {
-          pendings.push(std::make_pair(dstSaddr, recvti.ts.hdr.th_seq));
+        if (backlog == 0 || static_cast<int>(pendings.size()) < backlog) {
+          tcp_seq seq = recvti.ts.hdr.th_seq;
+          pendings.push(std::make_pair(dstSaddr, seq));
           acceptCv.notify_all();
         }
       }
@@ -191,7 +197,7 @@ void TcpWorker::handler(TcpItem& recvti) {
       if (ISTYPE_SYN_ACK(hdr)) {
         if (seq.tryAndRcvAck(hdr)) {
           seq.initRcvIsn(hdr.th_seq);
-          POP_NOTIFY(lock);
+          SENDLST_POP_NOTIFY(lock);
           syned.store(true);
           setCriticalSt(TcpState::ESTABLISHED);
         }
@@ -200,7 +206,7 @@ void TcpWorker::handler(TcpItem& recvti) {
       // SYN_SENT --[rcv SYN, snd SYN/ACK]--> SYN_RCVD > `connect`
       else if (ISTYPE_SYN(hdr)) {
         seq.initRcvIsn(hdr.th_seq);
-        POP_NOTIFY(lock);
+        SENDLST_POP_NOTIFY(lock);
         setCriticalSt(TcpState::SYN_RECEIVED);
         lock.unlock();
       }
@@ -210,7 +216,7 @@ void TcpWorker::handler(TcpItem& recvti) {
       // SYN_RCVD --[rcv ACK]--> ESTAB > `connect` or `accept`
       if (ISTYPE_ACK(hdr)) {
         if (seq.tryAndRcvAck(hdr)) {
-          POP_NOTIFY(lock);
+          SENDLST_POP_NOTIFY(lock);
           setCriticalSt(TcpState::ESTABLISHED);
         }
         lock.unlock();
@@ -224,14 +230,14 @@ void TcpWorker::handler(TcpItem& recvti) {
           recvBuf.write(recvti.ts.data, len);
           tcp_seq s = seq.sndAckWithLen(len);
           if (!WITHTYPE_FIN(hdr)) {
-            auto ti = buildAckItem(srcSaddr, dstSaddr, seq, s);
+            auto ti = buildAckItem(srcSaddr, dstSaddr, seq, seq_m, s);
             this->send(ti);
           }
         }
       }  // end save data
       // ESTAB --[rcv FIN, snd ACK]--> CLOSE_WAIT
       if (ISTYPE_FIN(hdr)) {
-        auto ti = buildAckItem(srcSaddr, dstSaddr, seq);
+        auto ti = buildAckItem(srcSaddr, dstSaddr, seq, seq_m);
         this->send(ti);
         setSt(TcpState::CLOSE_WAIT);
       }
@@ -244,7 +250,7 @@ void TcpWorker::handler(TcpItem& recvti) {
           recvBuf.write(recvti.ts.data, len);
           tcp_seq s = seq.sndAckWithLen(len);
           if (!WITHTYPE_FIN(hdr)) {
-            auto ti = buildAckItem(srcSaddr, dstSaddr, seq, s);
+            auto ti = buildAckItem(srcSaddr, dstSaddr, seq, seq_m, s);
             this->send(ti);
           }
         }

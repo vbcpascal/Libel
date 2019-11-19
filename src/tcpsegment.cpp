@@ -61,16 +61,18 @@ void TcpSegment::ntoh() {
 }
 
 TcpItem buildAckItem(Socket::SocketAddr src, Socket::SocketAddr dst,
-                     Sequence::SeqSet& ss, std::optional<tcp_seq>(ackSeq)) {
-  TcpSegment ts(src.port, dst.port);
-  ts.setFlags(TH_ACK);
-  ts.setSeq(ss, 0);
+                     Sequence::SeqSet& ss, std::shared_mutex& seq_m,
+                     std::optional<tcp_seq>(ackSeq)) {
+  std::lock_guard lock(seq_m);
+  TcpItem ti(src.ip, dst.ip, true);
+  ti.ts.setFlags(TH_ACK);
+  ti.ts.setSeq(ss, 0);
   if (ackSeq.has_value())
-    ts.setAck(ackSeq.value());
+    ti.ts.setAck(ackSeq.value());
   else
-    ts.setAck(ss.sndAckWithLen(1));
+    ti.ts.setAck(ss.sndAckWithLen(1));
 
-  return TcpItem(std::move(ts), src.ip, dst.ip, true);
+  return ti;
 }
 
 #define X(TCPNAME, TCPFLAG) \

@@ -17,7 +17,9 @@ int count = 0;
 
 int defaultCallback(const void* buf, int len, DeviceId id) {
   Ether::EtherFrame ef(buf, len);
-  LOG_INFO("Message: (%d) %s", count++, ef.frame.payload);
+  char msg[200];
+  strncpy(msg, reinterpret_cast<const char*>(ef.frame.payload), 200);
+  printf("Message: (%d) %s", count++, msg);
 
   return 0;
 }

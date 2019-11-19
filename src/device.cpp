@@ -77,7 +77,7 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
   pcapArgs* pa = reinterpret_cast<pcapArgs*>(args);
 
   int len = header->len;
-  if (len != header->caplen) {
+  if (len != static_cast<int>(header->caplen)) {
     LOG_ERR("Data Lost.");
     return;
   }
@@ -132,8 +132,7 @@ Device::Device(std::string name, bool sniff)
   pcap = pcap_open_live(name.c_str(), MAX_FRAME_SIZE, false, FRAME_TIME_OUT,
                         pcap_errbuf);
   if (pcap_errbuf[0] != '\0') {
-    LOG_WARN("pcap_open_live error! name: \033[1m%s\033[0m: %s", name.c_str(),
-             pcap_errbuf);
+    LOG_WARN("pcap_open_live error! name: \033[1m%s\033[0m", name.c_str());
     badDevice();
     return;
   }

@@ -28,7 +28,7 @@ class BufferQueue {
   int read(u_char* buf, size_t nbyte) {
     if (buffer.size() < nbyte) return -1;
     std::copy_n(buffer.begin(), nbyte, buf);
-    for (int i = 0; i < nbyte; ++i) buffer.pop_front();
+    for (size_t i = 0; i < nbyte; ++i) buffer.pop_front();
     return 0;
   }
 
