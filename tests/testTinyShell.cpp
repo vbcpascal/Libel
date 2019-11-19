@@ -1,3 +1,13 @@
+/**
+ * @file testTinyShell.cpp
+ * @author guanzhichao (vbcpascal@gmail.com)
+ * @version 0.1
+ * @date 2019-10-02
+ *
+ * @brief Test: not maintained
+ *
+ */
+
 #include <csignal>
 
 #include "api.h"

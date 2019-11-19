@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     LOG_INFO("Add routing item succeed!")
   }
 
-  Printer::printRouteTable();
+  // Printer::printRouteTable();
 
   std::string srcStr, dstStr, msg, tmp;
   while (true) {

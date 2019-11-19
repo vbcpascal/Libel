@@ -1,3 +1,14 @@
+/**
+ * @file testARP.cpp
+ * @author guanzhichao (vbcpascal@gmail.com)
+ * @version 0.1
+ * @date 2019-10-18
+ *
+ * @brief Test: test ARP request and response. Host1 uses `testDeviceManager` to
+ * listen devices. And Host2 runs `testARP` with param IP of HOST1.
+ *
+ */
+
 #include "api.h"
 #include "arp.h"
 #include "device.h"
