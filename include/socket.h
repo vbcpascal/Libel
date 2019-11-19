@@ -79,4 +79,8 @@ int tcpDispatcher(const void* buf, int len);
 
 }  // namespace Socket
 
+namespace Printer {
+void printSocket(const Socket::SocketPtr& sock);
+}  // namespace Printer
+
 #endif

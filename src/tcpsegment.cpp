@@ -7,25 +7,29 @@ TcpSegment::TcpSegment() { setDefaultHdr(); }
 TcpSegment::TcpSegment(const u_char* buf, int len) {
   memset(&hdr, 0, sizeof(TcpSegment));
   memcpy(&hdr, buf, len);
+  this->totalLen = len;
+  this->dataLen = len - hdr.th_off * 4;
+  dataPtr = reinterpret_cast<u_char*>(&hdr) + hdr.th_off * 4;
 }
 
-TcpSegment::TcpSegment(int sport, int dport, int offset) {
+TcpSegment::TcpSegment(int sport, int dport) {
   setDefaultHdr();
   hdr.th_sport = sport;
   hdr.th_dport = dport;
-  hdr.th_off = offset;
+  dataPtr = data;
 }
 
 void TcpSegment::setDefaultHdr() {
   hdr.th_sport = hdr.th_dport = 0;
   hdr.th_seq = hdr.th_ack = 0;
-  hdr.th_off = 4;
+  hdr.th_off = sizeof(tcphdr) / 4;
   hdr.th_flags = 0;
   hdr.th_win = UINT16_MAX;
   hdr.th_urp = 0;
 
   dataLen = 0;
   totalLen = dataLen + 4 * hdr.th_off;
+  dataPtr = data;
 }
 
 void TcpSegment::setSeq(Sequence::SeqSet& ss, int len) {
@@ -84,10 +88,13 @@ bool TYPE_NONE(tcphdr t) { return t.th_flags == 0; }
 }  // namespace Tcp
 
 namespace Printer {
-void printTcpItem(const Tcp::TcpItem& ti) {
+void printTcpItem(const Tcp::TcpItem& ti, bool sender) {
   Socket::SocketAddr srcSaddr(ti.srcIp, ti.ts.hdr.th_sport);
   Socket::SocketAddr dstSaddr(ti.dstIp, ti.ts.hdr.th_dport);
-  printf("TCP Segment: %s -> %s, flags=%d\n", srcSaddr.toStr().c_str(),
-         dstSaddr.toStr().c_str(), ti.ts.hdr.th_flags);
+  printf("%s \033[;1mTCP\033[0m %s -> %s, f=0x%x\n", (sender ? "--" : ">>"),
+         srcSaddr.toStr().c_str(), dstSaddr.toStr().c_str(),
+         ti.ts.hdr.th_flags);
+  printf("   [ seq=%d, ack=%d ], len=%d(%d)\n", ti.ts.hdr.th_seq,
+         ti.ts.hdr.th_ack, ti.ts.dataLen, ti.ts.totalLen);
 }
 }  // namespace Printer

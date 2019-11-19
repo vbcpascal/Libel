@@ -28,6 +28,7 @@ int Socket::accept(sockaddr* address, socklen_t* address_len) {
 
   lock.lock();
   tcpWorker.acceptCv.wait(lock, [&] { return tcpWorker.pendings.size() > 0; });
+  lock.unlock();
 
   // LISTEN --[rcv SYN, snd SYN/ACK]--> SYN_RCVD
   auto saddr_seq = tcpWorker.pendings.front();
@@ -35,7 +36,9 @@ int Socket::accept(sockaddr* address, socklen_t* address_len) {
   auto sock = sockmgr.getSocket(fd);
   sock->src = src;
   sock->dst = saddr_seq.first;
-  sock->tcpWorker.seq.rcv_isn = saddr_seq.second;
+  sock->tcpWorker.seq.initRcvIsn(saddr_seq.second);
+  sock->tcpWorker.syned.store(true);
+  Printer::printSocket(sock);
 
   Tcp::TcpSegment ts(sock->src.port, sock->dst.port);
   ts.setFlags(TH_SYN + TH_ACK);
@@ -88,7 +91,7 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
   {  // CLOSED --[send SYN]--> SYN_SENT
     ts.setFlags(TH_SYN);
     ts.setSeq(tcpWorker.seq, 1);
-    Tcp::TcpItem ti(ts, addr_in, dstSaddr.ip);
+    Tcp::TcpItem ti(ts, src.ip, dstSaddr.ip);
     tcpWorker.setSt(Tcp::TcpState::SYN_SENT);
 
     if (this->send(ti) < 0) {
@@ -330,21 +333,33 @@ int tcpDispatcher(const void* buf, int len) {
   SocketAddr srcSaddr, dstSaddr;
   srcSaddr.ip = ipp.ipSrc();
   dstSaddr.ip = ipp.ipDst();
-  Tcp::TcpSegment ts((u_char*)ipp.data, len - ipp.hdr.ip_off * 4);
+  LOG_ERR("%d %d", len, ipp.hdr.ip_hl);
+  Tcp::TcpSegment ts((u_char*)ipp.data, len - ipp.hdr.ip_hl * 4);
   srcSaddr.port = ts.hdr.th_sport;
   dstSaddr.port = ts.hdr.th_dport;
   Tcp::TcpItem ti(ts, ipp.ipSrc(), ipp.ipDst());
+  // Printer::printIpPacket(ipp);
+  Printer::printTcpItem(ti);
 
   SocketPtr sock;
-  if (Tcp::ISTYPE_SYN(ts.hdr))
+  if (Tcp::ISTYPE_SYN(ts.hdr)) {
     sock = sockmgr.getListeningSocket(dstSaddr);
-  else
+  } else {
     sock = sockmgr.getSocket(dstSaddr, srcSaddr);
+  }
   if (!sock) {
     LOG_WARN("A segment cannot match any local socket.");
-    return -1;
+    return 0;
   }
   sock->tcpWorker.handler(ti);
   return 0;
 }
 }  // namespace Socket
+
+namespace Printer {
+void printSocket(const Socket::SocketPtr& sock) {
+  printf("Socket: %d, src=%s, dst=%s, st=%s\n", sock->fd,
+         sock->src.toStr().c_str(), sock->dst.toStr().c_str(),
+         Tcp::stateToStr(sock->tcpWorker.getSt()).c_str());
+}
+}  // namespace Printer

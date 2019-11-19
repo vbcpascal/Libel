@@ -1,14 +1,18 @@
 #include "tcp.h"
 
-#define POP_N(deq, size)                            \
-  {                                                 \
-    for (int i = 0; i < size; ++i) deq.pop_front(); \
+#define POP_NOTIFY(lck)  \
+  {                      \
+    lck.lock();          \
+    sendList.pop();      \
+    lck.unlock();        \
+    sendCv.notify_all(); \
   }
 
 namespace Tcp {
 
 TcpWorker::TcpWorker() : st(TcpState::CLOSED) {
   seq.snd_una = seq.snd_nxt = seq.snd_isn = Sequence::isnGen.getISN();
+  syned.store(false);
   sender = std::thread([&]() { senderLoop(); });
   sender.detach();
 }
@@ -45,14 +49,14 @@ ssize_t TcpWorker::send(const TcpItem& ti) {
    *
    * See also: senderLoop
    */
-  LOG_INFO("Send a TCP segment");
-  Printer::printTcpItem(ti);
+  // Printer::printTcpItem(ti);
 
   auto currSeq = ti.ts.hdr.th_seq;
   {  // push the segment to sendList
     std::unique_lock<std::shared_mutex> lock(sendlst_m);
     // ASSERT_EQ(sendList.size(), 0, "sendList is not empty");
     sendList.push(ti);
+    sendCv.notify_all();
     lock.unlock();
   }
 
@@ -69,6 +73,7 @@ ssize_t TcpWorker::send(const TcpItem& ti) {
       abandonedSeq.erase(currSeq);
       RET_SETERRNO(ECONNRESET);
     }
+    aslock.unlock();
   }
   return ti.ts.dataLen;
 }
@@ -96,10 +101,10 @@ void TcpWorker::senderLoop() {
     // wait for something if no sengment
     if (currSeq == 0) {
       sendLock.lock();
-      sendCv.wait(sendLock, [&]() { return sendList.size() > 0; });
-      sendLock.unlock();
-
+      sendCv.wait(sendLock, [&] { return sendList.size() > 0; });
       ti = sendList.front();
+      sendLock.unlock();
+      Printer::printTcpItem(ti, true);
       currSeq = ti.ts.hdr.th_seq;
     }
     Ip::sendIPPacket(ti.srcIp, ti.dstIp, IPPROTO_TCP, &ti.ts, ti.ts.totalLen);
@@ -107,25 +112,26 @@ void TcpWorker::senderLoop() {
     if (ti.nonblock) {
       // send next segment if nonblock
       retransCnt = tcpMaxRetrans;
-      sendList.pop();
+      currSeq = 0;
+      POP_NOTIFY(sendLock);
       continue;
     }
 
     seqLock.lock();
     if (seqCv.wait_for(seqLock, std::chrono::seconds(tcpTimeout),
-                       [&]() { return seq.rcv_nxt > currSeq; })) {
+                       [&]() { return seq.snd_una > currSeq; })) {
       // send succeed
       currSeq = 0;
     } else {
       // send failed
+      LOG_WARN("Send failed, rest retry: %d", retransCnt);
       if (retransCnt == 0) {
         retransCnt = tcpMaxRetrans;
         abanseqLock.lock();
         abandonedSeq.insert(currSeq);
         abanseqLock.unlock();
-        sendLock.lock();
-        sendList.pop();
-        sendLock.unlock();
+        POP_NOTIFY(sendLock);
+        currSeq = 0;
       } else {
         retransCnt--;
       }
@@ -147,18 +153,22 @@ void TcpWorker::handler(TcpItem& recvti) {
   while (st.load() != criticalSt.load())
     ;
   auto hdr = recvti.ts.hdr;
+  // ATTENTION: src and dst matched local address!!
   Socket::SocketAddr srcSaddr(recvti.dstIp, hdr.th_dport);
   Socket::SocketAddr dstSaddr(recvti.srcIp, hdr.th_sport);
+  std::unique_lock<std::shared_mutex> lock(sendlst_m, std::defer_lock);
 
   // send duplicate ACK if rcving a larger sequence number
-  if (hdr.th_seq > seq.rcv_nxt) {
+  if (syned.load() && hdr.th_seq > seq.rcv_nxt) {
+    LOG_INFO("Send an old ACK");
     auto ti = buildAckItem(srcSaddr, dstSaddr, seq, seq.rcv_nxt);
     this->send(ti);
     return;
   }
 
   // send old ACK if rcving a smaller sequence number
-  if (hdr.th_seq < seq.rcv_nxt) {
+  if (syned.load() && hdr.th_seq < seq.rcv_nxt) {
+    LOG_INFO("Send a duplicated ACK");
     auto ti =
         buildAckItem(srcSaddr, dstSaddr, seq, hdr.th_seq + recvti.ts.dataLen);
     this->send(ti);
@@ -170,7 +180,7 @@ void TcpWorker::handler(TcpItem& recvti) {
       // LISTEN --[rcv SYN, snd SYN/ACK]--> SYN_RCVD > `accept`
       if (ISTYPE_SYN(hdr)) {
         if (backlog == 0 || pendings.size() < backlog) {
-          pendings.push(std::make_pair(srcSaddr, recvti.ts.hdr.th_seq));
+          pendings.push(std::make_pair(dstSaddr, recvti.ts.hdr.th_seq));
           acceptCv.notify_all();
         }
       }
@@ -179,19 +189,18 @@ void TcpWorker::handler(TcpItem& recvti) {
     case TcpState::SYN_SENT: {
       // STN_SENT --[rcv SYN/ACK, snd ACK]--> ESTAB > `connect`
       if (ISTYPE_SYN_ACK(hdr)) {
-        std::unique_lock<std::shared_mutex> lock(sendlst_m);
         if (seq.tryAndRcvAck(hdr)) {
           seq.initRcvIsn(hdr.th_seq);
-          sendList.pop();
+          POP_NOTIFY(lock);
+          syned.store(true);
           setCriticalSt(TcpState::ESTABLISHED);
         }
         lock.unlock();
       }
       // SYN_SENT --[rcv SYN, snd SYN/ACK]--> SYN_RCVD > `connect`
       else if (ISTYPE_SYN(hdr)) {
-        std::unique_lock<std::shared_mutex> lock(sendlst_m);
         seq.initRcvIsn(hdr.th_seq);
-        sendList.pop();
+        POP_NOTIFY(lock);
         setCriticalSt(TcpState::SYN_RECEIVED);
         lock.unlock();
       }
@@ -200,9 +209,8 @@ void TcpWorker::handler(TcpItem& recvti) {
     case TcpState::SYN_RECEIVED: {
       // SYN_RCVD --[rcv ACK]--> ESTAB > `connect` or `accept`
       if (ISTYPE_ACK(hdr)) {
-        std::unique_lock<std::shared_mutex> lock(sendlst_m);
         if (seq.tryAndRcvAck(hdr)) {
-          sendList.pop();
+          POP_NOTIFY(lock);
           setCriticalSt(TcpState::ESTABLISHED);
         }
         lock.unlock();

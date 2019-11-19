@@ -8,10 +8,20 @@
 #define CALL(f, ...) f(__VA_ARGS__)
 #endif
 
+#define RUN_FUNC(var, func, ...)                   \
+  {                                                \
+    var = CALL(func, __VA_ARGS__);                 \
+    if (var < 0) {                                 \
+      LOG_ERR(#func " failed. errno: %d", errno);  \
+    } else {                                       \
+      LOG_INFO(#func " succeed. return: %d", var); \
+    }                                              \
+  }
+
 int main(int argc, char* argv[]) {
   printf(
       "Usage: ./testSocketServer serverIP serverPort\n"
-      "  For example: ./testSocketServer 10.100.1.2 4096");
+      "  For example: ./testSocketServer 10.100.1.2 4096\n");
   char* addrStr = argv[argc - 2];
   char* portStr = argv[argc - 1];
 
@@ -31,32 +41,10 @@ int main(int argc, char* argv[]) {
       "client.";
   int xx, ws;
 
-  ws = CALL(socket, AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (ws < 0) {
-    LOG_ERR("socket failed. errno: %d", errno);
-  } else {
-    LOG_INFO("socket succeed: %d", ws);
-  }
+  RUN_FUNC(ws, socket, AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  RUN_FUNC(xx, connect, ws, &dstSock, INET_ADDRSTRLEN);
+  RUN_FUNC(xx, write, ws, sendBuffer, strlen(sendBuffer));
+  RUN_FUNC(xx, close, ws);
 
-  xx = CALL(connect, ws, &dstSock, INET_ADDRSTRLEN);
-  if (ws < 0) {
-    LOG_ERR("connect failed. errno: %d", errno);
-  } else {
-    LOG_INFO("connect succeed.");
-  }
-
-  xx = CALL(write, ws, sendBuffer, strlen(sendBuffer));
-  if (xx < 0) {
-    LOG_ERR("write failed. errno: %d", errno)
-  } else {
-    LOG_INFO("write succeed.");
-  }
-
-  xx = CALL(close, ws);
-  if (xx < 0) {
-    LOG_ERR("close failed. errno: %d", errno)
-  } else {
-    LOG_INFO("close succeed.");
-  }
   return 0;
 }

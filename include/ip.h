@@ -37,7 +37,7 @@ class IpPacket {
     u_char data[IP_MAXPACKET];
   };
 
-  IpPacket() = default;
+  IpPacket() { setDefaultHdr(); };
   IpPacket(const u_char* buf, int len);
 
   void setDefaultHdr();

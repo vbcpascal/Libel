@@ -102,7 +102,9 @@ class EtherFrame {
   struct __attribute__((__packed__)) {
     ether_header header;
     u_char payload[ETHER_MAX_LEN];
+#ifdef ETHER_CRC_OPEN
     u_char crc[ETHER_CRC_LEN];
+#endif
   } frame;
 
   int len;
@@ -150,7 +152,11 @@ class EtherFrame {
    *
    * @return int length
    */
+#ifdef ETHER_CRC_OPEN
   int getPayloadLength() { return len - ETHER_HDR_LEN - ETHER_CRC_LEN; }
+#else
+  int getPayloadLength() { return len - ETHER_HDR_LEN; }
+#endif
 
   /**
    * @brief Set the Header object
@@ -167,7 +173,11 @@ class EtherFrame {
    */
   void setPayload(const u_char* buf, int l) {
     std::memcpy(frame.payload, buf, l);
+#ifdef ETHER_CRC_OPEN
     len = l + ETHER_HDR_LEN + ETHER_CRC_LEN;
+#else
+    len = l + ETHER_HDR_LEN;
+#endif
   }
 
   /**

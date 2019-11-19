@@ -37,11 +37,12 @@
 namespace Tcp {
 extern Sequence::ISNGenerator isnGen;
 
-constexpr int tcpTimeout = 3;
-constexpr int tcpMaxRetrans = 3;
+constexpr int tcpTimeout = 10;
+constexpr int tcpMaxRetrans = 0;
 
 class TcpWorker {
  public:
+  std::atomic_bool syned;
   std::atomic<TcpState> st;          // Current state of TCP connection
   std::atomic<TcpState> criticalSt;  // Critical State, for DFA
 

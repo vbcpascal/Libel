@@ -74,7 +74,9 @@ EtherFrame::EtherFrame() {
   std::memset(frame.header.ether_dhost, 0, ETHER_ADDR_LEN);
   std::memset(frame.header.ether_shost, 0, ETHER_ADDR_LEN);
   std::memset(frame.payload, 0, ETHER_MAX_LEN);
+#ifdef ETHER_CRC_OPEN
   std::memset(frame.crc, 0, ETHER_CRC_LEN);
+#endif
 }
 
 EtherFrame::EtherFrame(const void* buf, int l) : len(l) {

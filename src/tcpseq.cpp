@@ -28,7 +28,7 @@ void ISNGenerator::setISN() {
 
 void SeqSet::initRcvIsn(tcp_seq s) {
   rcv_isn = s;
-  rcv_nxt = s + 1;
+  rcv_nxt = s;
 }
 
 tcp_seq SeqSet::rcvAckWithLen(int len) {

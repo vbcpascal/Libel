@@ -9,14 +9,14 @@ int arpCallBack(const void* buf, int len, DeviceId id) {
   ArpFrame frame(buf);
 
   frame.ntohType();
-  Printer::printArpFrame(frame);
+  // Printer::printArpFrame(frame);
   switch (frame.arpHdr.ar_op) {
     // any reply: add to ARP table
     case ARPOP_REPLY: {
       arpMgr.ipMacMap[frame.srcIp] = MAC::MacAddr(frame.srcMac);
       arpMgr.cv.notify_all();
-      LOG_INFO("ARP table update");
-      Printer::printArpTable();
+      // LOG_INFO("ARP table update");
+      // Printer::printArpTable();
       break;
     }
     // dstip is me? reply it!
@@ -61,11 +61,12 @@ MAC::MacAddr ArpManager::getMacAddr(Device::DevicePtr dev, const ip_addr& dstIp,
   if (iter != ipMacMap.end()) return iter->second;
 
   // well, ask it anyway
-  LOG_INFO("Send ARP request to %s", inet_ntoa(dstIp));
+  // LOG_INFO("Send ARP request to %s", inet_ntoa(dstIp));
   int res = sendRequestArp(dev, dstIp, maxRetry);
   if (res >= 0) {
     iter = ipMacMap.find(dstIp);
-    LOG_INFO("Get mac address: %s", MAC::toString(iter->second.addr).c_str());
+    // LOG_INFO("Get mac address: %s",
+    // MAC::toString(iter->second.addr).c_str());
     return iter->second;
   } else {
     LOG_WARN("MAC not found.");
@@ -114,14 +115,14 @@ int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
 
 void ArpManager::sendReplyArp(Device::DevicePtr dev, const u_char* dstMac,
                               const ip_addr& dstIp) {
-  LOG_INFO("Send ARP reply to %s", inet_ntoa(dstIp));
+  // LOG_INFO("Send ARP reply to %s", inet_ntoa(dstIp));
   ArpFrame frame;
   frame.setDefaultHdr(ARPOP_REPLY);
   frame.srcIp = dev->getIp();
   frame.dstIp = dstIp;
   std::memcpy(frame.srcMac, dev->getMAC(), ETHER_ADDR_LEN);
   std::memcpy(frame.dstMac, dstMac, ETHER_ADDR_LEN);
-  Printer::printArpFrame(frame, true);
+  // Printer::printArpFrame(frame, true);
   frame.htonType();
   Device::deviceMgr.sendFrame(&frame, sizeof(ArpFrame), ETHERTYPE_ARP, dstMac,
                               dev);

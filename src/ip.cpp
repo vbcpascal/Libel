@@ -37,7 +37,6 @@ int ipCallBack(const void *buf, int len, DeviceId id) {
     if (callback) {
       return callback(&ipp, len);
     } else {
-      Printer::printIpPacket(ipp);
       return 0;
     }
   }
@@ -169,6 +168,7 @@ int sendIPPacket(const ip_addr src, const ip_addr dest, int proto,
   ipPack.setData((u_char *)buf, len);
 
   int packLen = ipPack.totalLen();
+  // Printer::printIpPacket(ipPack, true);
 
   ipPack.htonType();
   ipPack.setChksum();

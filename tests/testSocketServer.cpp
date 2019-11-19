@@ -9,10 +9,20 @@
 #define CALL(f, ...) f(__VA_ARGS__)
 #endif
 
+#define RUN_FUNC(var, func, ...)                   \
+  {                                                \
+    var = CALL(func, __VA_ARGS__);                 \
+    if (var < 0) {                                 \
+      LOG_ERR(#func " failed. errno: %d", errno);  \
+    } else {                                       \
+      LOG_INFO(#func " succeed. return: %d", var); \
+    }                                              \
+  }
+
 int main(int argc, char* argv[]) {
   printf(
       "Usage: ./testSocketServer serverIP serverPort\n"
-      "  For example: ./testSocketServer 10.100.1.2 4096");
+      "  For example: ./testSocketServer 10.100.1.2 4096\n");
   char* addrStr = argv[argc - 2];
   char* portStr = argv[argc - 1];
 
@@ -26,52 +36,17 @@ int main(int argc, char* argv[]) {
   LOG_INFO("Build a server with %s:%d", addrStr, port);
   sockaddr srcSock, dstSock;
   socklen_t dstSockLen;
-  Socket::SocketAddr(ip, htonl(port)).get(&srcSock);
+  Socket::SocketAddr(ip, port).get(&srcSock);
 
   char recvBuffer[100];
   int xx, ls, ws;
 
-  ls = CALL(socket, AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (ls < 0) {
-    LOG_ERR("socket failed. errno: %d", errno);
-  } else {
-    LOG_INFO("socket succeed: %d", ls);
-  }
-
-  xx = CALL(bind, ls, &srcSock, INET_ADDRSTRLEN);
-  if (xx < 0) {
-    LOG_ERR("bind failed. errno: %d", errno);
-  } else {
-    LOG_INFO("bind succeed.");
-  }
-
-  xx = CALL(listen, ls, 10);
-  if (xx < 0) {
-    LOG_ERR("listen failed. errno: %d", errno);
-  } else {
-    LOG_INFO("listen succeed.");
-  }
-
-  ws = CALL(accept, ls, &dstSock, &dstSockLen);
-  if (ws < 0) {
-    LOG_ERR("accept failed. errno: %d", errno);
-  } else {
-    LOG_INFO("accept succeed: %d", ws);
-  }
-
-  xx = CALL(read, ws, recvBuffer, 20);
-  if (xx < 0) {
-    LOG_ERR("read failed. errno: %d", errno);
-  } else {
-    LOG_INFO("read succeed.");
-  }
-
-  xx = CALL(close, ws);
-  if (xx < 0) {
-    LOG_ERR("close failed. errno: %d", errno);
-  } else {
-    LOG_INFO("close succeed.");
-  }
+  RUN_FUNC(ls, socket, AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  RUN_FUNC(xx, bind, ls, &srcSock, INET_ADDRSTRLEN);
+  RUN_FUNC(xx, listen, ls, 10);
+  RUN_FUNC(ws, accept, ls, &dstSock, &dstSockLen);
+  RUN_FUNC(xx, read, ws, recvBuffer, 20);
+  RUN_FUNC(xx, close, ws);
 
   printf("Text received: %s", recvBuffer);
   return 0;

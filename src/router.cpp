@@ -65,7 +65,7 @@ void Router::init() {
     table.insert(RouteItem(d->getIp(), d->getSubnetMask(), d, d->getMAC(), 0,
                            true, SDP_METRIC_NODEL));
   }
-  Printer::printRouteTable();
+  // Printer::printRouteTable();
   sendRoutingTable(SDPFLAG_ISNEW, {}, {});
   loopThread = std::thread([&]() { this->routerWorkingLoop(); });
 }

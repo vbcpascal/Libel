@@ -21,15 +21,16 @@ namespace Tcp {
 struct TcpSegment {
   struct __attribute__((__packed__)) {
     tcphdr hdr;
-    u_char data[TCP_MAXWIN];
+    u_char data[TCP_MAXWIN];  // with options
   };
 
   int totalLen;
   int dataLen;
+  u_char* dataPtr;
 
   TcpSegment();
   TcpSegment(const u_char* buf, int len);
-  TcpSegment(int sport, int dport, int offset = 4);
+  TcpSegment(int sport, int dport);
 
   void setDefaultHdr();
   void setFlags(unsigned char flags) { hdr.th_flags = flags; }
@@ -78,7 +79,7 @@ bool TYPE_NONE(tcphdr t);
 }  // namespace Tcp
 
 namespace Printer {
-void printTcpItem(const Tcp::TcpItem& ts);
+void printTcpItem(const Tcp::TcpItem& ts, bool sender = false);
 }
 
 #endif
