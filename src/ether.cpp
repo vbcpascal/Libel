@@ -71,11 +71,11 @@ const u_char zeroMacAddr[6] = {0, 0, 0, 0, 0, 0};
 
 EtherFrame::EtherFrame() {
   frame.header.ether_type = 0;
-  std::memset(frame.header.ether_dhost, 0, ETHER_ADDR_LEN);
-  std::memset(frame.header.ether_shost, 0, ETHER_ADDR_LEN);
-  std::memset(frame.payload, 0, ETHER_MAX_LEN);
+  memset(frame.header.ether_dhost, 0, ETHER_ADDR_LEN);
+  memset(frame.header.ether_shost, 0, ETHER_ADDR_LEN);
+  memset(frame.payload, 0, ETHER_MAX_LEN);
 #ifdef ETHER_CRC_OPEN
-  std::memset(frame.crc, 0, ETHER_CRC_LEN);
+  memset(frame.crc, 0, ETHER_CRC_LEN);
 #endif
 }
 
@@ -89,7 +89,7 @@ EtherFrame::EtherFrame(const void* buf, int l) : len(l) {
     len = 0;
     return;
   }
-  std::memcpy(&frame, buf, len);
+  memcpy(&frame, buf, len);
 }
 
 }  // namespace Ether

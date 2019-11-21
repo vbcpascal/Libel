@@ -147,9 +147,7 @@ DeviceId Device::getId() { return id; }
 
 std::string Device::getName() { return name; }
 
-void Device::getMAC(u_char* dst_mac) {
-  std::memcpy(dst_mac, mac, ETHER_ADDR_LEN);
-}
+void Device::getMAC(u_char* dst_mac) { memcpy(dst_mac, mac, ETHER_ADDR_LEN); }
 
 const u_char* Device::getMAC() { return mac; }
 
@@ -357,7 +355,7 @@ int DeviceManager::sendFrame(const void* buf, int len, int ethtype,
 
   ether_header hdr;
   hdr.ether_type = (u_short)ethtype;
-  std::memcpy(hdr.ether_dhost, destmac, ETHER_ADDR_LEN);
+  memcpy(hdr.ether_dhost, destmac, ETHER_ADDR_LEN);
 
   Ether::EtherFrame frame;
   frame.setHeader(hdr);

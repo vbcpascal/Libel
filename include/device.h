@@ -41,7 +41,7 @@ struct PcapArgs {
   u_char mac[ETHER_ADDR_LEN];
 
   PcapArgs(DeviceId id, std::string name, u_char *m) : id(id), name(name) {
-    std::memcpy(mac, m, ETHER_ADDR_LEN);
+    memcpy(mac, m, ETHER_ADDR_LEN);
   }
 };
 

@@ -172,7 +172,7 @@ class EtherFrame {
    * @param l length of payload
    */
   void setPayload(const u_char* buf, int l) {
-    std::memcpy(frame.payload, buf, l);
+    memcpy(frame.payload, buf, l);
 #ifdef ETHER_CRC_OPEN
     len = l + ETHER_HDR_LEN + ETHER_CRC_LEN;
 #else

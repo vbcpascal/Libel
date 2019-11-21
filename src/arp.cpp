@@ -84,8 +84,8 @@ int ArpManager::sendRequestArp(Device::DevicePtr dev, const ip_addr& dstIp,
   frame.setDefaultHdr(ARPOP_REQUEST);
   frame.srcIp = dev->getIp();
   frame.dstIp = dstIp;
-  std::memcpy(frame.srcMac, dev->getMAC(), ETHER_ADDR_LEN);
-  std::memcpy(frame.dstMac, Ether::zeroMacAddr, ETHER_ADDR_LEN);
+  memcpy(frame.srcMac, dev->getMAC(), ETHER_ADDR_LEN);
+  memcpy(frame.dstMac, Ether::zeroMacAddr, ETHER_ADDR_LEN);
   frame.htonType();
 
   // wait ...
@@ -120,8 +120,8 @@ void ArpManager::sendReplyArp(Device::DevicePtr dev, const u_char* dstMac,
   frame.setDefaultHdr(ARPOP_REPLY);
   frame.srcIp = dev->getIp();
   frame.dstIp = dstIp;
-  std::memcpy(frame.srcMac, dev->getMAC(), ETHER_ADDR_LEN);
-  std::memcpy(frame.dstMac, dstMac, ETHER_ADDR_LEN);
+  memcpy(frame.srcMac, dev->getMAC(), ETHER_ADDR_LEN);
+  memcpy(frame.dstMac, dstMac, ETHER_ADDR_LEN);
   // Printer::printArpFrame(frame, true);
   frame.htonType();
   Device::deviceMgr.sendFrame(&frame, sizeof(ArpFrame), ETHERTYPE_ARP, dstMac,
