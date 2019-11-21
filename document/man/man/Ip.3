@@ -1,0 +1,175 @@
+.TH "Ip" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Ip
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBIpPacket\fP"
+.br
+.RI "An IP packet\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBsendIPPacket\fP (const \fBip_addr\fP src, const \fBip_addr\fP dest, int proto, const void *buf, int len)"
+.br
+.RI "Send an IP packet\&. "
+.ti -1c
+.RI "uint16_t \fBgetChecksum\fP (const void *vdata, size_t length)"
+.br
+.RI "Get the Checksum of a buffer\&. Will be used in TCP as well\&. "
+.ti -1c
+.RI "int \fBipCallBack\fP (const void *buf, int len, \fBDeviceId\fP id)"
+.br
+.RI "Common IP packet callback\&. "
+.ti -1c
+.RI "std::string \fBipToStr\fP (const \fBip_addr\fP &ip)"
+.br
+.RI "Get a string from an \fCin_addr\fP ip address\&. "
+.ti -1c
+.RI "void \fBipToStr\fP (const \fBip_addr\fP &ip, char *ipstr)"
+.br
+.RI "Get a string from an \fCin_addr\fP ip address\&. "
+.ti -1c
+.RI "void \fBipCopy\fP (\fBip_addr\fP &dst, const \fBip_addr\fP &src)"
+.br
+.RI "Copy an ip address\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "constexpr int \fBIGNORE\fP = 0"
+.br
+.RI "IGNORE in ip header\&. "
+.ti -1c
+.RI "\fBIPPacketReceiveCallback\fP \fBcallback\fP = nullptr"
+.br
+.RI "The specific callback for IP packet\&. "
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "uint16_t Ip::getChecksum (const void * vdata, size_t length)"
+
+.PP
+Get the Checksum of a buffer\&. Will be used in TCP as well\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIvdata\fP buffer point 
+.br
+\fIlength\fP length 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+uint16_t checksum result 
+.RE
+.PP
+
+.SS "int Ip::ipCallBack (const void * buf, int len, \fBDeviceId\fP id)"
+
+.PP
+Common IP packet callback\&. It is necessary to check or forward a packet in this function\&. Then it will submit to \fCcallback\fP below
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP buffer 
+.br
+\fIlen\fP length 
+.br
+\fIid\fP the device getting the packet 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int result 
+.RE
+.PP
+
+.SS "void Ip::ipCopy (\fBip_addr\fP & dst, const \fBip_addr\fP & src)"
+
+.PP
+Copy an ip address\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst\fP dst ip address 
+.br
+\fIsrc\fP src ip address 
+.RE
+.PP
+
+.SS "std::string Ip::ipToStr (const \fBip_addr\fP & ip)"
+
+.PP
+Get a string from an \fCin_addr\fP ip address\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIip\fP ip address 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+std::string ip string 
+.RE
+.PP
+
+.SS "void Ip::ipToStr (const \fBip_addr\fP & ip, char * ipstr)"
+
+.PP
+Get a string from an \fCin_addr\fP ip address\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIip\fP ip address 
+.br
+\fIipstr\fP ip string stored to 
+.RE
+.PP
+
+.SS "int Ip::sendIPPacket (const \fBip_addr\fP src, const \fBip_addr\fP dest, int proto, const void * buf, int len)"
+
+.PP
+Send an IP packet\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP src IP 
+.br
+\fIdest\fP dst IP 
+.br
+\fIproto\fP protocol\&. such as TCP 
+.br
+\fIbuf\fP buffer 
+.br
+\fIlen\fP length 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int result 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "\fBIPPacketReceiveCallback\fP Ip::callback = nullptr"
+
+.PP
+The specific callback for IP packet\&. 
+.SS "constexpr int Ip::IGNORE = 0\fC [constexpr]\fP"
+
+.PP
+IGNORE in ip header\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

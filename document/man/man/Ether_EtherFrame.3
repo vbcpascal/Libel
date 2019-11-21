@@ -1,0 +1,202 @@
+.TH "Ether::EtherFrame" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Ether::EtherFrame \- Store a Ethernet frame\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <ether\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fB__attribute__\fP ((__packed__))"
+.br
+.ti -1c
+.RI "\fBEtherFrame\fP ()"
+.br
+.ti -1c
+.RI "\fBEtherFrame\fP (const void *buf, int l)"
+.br
+.RI "Construct a new \fBEther\fP Frame object\&. "
+.ti -1c
+.RI "u_char * \fBgetFrame\fP ()"
+.br
+.RI "Get the Frame object\&. "
+.ti -1c
+.RI "u_char * \fBgetPayload\fP ()"
+.br
+.RI "Get the Payload object\&. "
+.ti -1c
+.RI "ether_header \fBgetHeader\fP ()"
+.br
+.RI "Get the Header object\&. "
+.ti -1c
+.RI "int \fBgetLength\fP ()"
+.br
+.RI "Get the Length object\&. "
+.ti -1c
+.RI "int \fBgetPayloadLength\fP ()"
+.br
+.RI "Get the Payload Length object\&. "
+.ti -1c
+.RI "void \fBsetHeader\fP (ether_header hdr)"
+.br
+.RI "Set the Header object\&. "
+.ti -1c
+.RI "void \fBsetPayload\fP (const u_char *buf, int l)"
+.br
+.RI "Set the Payload object\&. "
+.ti -1c
+.RI "void \fBpadding\fP ()"
+.br
+.RI "Padding\&. You should always transfer this before you send a ether frame\&. "
+.ti -1c
+.RI "void \fBntohType\fP ()"
+.br
+.RI "ntoh for \fBEther\fP frame "
+.ti -1c
+.RI "void \fBhtonType\fP ()"
+.br
+.RI "hton for \fBEther\fP frame "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBframe\fP"
+.br
+.ti -1c
+.RI "int \fBlen\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Store a Ethernet frame\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Ether::EtherFrame::EtherFrame ()"
+
+.SS "Ether::EtherFrame::EtherFrame (const void * buf, int l)"
+
+.PP
+Construct a new \fBEther\fP Frame object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP frame buffer 
+.br
+\fIl\fP length of the buffer 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "struct Ether::EtherFrame::__attribute__ ((__packed__))\fC [inline]\fP"
+
+.SS "u_char* Ether::EtherFrame::getFrame ()\fC [inline]\fP"
+
+.PP
+Get the Frame object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+u_char* frame 
+.RE
+.PP
+
+.SS "ether_header Ether::EtherFrame::getHeader ()\fC [inline]\fP"
+
+.PP
+Get the Header object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+ether_header header 
+.RE
+.PP
+
+.SS "int Ether::EtherFrame::getLength ()\fC [inline]\fP"
+
+.PP
+Get the Length object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int length 
+.RE
+.PP
+
+.SS "u_char* Ether::EtherFrame::getPayload ()\fC [inline]\fP"
+
+.PP
+Get the Payload object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+u_char* payload pointer 
+.RE
+.PP
+
+.SS "int Ether::EtherFrame::getPayloadLength ()\fC [inline]\fP"
+
+.PP
+Get the Payload Length object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int length 
+.RE
+.PP
+
+.SS "void Ether::EtherFrame::htonType ()\fC [inline]\fP"
+
+.PP
+hton for \fBEther\fP frame 
+.SS "void Ether::EtherFrame::ntohType ()\fC [inline]\fP"
+
+.PP
+ntoh for \fBEther\fP frame 
+.SS "void Ether::EtherFrame::padding ()\fC [inline]\fP"
+
+.PP
+Padding\&. You should always transfer this before you send a ether frame\&. 
+.SS "void Ether::EtherFrame::setHeader (ether_header hdr)\fC [inline]\fP"
+
+.PP
+Set the Header object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhdr\fP the header 
+.RE
+.PP
+
+.SS "void Ether::EtherFrame::setPayload (const u_char * buf, int l)\fC [inline]\fP"
+
+.PP
+Set the Payload object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP the payload buffer 
+.br
+\fIl\fP length of payload 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "Ether::EtherFrame::frame"
+
+.SS "int Ether::EtherFrame::len"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

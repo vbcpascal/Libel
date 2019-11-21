@@ -1,0 +1,298 @@
+.TH "Device::DeviceManager" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Device::DeviceManager \- Control all the devices\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <device\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBDeviceId\fP \fBaddDevice\fP (std::string name, bool sniff=true)"
+.br
+.RI "Add a new device\&. "
+.ti -1c
+.RI "\fBDeviceId\fP \fBfindDevice\fP (std::string name)"
+.br
+.RI "Find a device\&. "
+.ti -1c
+.RI "\fBDevicePtr\fP \fBgetDevicePtr\fP (\fBDeviceId\fP id)"
+.br
+.RI "Get the pointer of device according to id\&. "
+.ti -1c
+.RI "\fBDevicePtr\fP \fBgetDevicePtr\fP (std::string name)"
+.br
+.RI "Get the pointer of device according to id\&. "
+.ti -1c
+.RI "\fBDevicePtr\fP \fBgetDevicePtr\fP (const \fBip_addr\fP &_ip)"
+.br
+.ti -1c
+.RI "int \fBaddAllDevice\fP (bool sniff=true)"
+.br
+.RI "Try to add all devices\&. "
+.ti -1c
+.RI "int \fBgetMACAddr\fP (u_char *mac, \fBDeviceId\fP id)"
+.br
+.RI "Get \fBMAC\fP address of a device\&. "
+.ti -1c
+.RI "bool \fBhaveDeviceWithIp\fP (const \fBip_addr\fP &ip)"
+.br
+.RI "Find out whether devices have ip\&. "
+.ti -1c
+.RI "int \fBsendFrame\fP (\fBDevicePtr\fP dev, \fBEther::EtherFrame\fP &frame)"
+.br
+.RI "Send a frame\&. "
+.ti -1c
+.RI "int \fBsendFrame\fP (\fBDeviceId\fP id, \fBEther::EtherFrame\fP &frame)"
+.br
+.RI "Send a frame\&. "
+.ti -1c
+.RI "int \fBsendFrame\fP (const void *buf, int len, int ethtype, const void *destmac, \fBDevicePtr\fP dev)"
+.br
+.ti -1c
+.RI "int \fBsendFrame\fP (const void *buf, int len, int ethtype, const void *destmac, \fBDeviceId\fP id)"
+.br
+.RI "Encapsulate some data into an Ethernet II frame and send it\&. "
+.ti -1c
+.RI "int \fBkeepReceiving\fP ()"
+.br
+.RI "Keep receiving packages until all the threads end\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::vector< \fBDevicePtr\fP > \fBdevices\fP"
+.br
+.ti -1c
+.RI "std::set< \fBDeviceId\fP > \fBvalidId\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Control all the devices\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "int Device::DeviceManager::addAllDevice (bool sniff = \fCtrue\fP)"
+
+.PP
+Try to add all devices\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int the number of devices added 
+.RE
+.PP
+
+.SS "\fBDeviceId\fP Device::DeviceManager::addDevice (std::string name, bool sniff = \fCtrue\fP)"
+
+.PP
+Add a new device\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of device 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+DeviceId id, -1 on error 
+.RE
+.PP
+
+.SS "\fBDeviceId\fP Device::DeviceManager::findDevice (std::string name)"
+
+.PP
+Find a device\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of device 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+DeviceId id, -1 on error 
+.RE
+.PP
+
+.SS "\fBDevicePtr\fP Device::DeviceManager::getDevicePtr (const \fBip_addr\fP & _ip)"
+
+.SS "\fBDevicePtr\fP Device::DeviceManager::getDevicePtr (\fBDeviceId\fP id)"
+
+.PP
+Get the pointer of device according to id\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIid\fP id of device 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+DevicePtr pointer of device 
+.RE
+.PP
+
+.SS "\fBDevicePtr\fP Device::DeviceManager::getDevicePtr (std::string name)"
+
+.PP
+Get the pointer of device according to id\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP name of device 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+DevicePtr pointer of device 
+.RE
+.PP
+
+.SS "int Device::DeviceManager::getMACAddr (u_char * mac, \fBDeviceId\fP id)"
+
+.PP
+Get \fBMAC\fP address of a device\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImac\fP \fBMAC\fP address will be stored in 
+.br
+\fIid\fP the id of the device 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int -1 on error 
+.RE
+.PP
+
+.SS "bool Device::DeviceManager::haveDeviceWithIp (const \fBip_addr\fP & ip)"
+
+.PP
+Find out whether devices have ip\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIip\fP ip 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true yes 
+.PP
+false no 
+.RE
+.PP
+
+.SS "int Device::DeviceManager::keepReceiving ()"
+
+.PP
+Keep receiving packages until all the threads end\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int always be 0 
+.RE
+.PP
+
+.SS "int Device::DeviceManager::sendFrame (const void * buf, int len, int ethtype, const void * destmac, \fBDeviceId\fP id)"
+
+.PP
+Encapsulate some data into an Ethernet II frame and send it\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP Pointer to the payload\&. 
+.br
+\fIlen\fP Length of the payload\&. 
+.br
+\fIethtype\fP EtherType field value of this frame\&. 
+.br
+\fIdestmac\fP \fBMAC\fP address of the destination\&. 
+.br
+\fIid\fP ID of the device(returned by \fCaddDevice\fP) to send on\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on success, -1 on error\&. 
+.RE
+.PP
+
+.SS "int Device::DeviceManager::sendFrame (const void * buf, int len, int ethtype, const void * destmac, \fBDevicePtr\fP dev)"
+
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP 
+.br
+\fIlen\fP 
+.br
+\fIethtype\fP 
+.br
+\fIdestmac\fP 
+.br
+\fIdev\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int 
+.RE
+.PP
+
+.SS "int Device::DeviceManager::sendFrame (\fBDeviceId\fP id, \fBEther::EtherFrame\fP & frame)"
+
+.PP
+Send a frame\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIid\fP the device id to send 
+.br
+\fIframe\fP the frame to send 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int -1 on error 
+.RE
+.PP
+
+.SS "int Device::DeviceManager::sendFrame (\fBDevicePtr\fP dev, \fBEther::EtherFrame\fP & frame)"
+
+.PP
+Send a frame\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdev\fP \fBDevice\fP pointer 
+.br
+\fIframe\fP the frame to send 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int -1 on error 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "std::vector<\fBDevicePtr\fP> Device::DeviceManager::devices"
+
+.SS "std::set<\fBDeviceId\fP> Device::DeviceManager::validId"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

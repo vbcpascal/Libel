@@ -1,0 +1,71 @@
+.TH "Device" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Device
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBDevice\fP"
+.br
+.RI "\fBDevice\fP created by addDevice\&. "
+.ti -1c
+.RI "class \fBDeviceManager\fP"
+.br
+.RI "Control all the devices\&. "
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBDevicePtr\fP = std::shared_ptr< \fBDevice\fP >"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBinitDeviceMACAddr\fP (u_char *mac, const char *if_name=\fBDEFAULT_DEV_NAME\fP)"
+.br
+.ti -1c
+.RI "std::pair< \fBip_addr\fP, \fBip_addr\fP > \fBinitDeviceIPAddr\fP (const char *if_name)"
+.br
+.ti -1c
+.RI "void \fBgetPacket\fP (u_char *args, const struct pcap_pkthdr *header, const u_char *packet)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "\fBDeviceManager\fP \fBdeviceMgr\fP"
+.br
+.ti -1c
+.RI "\fBframeReceiveCallback\fP \fBcallback\fP"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "using \fBDevice::DevicePtr\fP = typedef std::shared_ptr<\fBDevice\fP>"
+
+.SH "Function Documentation"
+.PP 
+.SS "void Device::getPacket (u_char * args, const struct pcap_pkthdr * header, const u_char * packet)"
+
+.SS "std::pair<\fBip_addr\fP, \fBip_addr\fP> Device::initDeviceIPAddr (const char * if_name)"
+
+.SS "int Device::initDeviceMACAddr (u_char * mac, const char * if_name = \fC\fBDEFAULT_DEV_NAME\fP\fP)"
+
+.SH "Variable Documentation"
+.PP 
+.SS "\fBframeReceiveCallback\fP Device::callback"
+
+.SS "\fBDeviceManager\fP Device::deviceMgr"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,84 @@
+.TH "Tcp::TcpItem" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Tcp::TcpItem \- A tcp item with tcp segment and ip address information\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tcpsegment\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBTcpItem\fP ()"
+.br
+.ti -1c
+.RI "\fBTcpItem\fP (\fBip_addr\fP src, \fBip_addr\fP dst, bool \fBnonblock\fP=false)"
+.br
+.ti -1c
+.RI "\fBTcpItem\fP (const \fBTcpSegment\fP &\fBts\fP, \fBip_addr\fP src, \fBip_addr\fP dst, bool \fBnonblock\fP=false)"
+.br
+.ti -1c
+.RI "void \fBhton\fP ()"
+.br
+.ti -1c
+.RI "void \fBntoh\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetChecksum\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBTcpSegment\fP \fBts\fP"
+.br
+.ti -1c
+.RI "\fBip_addr\fP \fBsrcIp\fP"
+.br
+.ti -1c
+.RI "\fBip_addr\fP \fBdstIp\fP"
+.br
+.ti -1c
+.RI "bool \fBnonblock\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A tcp item with tcp segment and ip address information\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Tcp::TcpItem::TcpItem ()\fC [inline]\fP"
+
+.SS "Tcp::TcpItem::TcpItem (\fBip_addr\fP src, \fBip_addr\fP dst, bool nonblock = \fCfalse\fP)\fC [inline]\fP"
+
+.SS "Tcp::TcpItem::TcpItem (const \fBTcpSegment\fP & ts, \fBip_addr\fP src, \fBip_addr\fP dst, bool nonblock = \fCfalse\fP)\fC [inline]\fP"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void Tcp::TcpItem::hton ()"
+
+.SS "void Tcp::TcpItem::ntoh ()"
+
+.SS "void Tcp::TcpItem::setChecksum ()"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "\fBip_addr\fP Tcp::TcpItem::dstIp"
+
+.SS "bool Tcp::TcpItem::nonblock"
+
+.SS "\fBip_addr\fP Tcp::TcpItem::srcIp"
+
+.SS "\fBTcpSegment\fP Tcp::TcpItem::ts"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

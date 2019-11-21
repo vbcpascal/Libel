@@ -1,0 +1,55 @@
+.TH "Tcp::Sequence" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Tcp::Sequence
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBISNGenerator\fP"
+.br
+.RI "To generate initial sequence number\&. "
+.ti -1c
+.RI "struct \fBSeqSet\fP"
+.br
+.RI "\fBSequence\fP set in a communication\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBlessThan\fP (tcp_seq lhs, tcp_seq rhs, tcp_seq base)"
+.br
+.ti -1c
+.RI "bool \fBgreaterThan\fP (tcp_seq lhs, tcp_seq rhs, tcp_seq base)"
+.br
+.ti -1c
+.RI "bool \fBequalTo\fP (tcp_seq lhs, tcp_seq rhs)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "\fBISNGenerator\fP \fBisnGen\fP"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "bool Tcp::Sequence::equalTo (tcp_seq lhs, tcp_seq rhs)"
+
+.SS "bool Tcp::Sequence::greaterThan (tcp_seq lhs, tcp_seq rhs, tcp_seq base)"
+
+.SS "bool Tcp::Sequence::lessThan (tcp_seq lhs, tcp_seq rhs, tcp_seq base)"
+
+.SH "Variable Documentation"
+.PP 
+.SS "\fBISNGenerator\fP Tcp::Sequence::isnGen"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

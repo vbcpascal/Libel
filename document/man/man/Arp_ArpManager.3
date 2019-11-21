@@ -1,0 +1,62 @@
+.TH "Arp::ArpManager" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Arp::ArpManager \- Manage all ARP items, request/reply an ARP frame\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <arp\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBMAC::MacAddr\fP \fBgetMacAddr\fP (\fBDevice::DevicePtr\fP dev, const \fBip_addr\fP &dstIp, int maxRetry=5)"
+.br
+.ti -1c
+.RI "int \fBsendRequestArp\fP (\fBDevice::DevicePtr\fP dev, const \fBip_addr\fP &dstIp, int maxRetry)"
+.br
+.ti -1c
+.RI "void \fBsendReplyArp\fP (\fBDevice::DevicePtr\fP, const u_char *dstMac, const \fBip_addr\fP &dstIp)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::map< \fBip_addr\fP, \fBMAC::MacAddr\fP > \fBipMacMap\fP"
+.br
+.ti -1c
+.RI "std::condition_variable \fBcv\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBcv_m\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Manage all ARP items, request/reply an ARP frame\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBMAC::MacAddr\fP Arp::ArpManager::getMacAddr (\fBDevice::DevicePtr\fP dev, const \fBip_addr\fP & dstIp, int maxRetry = \fC5\fP)"
+
+.SS "void Arp::ArpManager::sendReplyArp (\fBDevice::DevicePtr\fP dev, const u_char * dstMac, const \fBip_addr\fP & dstIp)"
+
+.SS "int Arp::ArpManager::sendRequestArp (\fBDevice::DevicePtr\fP dev, const \fBip_addr\fP & dstIp, int maxRetry)"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "std::condition_variable Arp::ArpManager::cv"
+
+.SS "std::mutex Arp::ArpManager::cv_m"
+
+.SS "std::map<\fBip_addr\fP, \fBMAC::MacAddr\fP> Arp::ArpManager::ipMacMap"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

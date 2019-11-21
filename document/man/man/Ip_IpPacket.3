@@ -1,0 +1,89 @@
+.TH "Ip::IpPacket" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Ip::IpPacket \- An IP packet\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <ip\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fB__attribute__\fP ((__packed__))"
+.br
+.ti -1c
+.RI "\fBIpPacket\fP ()"
+.br
+.ti -1c
+.RI "\fBIpPacket\fP (const u_char *buf, int len)"
+.br
+.ti -1c
+.RI "void \fBsetDefaultHdr\fP ()"
+.br
+.ti -1c
+.RI "int \fBsetData\fP (const u_char *buf, int len)"
+.br
+.ti -1c
+.RI "void \fBsetChksum\fP ()"
+.br
+.ti -1c
+.RI "int \fBchkChksum\fP ()"
+.br
+.RI "Check Checksum\&. Use this before ntoh\&. "
+.ti -1c
+.RI "void \fBhtonType\fP ()"
+.br
+.RI "hton for ip packet "
+.ti -1c
+.RI "void \fBntohType\fP ()"
+.br
+.RI "ntoh for ip packet "
+.in -1c
+.SH "Detailed Description"
+.PP 
+An IP packet\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Ip::IpPacket::IpPacket ()\fC [inline]\fP"
+
+.SS "Ip::IpPacket::IpPacket (const u_char * buf, int len)"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "struct Ip::IpPacket::__attribute__ ((__packed__))\fC [inline]\fP"
+
+.SS "int Ip::IpPacket::chkChksum ()"
+
+.PP
+Check Checksum\&. Use this before ntoh\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int 1 on right\&. 0 on error\&. -1 on \fBSDP\fP 
+.RE
+.PP
+
+.SS "void Ip::IpPacket::htonType ()"
+
+.PP
+hton for ip packet 
+.SS "void Ip::IpPacket::ntohType ()"
+
+.PP
+ntoh for ip packet 
+.SS "void Ip::IpPacket::setChksum ()"
+
+.SS "int Ip::IpPacket::setData (const u_char * buf, int len)"
+
+.SS "void Ip::IpPacket::setDefaultHdr ()"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

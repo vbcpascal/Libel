@@ -1,0 +1,185 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/sdp.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/sdp.h \- Self Destruct Protocol: An Distance Vector Routing protocol\&. Read documents for more details\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <array>\fP
+.br
+\fC#include <map>\fP
+.br
+\fC#include 'device\&.h'\fP
+.br
+\fC#include 'ether\&.h'\fP
+.br
+\fC#include 'massert\&.h'\fP
+.br
+\fC#include 'type\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBRoute::RouteItem\fP"
+.br
+.RI "Routing item in routing table\&. "
+.ti -1c
+.RI "class \fBSDP::SDPItem\fP"
+.br
+.RI "An \fBSDP\fP item used by \fBSDP\fP routing algorithm\&. "
+.ti -1c
+.RI "class \fBSDP::SDPManager\fP"
+.br
+.RI "Manage \fBSDP\fP information for routing algorithm\&. "
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBRoute\fP"
+.br
+.ti -1c
+.RI " \fBSDP\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBMAX_SDP_DATA_LEN\fP   255"
+.br
+.ti -1c
+.RI "#define \fBSDP_METRIC_NODEL\fP   \-1"
+.br
+.ti -1c
+.RI "#define \fBSDP_METRIC_DIE\fP   \-2"
+.br
+.ti -1c
+.RI "#define \fBSDP_METRIC_TIMEOUT\fP   2"
+.br
+.ti -1c
+.RI "#define \fBROUTE_LOOP_INTERVAL\fP   10"
+.br
+.ti -1c
+.RI "#define \fBDEFINE_SDPPACKET\fP(p,  len)"
+.br
+.ti -1c
+.RI "#define \fBSDPP_SIZE\fP(len)   (8 + 8 * len)"
+.br
+.ti -1c
+.RI "#define \fBSDPFLAG_INCREMENT\fP   0x1"
+.br
+.ti -1c
+.RI "#define \fBSDPFLAG_UNFINISH\fP   0x2"
+.br
+.ti -1c
+.RI "#define \fBSDPFLAG_ISNEW\fP   0x4"
+.br
+.ti -1c
+.RI "#define \fBSDPFLAG_VARIFY\fP   0x8"
+.br
+.ti -1c
+.RI "#define \fBSDP_ITEMFLAG_DEL\fP   0x1"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBSDP::SDPItemVector\fP = std::vector< SDPItem >"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBRoute::operator<\fP (const RouteItem &rl, const RouteItem &rr)"
+.br
+.RI "Compare two \fC\fBRouteItem\fP\fP according to prefix length\&. "
+.ti -1c
+.RI "int \fBRoute::maskToPflen\fP (const in_addr &mask)"
+.br
+.RI "Get prefix length from mask\&. "
+.ti -1c
+.RI "\fBip_addr\fP \fBRoute::pflenToMask\fP (int pflen)"
+.br
+.RI "Get prefix length from prefix length\&. "
+.ti -1c
+.RI "struct \fBSDP::__attribute__\fP ((__packed__)) SDPPacket"
+.br
+.RI "An \fBSDP\fP packet sent and received\&. "
+.ti -1c
+.RI "void \fBPrinter::printSDP\fP (const SDP::SDPPacket &sdpp, bool sender=false)"
+.br
+.RI "Print a \fBSDP\fP packet\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "SDPManager \fBSDP::sdpMgr\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Self Destruct Protocol: An Distance Vector Routing protocol\&. Read documents for more details\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-19 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define DEFINE_SDPPACKET(p, len)"
+\fBValue:\fP
+.PP
+.nf
+std::vector<uint8_t> p_##data(sizeof(SDPPacket) + len * 8); \
+  auto& p = *reinterpret_cast<SDPPacket*>(p_##data\&.data())
+.fi
+.SS "#define MAX_SDP_DATA_LEN   255"
+
+.SS "#define ROUTE_LOOP_INTERVAL   10"
+
+.SS "#define SDP_ITEMFLAG_DEL   0x1"
+
+.SS "#define SDP_METRIC_DIE   \-2"
+
+.SS "#define SDP_METRIC_NODEL   \-1"
+
+.SS "#define SDP_METRIC_TIMEOUT   2"
+
+.SS "#define SDPFLAG_INCREMENT   0x1"
+
+.SS "#define SDPFLAG_ISNEW   0x4"
+
+.SS "#define SDPFLAG_UNFINISH   0x2"
+
+.SS "#define SDPFLAG_VARIFY   0x8"
+
+.SS "#define SDPP_SIZE(len)   (8 + 8 * len)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

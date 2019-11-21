@@ -1,0 +1,44 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/tcpstate.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/tcpstate.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'tcpstate\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBTcp\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBX\fP(STATENAME)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "std::string \fBTcp::stateToStr\fP (TcpState st)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define X(STATENAME)"
+\fBValue:\fP
+.PP
+.nf
+case TcpState::STATENAME: \
+    return #STATENAME;
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

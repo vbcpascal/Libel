@@ -1,0 +1,67 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/ip.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/ip.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'ip\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBIp\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBIp::ipCopy\fP (\fBip_addr\fP &dst, const \fBip_addr\fP &src)"
+.br
+.RI "Copy an ip address\&. "
+.ti -1c
+.RI "std::string \fBIp::ipToStr\fP (const \fBip_addr\fP &ip)"
+.br
+.RI "Get a string from an \fCin_addr\fP ip address\&. "
+.ti -1c
+.RI "void \fBIp::ipToStr\fP (const \fBip_addr\fP &ip, char *ipstr)"
+.br
+.RI "Get a string from an \fCin_addr\fP ip address\&. "
+.ti -1c
+.RI "int \fBIp::ipCallBack\fP (const void *buf, int len, \fBDeviceId\fP id)"
+.br
+.RI "Common IP packet callback\&. "
+.ti -1c
+.RI "int \fBIp::sendIPPacket\fP (const \fBip_addr\fP src, const \fBip_addr\fP dest, int proto, const void *buf, int len)"
+.br
+.RI "Send an IP packet\&. "
+.ti -1c
+.RI "uint16_t \fBIp::getChecksum\fP (const void *vdata, size_t length)"
+.br
+.RI "Get the Checksum of a buffer\&. Will be used in TCP as well\&. "
+.ti -1c
+.RI "void \fBPrinter::printIp\fP (const \fBip_addr\fP &ip, bool newline=true)"
+.br
+.RI "Print IP\&. "
+.ti -1c
+.RI "void \fBPrinter::printIpPacket\fP (const \fBIp::IpPacket\fP &ipp, bool sender=false)"
+.br
+.RI "Print an ip packet\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "std::map< u_char, std::string > \fBPrinter::ipProtoNameMap\fP"
+.br
+.in -1c
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

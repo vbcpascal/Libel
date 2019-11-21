@@ -1,0 +1,304 @@
+.TH "Device::Device" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Device::Device \- \fBDevice\fP created by addDevice\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <device\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fB~Device\fP ()"
+.br
+.ti -1c
+.RI "\fBDevice\fP (std::string \fBname\fP, bool sniff=false)"
+.br
+.RI "Construct a new \fBDevice\fP object\&. "
+.ti -1c
+.RI "\fBDeviceId\fP \fBgetId\fP ()"
+.br
+.RI "Get the Id object\&. "
+.ti -1c
+.RI "std::string \fBgetName\fP ()"
+.br
+.RI "Get the Name object\&. "
+.ti -1c
+.RI "void \fBgetMAC\fP (u_char *dst_mac)"
+.br
+.RI "Get the \fBMAC\fP address\&. "
+.ti -1c
+.RI "const u_char * \fBgetMAC\fP ()"
+.br
+.RI "Get the \fBMAC\fP address (Not Recommand!) "
+.ti -1c
+.RI "\fBip_addr\fP \fBgetIp\fP ()"
+.br
+.RI "Get the \fBIp\fP object\&. "
+.ti -1c
+.RI "\fBip_addr\fP \fBgetSubnetMask\fP ()"
+.br
+.RI "Get the Subnet Mask object\&. "
+.ti -1c
+.RI "int \fBsendFrame\fP (\fBEther::EtherFrame\fP &frame)"
+.br
+.RI "Send a frame on the device\&. "
+.ti -1c
+.RI "int \fBstartSniffing\fP ()"
+.br
+.RI "start sniffing in this device "
+.ti -1c
+.RI "int \fBstopSniffing\fP ()"
+.br
+.RI "stop sniffing "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::thread \fBsniffingThread\fP"
+.br
+.RI "thread sniffing "
+.ti -1c
+.RI "std::thread \fBsendingThread\fP"
+.br
+.RI "thread sending "
+.in -1c
+.SS "Private Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBbadDevice\fP ()"
+.br
+.ti -1c
+.RI "int \fBstartSending\fP ()"
+.br
+.ti -1c
+.RI "void \fBsenderLoop\fP ()"
+.br
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "bool \fBclosed\fP = false"
+.br
+.ti -1c
+.RI "\fBDeviceId\fP \fBid\fP"
+.br
+.ti -1c
+.RI "std::string \fBname\fP"
+.br
+.ti -1c
+.RI "u_char \fBmac\fP [ETHER_ADDR_LEN]"
+.br
+.ti -1c
+.RI "\fBip_addr\fP \fBip\fP"
+.br
+.ti -1c
+.RI "\fBip_addr\fP \fBsubnetMask\fP"
+.br
+.ti -1c
+.RI "pcap_t * \fBpcap\fP"
+.br
+.ti -1c
+.RI "bool \fBsniffing\fP"
+.br
+.ti -1c
+.RI "\fBPcapArgs\fP * \fBpcapArgs\fP"
+.br
+.ti -1c
+.RI "std::queue< \fBEther::EtherFrame\fP > \fBsender\fP"
+.br
+.ti -1c
+.RI "std::condition_variable \fBsenderCv\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBsender_m\fP"
+.br
+.in -1c
+.SS "Static Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "static \fBDeviceId\fP \fBmax_id\fP = 0"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBDevice\fP created by addDevice\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Device::Device::~Device ()"
+
+.SS "Device::Device::Device (std::string name, bool sniff = \fCfalse\fP)\fC [explicit]\fP"
+
+.PP
+Construct a new \fBDevice\fP object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the name of device 
+.br
+\fIsniff\fP whether begin to sniff after construct this device 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void Device::Device::badDevice ()\fC [private]\fP"
+
+.SS "\fBDeviceId\fP Device::Device::getId ()"
+
+.PP
+Get the Id object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+DeviceId the id 
+.RE
+.PP
+
+.SS "\fBip_addr\fP Device::Device::getIp ()"
+
+.PP
+Get the \fBIp\fP object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+ip_addr ip of device 
+.RE
+.PP
+
+.SS "const u_char * Device::Device::getMAC ()"
+
+.PP
+Get the \fBMAC\fP address (Not Recommand!) 
+.PP
+\fBReturns\fP
+.RS 4
+const u_char* \fBMAC\fP address 
+.RE
+.PP
+
+.SS "void Device::Device::getMAC (u_char * dst_mac)"
+
+.PP
+Get the \fBMAC\fP address\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdst_mac\fP \fBMAC\fP address will be stored in 
+.RE
+.PP
+
+.SS "std::string Device::Device::getName ()"
+
+.PP
+Get the Name object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::string the name 
+.RE
+.PP
+
+.SS "\fBip_addr\fP Device::Device::getSubnetMask ()"
+
+.PP
+Get the Subnet Mask object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+ip_addr subnet mask 
+.RE
+.PP
+
+.SS "void Device::Device::senderLoop ()\fC [private]\fP"
+
+.SS "int Device::Device::sendFrame (\fBEther::EtherFrame\fP & frame)"
+
+.PP
+Send a frame on the device\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIframe\fP the frame will be sent 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on success, -1 on error 
+.RE
+.PP
+
+.SS "int Device::Device::startSending ()\fC [private]\fP"
+
+.SS "int Device::Device::startSniffing ()"
+
+.PP
+start sniffing in this device 
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on success, -1 on error 
+.RE
+.PP
+
+.SS "int Device::Device::stopSniffing ()"
+
+.PP
+stop sniffing 
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on success, -1 on error 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "bool Device::Device::closed = false\fC [private]\fP"
+
+.SS "\fBDeviceId\fP Device::Device::id\fC [private]\fP"
+
+.SS "\fBip_addr\fP Device::Device::ip\fC [private]\fP"
+
+.SS "u_char Device::Device::mac[ETHER_ADDR_LEN]\fC [private]\fP"
+
+.SS "\fBDeviceId\fP Device::Device::max_id = 0\fC [static]\fP, \fC [private]\fP"
+
+.SS "std::string Device::Device::name\fC [private]\fP"
+
+.SS "pcap_t* Device::Device::pcap\fC [private]\fP"
+
+.SS "\fBPcapArgs\fP* Device::Device::pcapArgs\fC [private]\fP"
+
+.SS "std::queue<\fBEther::EtherFrame\fP> Device::Device::sender\fC [private]\fP"
+
+.SS "std::mutex Device::Device::sender_m\fC [private]\fP"
+
+.SS "std::condition_variable Device::Device::senderCv\fC [private]\fP"
+
+.SS "std::thread Device::Device::sendingThread"
+
+.PP
+thread sending 
+.SS "bool Device::Device::sniffing\fC [private]\fP"
+
+.SS "std::thread Device::Device::sniffingThread"
+
+.PP
+thread sniffing 
+.SS "\fBip_addr\fP Device::Device::subnetMask\fC [private]\fP"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,113 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/tcp.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/tcp.h \- Main TCP functions and status\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <netdb\&.h>\fP
+.br
+\fC#include <netinet/tcp\&.h>\fP
+.br
+\fC#include <sys/socket\&.h>\fP
+.br
+\fC#include <sys/types\&.h>\fP
+.br
+\fC#include <atomic>\fP
+.br
+\fC#include <list>\fP
+.br
+\fC#include <queue>\fP
+.br
+\fC#include <shared_mutex>\fP
+.br
+\fC#include 'ip\&.h'\fP
+.br
+\fC#include 'socketaddr\&.h'\fP
+.br
+\fC#include 'tcpbuffer\&.h'\fP
+.br
+\fC#include 'tcpsegment\&.h'\fP
+.br
+\fC#include 'tcpseq\&.h'\fP
+.br
+\fC#include 'tcpstate\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBTcp::TcpWorker\fP"
+.br
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBTcp\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBSETERRNO\fP(x)   errno = x"
+.br
+.ti -1c
+.RI "#define \fBRET_SETERRNO\fP(x)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "Sequence::ISNGenerator \fBTcp::isnGen\fP"
+.br
+.ti -1c
+.RI "constexpr int \fBTcp::tcpTimeout\fP = 3"
+.br
+.ti -1c
+.RI "constexpr int \fBTcp::tcpMaxRetrans\fP = 2"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Main TCP functions and status\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-24 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define RET_SETERRNO(x)"
+\fBValue:\fP
+.PP
+.nf
+{                     \
+    SETERRNO(x);        \
+    return -1;          \
+  }
+.fi
+.SS "#define SETERRNO(x)   errno = x"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

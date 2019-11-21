@@ -1,0 +1,59 @@
+.TH "Tcp::Sequence::ISNGenerator" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Tcp::Sequence::ISNGenerator \- To generate initial sequence number\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tcpseq\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBISNGenerator\fP ()"
+.br
+.ti -1c
+.RI "tcp_seq \fBgetISN\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetISN\fP ()"
+.br
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::atomic< tcp_seq > \fBisn\fP"
+.br
+.ti -1c
+.RI "std::thread \fBsetter\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+To generate initial sequence number\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Tcp::Sequence::ISNGenerator::ISNGenerator ()"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "tcp_seq Tcp::Sequence::ISNGenerator::getISN ()"
+
+.SS "void Tcp::Sequence::ISNGenerator::setISN ()"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "std::atomic<tcp_seq> Tcp::Sequence::ISNGenerator::isn\fC [private]\fP"
+
+.SS "std::thread Tcp::Sequence::ISNGenerator::setter\fC [private]\fP"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

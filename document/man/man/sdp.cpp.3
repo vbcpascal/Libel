@@ -1,0 +1,47 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/sdp.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/sdp.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'sdp\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBRoute\fP"
+.br
+.ti -1c
+.RI " \fBSDP\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBRoute::operator<\fP (const RouteItem &rl, const RouteItem &rr)"
+.br
+.RI "Compare two \fC\fBRouteItem\fP\fP according to prefix length\&. "
+.ti -1c
+.RI "int \fBRoute::maskToPflen\fP (const in_addr &mask)"
+.br
+.RI "Get prefix length from mask\&. "
+.ti -1c
+.RI "\fBip_addr\fP \fBRoute::pflenToMask\fP (int pflen)"
+.br
+.RI "Get prefix length from prefix length\&. "
+.ti -1c
+.RI "void \fBPrinter::printSDP\fP (const SDP::SDPPacket &sdpp, bool sender=false)"
+.br
+.RI "Print a \fBSDP\fP packet\&. "
+.in -1c
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

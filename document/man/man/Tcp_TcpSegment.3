@@ -1,0 +1,109 @@
+.TH "Tcp::TcpSegment" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Tcp::TcpSegment \- A tcp segment\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tcpsegment\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fB__attribute__\fP ((__packed__))"
+.br
+.ti -1c
+.RI "\fBTcpSegment\fP ()"
+.br
+.ti -1c
+.RI "\fBTcpSegment\fP (const u_char *buf, int len)"
+.br
+.ti -1c
+.RI "\fBTcpSegment\fP (int sport, int dport)"
+.br
+.ti -1c
+.RI "void \fBsetDefaultHdr\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetFlags\fP (unsigned char flags)"
+.br
+.ti -1c
+.RI "void \fBsetSeq\fP (\fBSequence::SeqSet\fP &ss, int len=0)"
+.br
+.ti -1c
+.RI "void \fBsetSeq\fP (tcp_seq seq)"
+.br
+.ti -1c
+.RI "void \fBsetAck\fP (tcp_seq ack)"
+.br
+.ti -1c
+.RI "void \fBsetPayload\fP (const u_char *buf, size_t len)"
+.br
+.ti -1c
+.RI "void \fBhton\fP ()"
+.br
+.ti -1c
+.RI "void \fBntoh\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBtotalLen\fP"
+.br
+.ti -1c
+.RI "int \fBdataLen\fP"
+.br
+.ti -1c
+.RI "u_char * \fBdataPtr\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A tcp segment\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Tcp::TcpSegment::TcpSegment ()"
+
+.SS "Tcp::TcpSegment::TcpSegment (const u_char * buf, int len)"
+
+.SS "Tcp::TcpSegment::TcpSegment (int sport, int dport)"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "struct Tcp::TcpSegment::__attribute__ ((__packed__))\fC [inline]\fP"
+
+.SS "void Tcp::TcpSegment::hton ()"
+
+.SS "void Tcp::TcpSegment::ntoh ()"
+
+.SS "void Tcp::TcpSegment::setAck (tcp_seq ack)\fC [inline]\fP"
+
+.SS "void Tcp::TcpSegment::setDefaultHdr ()"
+
+.SS "void Tcp::TcpSegment::setFlags (unsigned char flags)\fC [inline]\fP"
+
+.SS "void Tcp::TcpSegment::setPayload (const u_char * buf, size_t len)"
+
+.SS "void Tcp::TcpSegment::setSeq (\fBSequence::SeqSet\fP & ss, int len = \fC0\fP)"
+
+.SS "void Tcp::TcpSegment::setSeq (tcp_seq seq)\fC [inline]\fP"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "int Tcp::TcpSegment::dataLen"
+
+.SS "u_char* Tcp::TcpSegment::dataPtr"
+
+.SS "int Tcp::TcpSegment::totalLen"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

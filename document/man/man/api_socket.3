@@ -1,0 +1,73 @@
+.TH "api::socket" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+api::socket \- \fBSocket\fP functions with are similiar with system ones\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBsocket\fP (int domain, int type, int protocol)"
+.br
+.ti -1c
+.RI "int \fBbind\fP (int \fBsocket\fP, const struct sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "int \fBlisten\fP (int \fBsocket\fP, int backlog)"
+.br
+.ti -1c
+.RI "int \fBconnect\fP (int \fBsocket\fP, const struct sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "int \fBaccept\fP (int \fBsocket\fP, struct sockaddr *address, socklen_t *address_len)"
+.br
+.ti -1c
+.RI "ssize_t \fBread\fP (int fildes, void *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "ssize_t \fBwrite\fP (int fildes, const void *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "ssize_t \fBclose\fP (int fildes)"
+.br
+.ti -1c
+.RI "int \fBgetaddrinfo\fP (const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res)"
+.br
+.ti -1c
+.RI "void \fBfreeaddrinfo\fP (struct addrinfo *res)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBSocket\fP functions with are similiar with system ones\&. 
+
+Can be easily called without wrapping\&. See also: http://pubs.opengroup.org/onlinepubs/9699919799/functions/sock.html and so on\&. 
+.SH "Function Documentation"
+.PP 
+.SS "int api::socket::accept (int socket, struct sockaddr * address, socklen_t * address_len)"
+
+.SS "int api::socket::bind (int socket, const struct sockaddr * address, socklen_t address_len)"
+
+.SS "ssize_t api::socket::close (int fildes)"
+
+.SS "int api::socket::connect (int socket, const struct sockaddr * address, socklen_t address_len)"
+
+.SS "void api::socket::freeaddrinfo (struct addrinfo * res)"
+
+.SS "int api::socket::getaddrinfo (const char * node, const char * service, const struct addrinfo * hints, struct addrinfo ** res)"
+
+.SS "int api::socket::listen (int socket, int backlog)"
+
+.SS "ssize_t api::socket::read (int fildes, void * buf, size_t nbyte)"
+
+.SS "int api::socket::socket (int domain, int type, int protocol)"
+
+.SS "ssize_t api::socket::write (int fildes, const void * buf, size_t nbyte)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

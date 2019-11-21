@@ -1,0 +1,98 @@
+.TH "Route" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Route
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBRouteItem\fP"
+.br
+.RI "Routing item in routing table\&. "
+.ti -1c
+.RI "class \fBRouter\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBRoutingTable\fP = std::set< \fBRouteItem\fP >"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBoperator<\fP (const \fBRouteItem\fP &rl, const \fBRouteItem\fP &rr)"
+.br
+.RI "Compare two \fC\fBRouteItem\fP\fP according to prefix length\&. "
+.ti -1c
+.RI "int \fBmaskToPflen\fP (const in_addr &mask)"
+.br
+.RI "Get prefix length from mask\&. "
+.ti -1c
+.RI "\fBip_addr\fP \fBpflenToMask\fP (int pflen)"
+.br
+.RI "Get prefix length from prefix length\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "\fBRouter\fP \fBrouter\fP"
+.br
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "using \fBRoute::RoutingTable\fP = typedef std::set<\fBRouteItem\fP>"
+
+.SH "Function Documentation"
+.PP 
+.SS "int Route::maskToPflen (const in_addr & mask)"
+
+.PP
+Get prefix length from mask\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImask\fP subnet mask 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int prefix length 
+.RE
+.PP
+
+.SS "bool Route::operator< (const \fBRouteItem\fP & rl, const \fBRouteItem\fP & rr)"
+
+.PP
+Compare two \fC\fBRouteItem\fP\fP according to prefix length\&. 
+.SS "\fBip_addr\fP Route::pflenToMask (int pflen)"
+
+.PP
+Get prefix length from prefix length\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpflen\fP prefix length 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+ip_addr subnet mask 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "\fBRouter\fP Route::router"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

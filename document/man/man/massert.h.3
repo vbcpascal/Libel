@@ -1,0 +1,125 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/massert.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/massert.h \- Library supporting show message\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <cstdio>\fP
+.br
+\fC#include <cstdlib>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBINFO\fP   '\\033[32mINFO\\033[0m'"
+.br
+.ti -1c
+.RI "#define \fBERR\fP   '\\033[31mERR \\033[0m'"
+.br
+.ti -1c
+.RI "#define \fBWARN\fP   '\\033[34mWARN\\033[0m'"
+.br
+.ti -1c
+.RI "#define \fBASSERT\fP(Expr,  Msg, \&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fBASSERT_EQ\fP(A,  B,  Msg, \&.\&.\&.)   \fBASSERT\fP((A) == (B), Msg, ##__VA_ARGS__)"
+.br
+.ti -1c
+.RI "#define \fBASSERT_NE\fP(A,  B,  Msg, \&.\&.\&.)   \fBASSERT\fP((A) != (B), Msg, ##__VA_ARGS__)"
+.br
+.ti -1c
+.RI "#define \fBLOG\fP(Title,  Msg, \&.\&.\&.)"
+.br
+.ti -1c
+.RI "#define \fBLOG_ERR\fP(\&.\&.\&.)   \fBLOG\fP(\fBERR\fP, ##__VA_ARGS__)"
+.br
+.ti -1c
+.RI "#define \fBLOG_WARN\fP(\&.\&.\&.)   \fBLOG\fP(\fBWARN\fP, ##__VA_ARGS__)"
+.br
+.ti -1c
+.RI "#define \fBLOG_INFO\fP(\&.\&.\&.)   \fBLOG\fP(\fBINFO\fP, ##__VA_ARGS__)"
+.br
+.ti -1c
+.RI "#define \fBLOG_DBG\fP(\&.\&.\&.)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Library supporting show message\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-02 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define ASSERT(Expr, Msg,  \&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+{                                               \
+    if (!(Expr)) {                                \
+      const size_t BUFSIZE = 255;                 \
+      char buf[BUFSIZE];                          \
+      snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__); \
+      fprintf(stderr,                             \
+              "Assertion failed:\t%s\n"           \
+              "Expected:\t%s\n"                   \
+              "Source:\t\t%s, line %d\n",         \
+              buf, #Expr, __FILE__, __LINE__);    \
+      std::abort();                               \
+    }                                             \
+  }
+.fi
+.SS "#define ASSERT_EQ(A, B, Msg,  \&.\&.\&.)   \fBASSERT\fP((A) == (B), Msg, ##__VA_ARGS__)"
+
+.SS "#define ASSERT_NE(A, B, Msg,  \&.\&.\&.)   \fBASSERT\fP((A) != (B), Msg, ##__VA_ARGS__)"
+
+.SS "#define ERR   '\\033[31mERR \\033[0m'"
+
+.SS "#define INFO   '\\033[32mINFO\\033[0m'"
+
+.SS "#define LOG(Title, Msg,  \&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+{                                               \
+    const size_t BUFSIZE = 255;                   \
+    char buf[BUFSIZE];                            \
+    snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__);   \
+    fprintf(stderr, "[ %s ] \t%s\n", Title, buf); \
+  }
+.fi
+.SS "#define LOG_DBG( \&.\&.\&.)"
+
+.SS "#define LOG_ERR( \&.\&.\&.)   \fBLOG\fP(\fBERR\fP, ##__VA_ARGS__)"
+
+.SS "#define LOG_INFO( \&.\&.\&.)   \fBLOG\fP(\fBINFO\fP, ##__VA_ARGS__)"
+
+.SS "#define LOG_WARN( \&.\&.\&.)   \fBLOG\fP(\fBWARN\fP, ##__VA_ARGS__)"
+
+.SS "#define WARN   '\\033[34mWARN\\033[0m'"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

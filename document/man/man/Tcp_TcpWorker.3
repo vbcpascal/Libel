@@ -1,0 +1,223 @@
+.TH "Tcp::TcpWorker" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Tcp::TcpWorker
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tcp\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBTcpWorker\fP ()"
+.br
+.ti -1c
+.RI "\fB~TcpWorker\fP ()"
+.br
+.ti -1c
+.RI "\fBTcpState\fP \fBgetSt\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetSt\fP (\fBTcpState\fP newst)"
+.br
+.ti -1c
+.RI "\fBTcpState\fP \fBgetCriticalSt\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetCriticalSt\fP (\fBTcpState\fP newst)"
+.br
+.ti -1c
+.RI "ssize_t \fBsend\fP (\fBTcpItem\fP &ti)"
+.br
+.ti -1c
+.RI "ssize_t \fBread\fP (u_char *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "void \fBhandler\fP (\fBTcpItem\fP &ts)"
+.br
+.ti -1c
+.RI "void \fBsenderLoop\fP ()"
+.br
+.ti -1c
+.RI "void \fBsenderNonBlockLoop\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "bool \fBclosed\fP = false"
+.br
+.ti -1c
+.RI "std::atomic_bool \fBsyned\fP"
+.br
+.ti -1c
+.RI "std::atomic< \fBTcpState\fP > \fBst\fP"
+.br
+.ti -1c
+.RI "std::atomic< \fBTcpState\fP > \fBcriticalSt\fP"
+.br
+.ti -1c
+.RI "std::condition_variable \fBstSameCv\fP"
+.br
+.ti -1c
+.RI "std::condition_variable \fBstCriticalChangeCv\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBstSameCv_m\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBstCCCv_m\fP"
+.br
+.ti -1c
+.RI "\fBSequence::SeqSet\fP \fBseq\fP"
+.br
+.ti -1c
+.RI "std::shared_mutex \fBseq_m\fP"
+.br
+.ti -1c
+.RI "std::condition_variable_any \fBseqCv\fP"
+.br
+.ti -1c
+.RI "std::set< tcp_seq > \fBabandonedSeq\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBabanseq_m\fP"
+.br
+.ti -1c
+.RI "std::queue< \fBTcpItem\fP > \fBsendList\fP"
+.br
+.ti -1c
+.RI "std::queue< \fBTcpItem\fP > \fBsendNonBlockList\fP"
+.br
+.ti -1c
+.RI "\fBBufferQueue\fP \fBrecvBuf\fP"
+.br
+.ti -1c
+.RI "std::shared_mutex \fBsendlst_m\fP"
+.br
+.ti -1c
+.RI "std::shared_mutex \fBsendNonBlocklst_m\fP"
+.br
+.ti -1c
+.RI "std::shared_mutex \fBrecvbuf_m\fP"
+.br
+.ti -1c
+.RI "std::thread \fBsender\fP"
+.br
+.ti -1c
+.RI "std::thread \fBsenderNonBlock\fP"
+.br
+.ti -1c
+.RI "std::condition_variable_any \fBsendCv\fP"
+.br
+.ti -1c
+.RI "std::condition_variable_any \fBsendNonBlockCv\fP"
+.br
+.ti -1c
+.RI "std::condition_variable_any \fBrecvCv\fP"
+.br
+.ti -1c
+.RI "int \fBbacklog\fP"
+.br
+.ti -1c
+.RI "std::queue< std::pair< \fBSocket::SocketAddr\fP, tcp_seq > > \fBpendings\fP"
+.br
+.ti -1c
+.RI "std::condition_variable \fBacceptCv\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBacceptCv_m\fP"
+.br
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Tcp::TcpWorker::TcpWorker ()"
+
+.SS "Tcp::TcpWorker::~TcpWorker ()"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBTcpState\fP Tcp::TcpWorker::getCriticalSt ()"
+
+.SS "\fBTcpState\fP Tcp::TcpWorker::getSt ()"
+
+.SS "void Tcp::TcpWorker::handler (\fBTcpItem\fP & ts)"
+
+.SS "ssize_t Tcp::TcpWorker::read (u_char * buf, size_t nbyte)"
+
+.SS "ssize_t Tcp::TcpWorker::send (\fBTcpItem\fP & ti)"
+
+.SS "void Tcp::TcpWorker::senderLoop ()"
+
+.SS "void Tcp::TcpWorker::senderNonBlockLoop ()"
+
+.SS "void Tcp::TcpWorker::setCriticalSt (\fBTcpState\fP newst)"
+
+.SS "void Tcp::TcpWorker::setSt (\fBTcpState\fP newst)"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "std::set<tcp_seq> Tcp::TcpWorker::abandonedSeq"
+
+.SS "std::mutex Tcp::TcpWorker::abanseq_m"
+
+.SS "std::condition_variable Tcp::TcpWorker::acceptCv"
+
+.SS "std::mutex Tcp::TcpWorker::acceptCv_m"
+
+.SS "int Tcp::TcpWorker::backlog"
+
+.SS "bool Tcp::TcpWorker::closed = false"
+
+.SS "std::atomic<\fBTcpState\fP> Tcp::TcpWorker::criticalSt"
+
+.SS "std::queue<std::pair<\fBSocket::SocketAddr\fP, tcp_seq> > Tcp::TcpWorker::pendings"
+
+.SS "\fBBufferQueue\fP Tcp::TcpWorker::recvBuf"
+
+.SS "std::shared_mutex Tcp::TcpWorker::recvbuf_m"
+
+.SS "std::condition_variable_any Tcp::TcpWorker::recvCv"
+
+.SS "std::condition_variable_any Tcp::TcpWorker::sendCv"
+
+.SS "std::thread Tcp::TcpWorker::sender"
+
+.SS "std::thread Tcp::TcpWorker::senderNonBlock"
+
+.SS "std::queue<\fBTcpItem\fP> Tcp::TcpWorker::sendList"
+
+.SS "std::shared_mutex Tcp::TcpWorker::sendlst_m"
+
+.SS "std::condition_variable_any Tcp::TcpWorker::sendNonBlockCv"
+
+.SS "std::queue<\fBTcpItem\fP> Tcp::TcpWorker::sendNonBlockList"
+
+.SS "std::shared_mutex Tcp::TcpWorker::sendNonBlocklst_m"
+
+.SS "\fBSequence::SeqSet\fP Tcp::TcpWorker::seq"
+
+.SS "std::shared_mutex Tcp::TcpWorker::seq_m"
+
+.SS "std::condition_variable_any Tcp::TcpWorker::seqCv"
+
+.SS "std::atomic<\fBTcpState\fP> Tcp::TcpWorker::st"
+
+.SS "std::mutex Tcp::TcpWorker::stCCCv_m"
+
+.SS "std::condition_variable Tcp::TcpWorker::stCriticalChangeCv"
+
+.SS "std::condition_variable Tcp::TcpWorker::stSameCv"
+
+.SS "std::mutex Tcp::TcpWorker::stSameCv_m"
+
+.SS "std::atomic_bool Tcp::TcpWorker::syned"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

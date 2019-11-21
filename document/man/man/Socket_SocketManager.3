@@ -1,0 +1,102 @@
+.TH "Socket::SocketManager" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Socket::SocketManager \- A manager managing all sockets\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <socket\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBSocketPtr\fP \fBgetSocket\fP (int fd)"
+.br
+.ti -1c
+.RI "\fBSocketPtr\fP \fBgetSocket\fP (const \fBSocketAddr\fP src, const \fBSocketAddr\fP dst)"
+.br
+.ti -1c
+.RI "\fBSocketPtr\fP \fBgetListeningSocket\fP (const \fBSocketAddr\fP src)"
+.br
+.ti -1c
+.RI "int \fBsocket\fP (int domain, int type, int protocol)"
+.br
+.ti -1c
+.RI "int \fBbind\fP (int \fBsocket\fP, const sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "int \fBlisten\fP (int \fBsocket\fP, int backlog)"
+.br
+.ti -1c
+.RI "int \fBaccept\fP (int \fBsocket\fP, sockaddr *address, socklen_t *address_len)"
+.br
+.ti -1c
+.RI "int \fBconnect\fP (int \fBsocket\fP, const sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "ssize_t \fBread\fP (int fildes, u_char *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "ssize_t \fBwrite\fP (int fildes, const u_char *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "int \fBclose\fP (int fildes)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBnextFd\fP = 1024"
+.br
+.ti -1c
+.RI "std::vector< \fBSocketPtr\fP > \fBsocketList\fP"
+.br
+.ti -1c
+.RI "std::map< \fBip_addr\fP, int > \fBnextPort\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A manager managing all sockets\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "int Socket::SocketManager::accept (int socket, sockaddr * address, socklen_t * address_len)"
+
+.SS "int Socket::SocketManager::bind (int socket, const sockaddr * address, socklen_t address_len)"
+
+.SS "int Socket::SocketManager::close (int fildes)"
+
+.SS "int Socket::SocketManager::connect (int socket, const sockaddr * address, socklen_t address_len)"
+
+.SS "\fBSocketPtr\fP Socket::SocketManager::getListeningSocket (const \fBSocketAddr\fP src)"
+
+.SS "\fBSocketPtr\fP Socket::SocketManager::getSocket (const \fBSocketAddr\fP src, const \fBSocketAddr\fP dst)"
+
+.SS "\fBSocketPtr\fP Socket::SocketManager::getSocket (int fd)"
+
+.SS "int Socket::SocketManager::listen (int socket, int backlog)"
+
+.SS "ssize_t Socket::SocketManager::read (int fildes, u_char * buf, size_t nbyte)"
+
+.SS "int Socket::SocketManager::socket (int domain, int type, int protocol)"
+
+.SS "ssize_t Socket::SocketManager::write (int fildes, const u_char * buf, size_t nbyte)"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "int Socket::SocketManager::nextFd = 1024"
+
+.SS "std::map<\fBip_addr\fP, int> Socket::SocketManager::nextPort"
+
+.SS "std::vector<\fBSocketPtr\fP> Socket::SocketManager::socketList"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,125 @@
+.TH "Socket::Socket" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Socket::Socket \- A socket class supporting basic information and functions\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <socket\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBSocket\fP (int \fBdomain\fP, int \fBtype\fP, int \fBprotocol\fP, int \fBfd\fP)"
+.br
+.ti -1c
+.RI "int \fBbind\fP (const sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "int \fBlisten\fP (int backlog)"
+.br
+.ti -1c
+.RI "int \fBaccept\fP (sockaddr *address, socklen_t *address_len)"
+.br
+.ti -1c
+.RI "int \fBconnect\fP (const sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "ssize_t \fBread\fP (u_char *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "ssize_t \fBwrite\fP (const u_char *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "ssize_t \fBsend\fP (\fBTcp::TcpItem\fP &ti)"
+.br
+.ti -1c
+.RI "int \fBclose\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBfd\fP"
+.br
+.RI "file description id "
+.ti -1c
+.RI "\fBTcp::TcpWorker\fP \fBtcpWorker\fP"
+.br
+.RI "A related tcp worker to send or handle segments with more information of a socket\&. "
+.ti -1c
+.RI "\fBSocketAddr\fP \fBsrc\fP"
+.br
+.ti -1c
+.RI "\fBSocketAddr\fP \fBdst\fP"
+.br
+.ti -1c
+.RI "int \fBdomain\fP"
+.br
+.ti -1c
+.RI "int \fBtype\fP"
+.br
+.ti -1c
+.RI "int \fBprotocol\fP"
+.br
+.ti -1c
+.RI "std::mutex \fBmu\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A socket class supporting basic information and functions\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Socket::Socket::Socket (int domain, int type, int protocol, int fd)"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "int Socket::Socket::accept (sockaddr * address, socklen_t * address_len)"
+
+.SS "int Socket::Socket::bind (const sockaddr * address, socklen_t address_len)"
+
+.SS "int Socket::Socket::close ()"
+
+.SS "int Socket::Socket::connect (const sockaddr * address, socklen_t address_len)"
+
+.SS "int Socket::Socket::listen (int backlog)"
+
+.SS "ssize_t Socket::Socket::read (u_char * buf, size_t nbyte)"
+
+.SS "ssize_t Socket::Socket::send (\fBTcp::TcpItem\fP & ti)"
+
+.SS "ssize_t Socket::Socket::write (const u_char * buf, size_t nbyte)"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "int Socket::Socket::domain"
+
+.SS "\fBSocketAddr\fP Socket::Socket::dst"
+
+.SS "int Socket::Socket::fd"
+
+.PP
+file description id 
+.SS "std::mutex Socket::Socket::mu"
+
+.SS "int Socket::Socket::protocol"
+
+.SS "\fBSocketAddr\fP Socket::Socket::src"
+
+.SS "\fBTcp::TcpWorker\fP Socket::Socket::tcpWorker"
+
+.PP
+A related tcp worker to send or handle segments with more information of a socket\&. 
+.SS "int Socket::Socket::type"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

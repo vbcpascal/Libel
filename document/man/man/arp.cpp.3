@@ -1,0 +1,47 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/arp.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/arp.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'arp\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBArp\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBArp::arpCallBack\fP (const void *buf, int len, \fBDeviceId\fP id)"
+.br
+.RI "Default ARP frame callback function\&. "
+.ti -1c
+.RI "void \fBPrinter::printArpTable\fP ()"
+.br
+.RI "Print current ARP table\&. "
+.ti -1c
+.RI "void \fBPrinter::printArpFrame\fP (const \fBArp::ArpFrame\fP &af, bool sender=false)"
+.br
+.RI "Print an ARP frame\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "std::map< u_short, std::string > \fBPrinter::arpOpTypeNameMap\fP"
+.br
+.in -1c
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

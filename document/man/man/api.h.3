@@ -1,0 +1,129 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/api.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/api.h \- Library supporting api for users\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'arp\&.h'\fP
+.br
+\fC#include 'device\&.h'\fP
+.br
+\fC#include 'ip\&.h'\fP
+.br
+\fC#include 'socket\&.h'\fP
+.br
+\fC#include 'tcp\&.h'\fP
+.br
+\fC#include 'type\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBapi\fP"
+.br
+.RI "API for users\&. Only \fC\fBSocket\fP\fP namespace will be used if you dont care about details below TCP\&. "
+.ti -1c
+.RI " \fBapi::socket\fP"
+.br
+.RI "\fBSocket\fP functions with are similiar with system ones\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBapi::socket::socket\fP (int domain, int type, int protocol)"
+.br
+.ti -1c
+.RI "int \fBapi::socket::bind\fP (int socket, const struct sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "int \fBapi::socket::listen\fP (int socket, int backlog)"
+.br
+.ti -1c
+.RI "int \fBapi::socket::connect\fP (int socket, const struct sockaddr *address, socklen_t address_len)"
+.br
+.ti -1c
+.RI "int \fBapi::socket::accept\fP (int socket, struct sockaddr *address, socklen_t *address_len)"
+.br
+.ti -1c
+.RI "ssize_t \fBapi::socket::read\fP (int fildes, void *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "ssize_t \fBapi::socket::write\fP (int fildes, const void *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "ssize_t \fBapi::socket::close\fP (int fildes)"
+.br
+.ti -1c
+.RI "int \fBapi::socket::getaddrinfo\fP (const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res)"
+.br
+.ti -1c
+.RI "void \fBapi::socket::freeaddrinfo\fP (struct addrinfo *res)"
+.br
+.ti -1c
+.RI "int \fBapi::setCallback\fP (u_short etherType, \fBcommonReceiveCallback\fP callback)"
+.br
+.RI "Set the Callback with specific type\&. "
+.ti -1c
+.RI "int \fBapi::init\fP ()"
+.br
+.RI "Initial dispatcher and callback function\&. "
+.ti -1c
+.RI "int \fBapi::sendFrame\fP (const void *buf, int len, int ethtype, const void *destmac, \fBDeviceId\fP id)"
+.br
+.RI "Encapsulate some data into an Ethernet II frame and send it\&. "
+.ti -1c
+.RI "int \fBapi::setFrameReceiveCallback\fP (\fBframeReceiveCallback\fP callback)"
+.br
+.RI "Register a callback function to be called each time an Ethernet II frame was received\&. "
+.ti -1c
+.RI "int \fBapi::sendIPPacket\fP (const struct in_addr src, const struct in_addr dest, int proto, const void *buf, int len)"
+.br
+.RI "Send an IP packet to specified host\&. "
+.ti -1c
+.RI "int \fBapi::setIPPacketReceiveCallback\fP (\fBIPPacketReceiveCallback\fP callback)"
+.br
+.RI "Register a callback function to be called each time an IP packet was received\&. "
+.ti -1c
+.RI "int \fBapi::setRoutingTable\fP (const in_addr dest, const in_addr mask, const void *nextHopMAC, const char *device)"
+.br
+.RI "Manully add an item to routing table\&. Useful when talking with real Linux machines\&. "
+.ti -1c
+.RI "int \fBapi::addAllDevice\fP (bool sniff=false)"
+.br
+.RI "Add all device of host\&. "
+.ti -1c
+.RI "void \fBapi::initRouter\fP ()"
+.br
+.RI "Initial router algorithm\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Library supporting api for users\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-02 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

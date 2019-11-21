@@ -1,0 +1,78 @@
+.TH "Socket::SocketAddr" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Socket::SocketAddr
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <socketaddr\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBSocketAddr\fP ()"
+.br
+.ti -1c
+.RI "\fBSocketAddr\fP (const \fBip_addr\fP &\fBip\fP, in_port_t p)"
+.br
+.ti -1c
+.RI "\fBSocketAddr\fP (const sockaddr *addr)"
+.br
+.ti -1c
+.RI "bool \fBisZero\fP ()"
+.br
+.ti -1c
+.RI "void \fBset\fP (const sockaddr *addr)"
+.br
+.ti -1c
+.RI "void \fBget\fP (sockaddr *addr)"
+.br
+.ti -1c
+.RI "bool \fBoperator==\fP (const \fBSocketAddr\fP &sa)"
+.br
+.ti -1c
+.RI "std::string \fBtoStr\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBip_addr\fP \fBip\fP"
+.br
+.ti -1c
+.RI "in_port_t \fBport\fP"
+.br
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Socket::SocketAddr::SocketAddr ()\fC [inline]\fP"
+
+.SS "Socket::SocketAddr::SocketAddr (const \fBip_addr\fP & ip, in_port_t p)\fC [inline]\fP"
+
+.SS "Socket::SocketAddr::SocketAddr (const sockaddr * addr)\fC [inline]\fP"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void Socket::SocketAddr::get (sockaddr * addr)\fC [inline]\fP"
+
+.SS "bool Socket::SocketAddr::isZero ()\fC [inline]\fP"
+
+.SS "bool Socket::SocketAddr::operator== (const \fBSocketAddr\fP & sa)\fC [inline]\fP"
+
+.SS "void Socket::SocketAddr::set (const sockaddr * addr)\fC [inline]\fP"
+
+.SS "std::string Socket::SocketAddr::toStr ()\fC [inline]\fP"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "\fBip_addr\fP Socket::SocketAddr::ip"
+
+.SS "in_port_t Socket::SocketAddr::port"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

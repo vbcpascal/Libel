@@ -1,0 +1,88 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/tests/testChecksum.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/tests/testChecksum.cpp \- Test: checksum function\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'ip\&.h'\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBCHECK\fP(TITLE,  HDR\&.\&.\&.)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "uint16_t \fBchecksum\fP (uint16_t *addr, int len)"
+.br
+.ti -1c
+.RI "int \fBmain\fP ()"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "int \fBcaseNum\fP = 1"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Test: checksum function\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-11-22 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define CHECK(TITLE, HDR\&.\&.\&.)"
+\fBValue:\fP
+.PP
+.nf
+{                                                                     \
+    auto len = std::vector<int>(HDR)\&.size();                            \
+    const u_char hdr[] = HDR;                                           \
+    auto res = Ip::getChecksum(hdr, len);                               \
+    if (res == 0)                                                       \
+      LOG_INFO("case %d [ %s ] Checksum correct\&.", caseNum++, #TITLE)   \\
+    else                                                                \\
+      LOG_ERR("case %d [ %s ] Checksum validation failed\&. res: 0x%x, ", \
+              caseNum++, res);                                          \
+  }
+.fi
+.SH "Function Documentation"
+.PP 
+.SS "uint16_t checksum (uint16_t * addr, int len)"
+
+.SS "int main ()"
+
+.SH "Variable Documentation"
+.PP 
+.SS "int caseNum = 1"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

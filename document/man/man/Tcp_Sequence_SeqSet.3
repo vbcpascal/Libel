@@ -1,0 +1,120 @@
+.TH "Tcp::Sequence::SeqSet" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Tcp::Sequence::SeqSet \- \fBSequence\fP set in a communication\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tcpseq\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBinitRcvIsn\fP (tcp_seq s)"
+.br
+.RI "Initial \fCrcv_isn\fP and \fCrcv_nxt\fP "
+.ti -1c
+.RI "tcp_seq \fBallocateWithLen\fP (int len)"
+.br
+.RI "Allocate sequence number for a segment with length \fClen\fP "
+.ti -1c
+.RI "tcp_seq \fBrcvAckWithLen\fP (int len)"
+.br
+.RI "Update \fCsnd_una\fP for an ACK with length \fClen\fP "
+.ti -1c
+.RI "tcp_seq \fBsndAckWithLen\fP (int len)"
+.br
+.RI "Get the ACK number when sending an ACK with length \fClen\fP "
+.ti -1c
+.RI "bool \fBtryAndRcvAck\fP (tcphdr hdr)"
+.br
+.RI "Compare and update sequence number\&. "
+.ti -1c
+.RI "std::string \fBtoStr\fP () const"
+.br
+.RI "Convert the sequence set to a string\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "tcp_seq \fBsnd_isn\fP"
+.br
+.RI "sender initial sequence number "
+.ti -1c
+.RI "tcp_seq \fBsnd_una\fP"
+.br
+.RI "oldest unacknowledged seq num "
+.ti -1c
+.RI "tcp_seq \fBsnd_nxt\fP"
+.br
+.RI "next seq num to be sent "
+.ti -1c
+.RI "tcp_seq \fBrcv_isn\fP"
+.br
+.RI "receive initial sequence number "
+.ti -1c
+.RI "tcp_seq \fBrcv_nxt\fP"
+.br
+.RI "next seq num expected on an incoming segment "
+.in -1c
+.SH "Detailed Description"
+.PP 
+\fBSequence\fP set in a communication\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "tcp_seq Tcp::Sequence::SeqSet::allocateWithLen (int len)"
+
+.PP
+Allocate sequence number for a segment with length \fClen\fP 
+.SS "void Tcp::Sequence::SeqSet::initRcvIsn (tcp_seq s)"
+
+.PP
+Initial \fCrcv_isn\fP and \fCrcv_nxt\fP 
+.SS "tcp_seq Tcp::Sequence::SeqSet::rcvAckWithLen (int len)"
+
+.PP
+Update \fCsnd_una\fP for an ACK with length \fClen\fP 
+.SS "tcp_seq Tcp::Sequence::SeqSet::sndAckWithLen (int len)"
+
+.PP
+Get the ACK number when sending an ACK with length \fClen\fP 
+.SS "std::string Tcp::Sequence::SeqSet::toStr () const"
+
+.PP
+Convert the sequence set to a string\&. 
+.SS "bool Tcp::Sequence::SeqSet::tryAndRcvAck (tcphdr hdr)"
+
+.PP
+Compare and update sequence number\&. 
+.SH "Member Data Documentation"
+.PP 
+.SS "tcp_seq Tcp::Sequence::SeqSet::rcv_isn"
+
+.PP
+receive initial sequence number 
+.SS "tcp_seq Tcp::Sequence::SeqSet::rcv_nxt"
+
+.PP
+next seq num expected on an incoming segment 
+.SS "tcp_seq Tcp::Sequence::SeqSet::snd_isn"
+
+.PP
+sender initial sequence number 
+.SS "tcp_seq Tcp::Sequence::SeqSet::snd_nxt"
+
+.PP
+next seq num to be sent 
+.SS "tcp_seq Tcp::Sequence::SeqSet::snd_una"
+
+.PP
+oldest unacknowledged seq num 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,126 @@
+.TH "Tcp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Tcp
+.SH SYNOPSIS
+.br
+.PP
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBSequence\fP"
+.br
+.in -1c
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBTcpItem\fP"
+.br
+.RI "A tcp item with tcp segment and ip address information\&. "
+.ti -1c
+.RI "struct \fBTcpSegment\fP"
+.br
+.RI "A tcp segment\&. "
+.ti -1c
+.RI "class \fBTcpWorker\fP"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBTcpState\fP : int { \fBTcpState::X\fP, \fBTcpState::TCP_STATE_SET\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBTCP_TYPE_MAP\fP bool \fBTYPE_NONE\fP (tcphdr t)"
+.br
+.RI "Whether a tcp segment with no flags\&. This function is useless in real communication\&. "
+.ti -1c
+.RI "std::string \fBtcpFlagStr\fP (int flags)"
+.br
+.ti -1c
+.RI "\fBTcpItem\fP \fBbuildAckItem\fP (\fBSocket::SocketAddr\fP src, \fBSocket::SocketAddr\fP dst, \fBSequence::SeqSet\fP &ss, std::shared_mutex &seq_m, std::optional< int >(ackLen)=1, std::optional< tcp_seq >(ackSeq)={})"
+.br
+.RI "Build an ACK item automatically\&. "
+.ti -1c
+.RI "std::string \fBstateToStr\fP (\fBTcpState\fP st)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "\fBSequence::ISNGenerator\fP \fBisnGen\fP"
+.br
+.ti -1c
+.RI "constexpr int \fBtcpTimeout\fP = 3"
+.br
+.ti -1c
+.RI "constexpr int \fBtcpMaxRetrans\fP = 2"
+.br
+.in -1c
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBTcp::TcpState\fP : int\fC [strong]\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIX \fP\fP
+.TP
+\fB\fITCP_STATE_SET \fP\fP
+.SH "Function Documentation"
+.PP 
+.SS "\fBTcpItem\fP Tcp::buildAckItem (\fBSocket::SocketAddr\fP src, \fBSocket::SocketAddr\fP dst, \fBSequence::SeqSet\fP & ss, std::shared_mutex & seq_m, std::optional< int >ackLen = \fC1\fP, std::optional< tcp_seq >ackSeq = \fC{}\fP)"
+
+.PP
+Build an ACK item automatically\&. Only one of ackLen and ackSeq can be set\&. ackLen will be overwrited by ackSeq if both of them are set\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP src address 
+.br
+\fIdst\fP dst address 
+.br
+\fIss\fP sequence set of \fBTcpWorker\fP 
+.br
+\fIseq_m\fP mutex of sequence 
+.br
+\fIackLen\fP the length to acknowledge\&. default: 1 for control segment 
+.br
+\fIackSeq\fP sequence number to set in ACK 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+\fBTcpItem\fP TCP ACK item built 
+.RE
+.PP
+
+.SS "std::string Tcp::stateToStr (\fBTcpState\fP st)"
+
+.SS "std::string Tcp::tcpFlagStr (int flags)"
+
+.SS "\fBTCP_TYPE_MAP\fP bool Tcp::TYPE_NONE (tcphdr t)"
+
+.PP
+Whether a tcp segment with no flags\&. This function is useless in real communication\&. 
+.SH "Variable Documentation"
+.PP 
+.SS "\fBSequence::ISNGenerator\fP Tcp::isnGen"
+
+.SS "constexpr int Tcp::tcpMaxRetrans = 2\fC [constexpr]\fP"
+
+.SS "constexpr int Tcp::tcpTimeout = 3\fC [constexpr]\fP"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

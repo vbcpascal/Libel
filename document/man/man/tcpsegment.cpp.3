@@ -1,0 +1,72 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/tcpsegment.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/tcpsegment.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'tcpsegment\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBTcp\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBX\fP(TCPNAME,  TCPFLAG)"
+.br
+.ti -1c
+.RI "#define \fBX\fP(TCPNAME,  TCPFLAG)   bool ISTYPE_##TCPNAME(tcphdr t) { return (t\&.th_flags) == TCPFLAG; }"
+.br
+.ti -1c
+.RI "#define \fBX\fP(TCPNAME,  TCPFLAG)   bool WITHTYPE_##TCPNAME(tcphdr t) { return (t\&.th_flags & TCPFLAG) != 0; }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "std::string \fBTcp::tcpFlagStr\fP (int flags)"
+.br
+.ti -1c
+.RI "TcpItem \fBTcp::buildAckItem\fP (\fBSocket::SocketAddr\fP src, \fBSocket::SocketAddr\fP dst, Sequence::SeqSet &ss, std::shared_mutex &seq_m, std::optional< int >(ackLen)=1, std::optional< tcp_seq >(ackSeq)={})"
+.br
+.RI "Build an ACK item automatically\&. "
+.ti -1c
+.RI "\fBTCP_TYPE_MAP\fP bool \fBTcp::TYPE_NONE\fP (tcphdr t)"
+.br
+.RI "Whether a tcp segment with no flags\&. This function is useless in real communication\&. "
+.ti -1c
+.RI "void \fBPrinter::printTcpItem\fP (const \fBTcp::TcpItem\fP &ts, bool sender=false, std::string info='')"
+.br
+.RI "Print a tcp item\&. "
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define X(TCPNAME, TCPFLAG)"
+\fBValue:\fP
+.PP
+.nf
+if (flags & TCPFLAG) {    \
+    flags -= TCPFLAG;       \
+    if (s != "") s += "/";  \
+    s += #TCPNAME;          \
+  }
+.fi
+.SS "#define X(TCPNAME, TCPFLAG)   bool ISTYPE_##TCPNAME(tcphdr t) { return (t\&.th_flags) == TCPFLAG; }"
+
+.SS "#define X(TCPNAME, TCPFLAG)   bool WITHTYPE_##TCPNAME(tcphdr t) { return (t\&.th_flags & TCPFLAG) != 0; }"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

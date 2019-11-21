@@ -1,0 +1,148 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/ether.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/ether.h \- Library supporting a EtherFrame class\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <netinet/ip\&.h>\fP
+.br
+\fC#include <cstdint>\fP
+.br
+\fC#include <cstring>\fP
+.br
+\fC#include 'type\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBMAC::MacAddr\fP"
+.br
+.RI "A class storing a \fBMAC\fP address\&. "
+.ti -1c
+.RI "class \fBEther::EtherFrame\fP"
+.br
+.RI "Store a Ethernet frame\&. "
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBMAC\fP"
+.br
+.ti -1c
+.RI " \fBEther\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBMAC::operator==\fP (const MacAddr &ml, const MacAddr &mr)"
+.br
+.ti -1c
+.RI "bool \fBMAC::isSameMacAddr\fP (const u_char *macA, const u_char *macB)"
+.br
+.ti -1c
+.RI "bool \fBMAC::isBroadcast\fP (const u_char *mac)"
+.br
+.RI "Whether a mac address is broadcast\&. "
+.ti -1c
+.RI "bool \fBMAC::isBroadcast\fP (const MacAddr &mac)"
+.br
+.RI "Whether a mac address is broadcast\&. "
+.ti -1c
+.RI "std::string \fBMAC::toString\fP (const u_char *mac)"
+.br
+.RI "Convert a \fBMAC\fP address to cpp string\&. "
+.ti -1c
+.RI "void \fBMAC::strtoMAC\fP (u_char *mac, const char *str)"
+.br
+.RI "Convert a string to \fBMAC\fP address\&. "
+.ti -1c
+.RI "void \fBPrinter::printMAC\fP (const u_char *mac, const std::string end='\\n')"
+.br
+.RI "Print a \fBMAC\fP address\&. "
+.ti -1c
+.RI "void \fBPrinter::printEtherFrame\fP (const \fBEther::EtherFrame\fP &ef, int col=0, int option=\fBe_PRINT_ALL\fP)"
+.br
+.RI "Print a EtherFrame object\&. "
+.ti -1c
+.RI "void \fBPrinter::print\fP (const u_char *buf, int len, int placeholder=0)"
+.br
+.RI "print a common payload data "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "constexpr int \fBe_PRINT_NONE\fP = 0"
+.br
+.ti -1c
+.RI "constexpr int \fBe_PRINT_INTRO\fP = 1"
+.br
+.ti -1c
+.RI "constexpr int \fBe_PRINT_MAC\fP = 2"
+.br
+.ti -1c
+.RI "constexpr int \fBe_PRINT_TYPE\fP = 4"
+.br
+.ti -1c
+.RI "constexpr int \fBe_PRINT_LEN\fP = 8"
+.br
+.ti -1c
+.RI "constexpr int \fBe_PRINT_ALL\fP = 127"
+.br
+.ti -1c
+.RI "const u_char \fBEther::broadcastMacAddr\fP [6] = {255, 255, 255, 255, 255, 255}"
+.br
+.ti -1c
+.RI "const u_char \fBEther::zeroMacAddr\fP [6] = {0, 0, 0, 0, 0, 0}"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Library supporting a EtherFrame class\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-02 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "constexpr int e_PRINT_ALL = 127\fC [constexpr]\fP"
+
+.SS "constexpr int e_PRINT_INTRO = 1\fC [constexpr]\fP"
+
+.SS "constexpr int e_PRINT_LEN = 8\fC [constexpr]\fP"
+
+.SS "constexpr int e_PRINT_MAC = 2\fC [constexpr]\fP"
+
+.SS "constexpr int e_PRINT_NONE = 0\fC [constexpr]\fP"
+
+.SS "constexpr int e_PRINT_TYPE = 4\fC [constexpr]\fP"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

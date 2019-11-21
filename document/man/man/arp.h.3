@@ -1,0 +1,117 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/arp.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/arp.h \- Library supporting sending and receiving ARP frame\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <arpa/inet\&.h>\fP
+.br
+\fC#include <netinet/ip\&.h>\fP
+.br
+\fC#include <atomic>\fP
+.br
+\fC#include <chrono>\fP
+.br
+\fC#include <condition_variable>\fP
+.br
+\fC#include <map>\fP
+.br
+\fC#include <mutex>\fP
+.br
+\fC#include <thread>\fP
+.br
+\fC#include 'device\&.h'\fP
+.br
+\fC#include 'ether\&.h'\fP
+.br
+\fC#include 'massert\&.h'\fP
+.br
+\fC#include 'type\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBArp::ArpFrame\fP"
+.br
+.RI "An ARP frame\&. "
+.ti -1c
+.RI "class \fBArp::ArpManager\fP"
+.br
+.RI "Manage all ARP items, request/reply an ARP frame\&. "
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBArp\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBArp::arpOpType\fP = int"
+.br
+.RI "The value of ar_op defined in if_arp\&.h\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBArp::arpCallBack\fP (const void *buf, int len, \fBDeviceId\fP id)"
+.br
+.RI "Default ARP frame callback function\&. "
+.ti -1c
+.RI "void \fBPrinter::printArpTable\fP ()"
+.br
+.RI "Print current ARP table\&. "
+.ti -1c
+.RI "void \fBPrinter::printArpFrame\fP (const \fBArp::ArpFrame\fP &af, bool sender=false)"
+.br
+.RI "Print an ARP frame\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "constexpr int \fBArp::ARP_TIMEOUT\fP = 1"
+.br
+.RI "timeout of arp reply (second) "
+.ti -1c
+.RI "ArpManager \fBArp::arpMgr\fP"
+.br
+.RI "unique ARP Manager "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Library supporting sending and receiving ARP frame\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-18 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

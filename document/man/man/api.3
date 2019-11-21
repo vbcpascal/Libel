@@ -1,0 +1,249 @@
+.TH "api" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+api \- API for users\&. Only \fC\fBSocket\fP\fP namespace will be used if you dont care about details below TCP\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBsocket\fP"
+.br
+.RI "\fBSocket\fP functions with are similiar with system ones\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBsetCallback\fP (u_short etherType, \fBcommonReceiveCallback\fP callback)"
+.br
+.RI "Set the Callback with specific type\&. "
+.ti -1c
+.RI "int \fBinit\fP ()"
+.br
+.RI "Initial dispatcher and callback function\&. "
+.ti -1c
+.RI "int \fBsendFrame\fP (const void *buf, int len, int ethtype, const void *destmac, \fBDeviceId\fP id)"
+.br
+.RI "Encapsulate some data into an Ethernet II frame and send it\&. "
+.ti -1c
+.RI "int \fBsetFrameReceiveCallback\fP (\fBframeReceiveCallback\fP callback)"
+.br
+.RI "Register a callback function to be called each time an Ethernet II frame was received\&. "
+.ti -1c
+.RI "int \fBsendIPPacket\fP (const struct in_addr src, const struct in_addr dest, int proto, const void *buf, int len)"
+.br
+.RI "Send an IP packet to specified host\&. "
+.ti -1c
+.RI "int \fBsetIPPacketReceiveCallback\fP (\fBIPPacketReceiveCallback\fP callback)"
+.br
+.RI "Register a callback function to be called each time an IP packet was received\&. "
+.ti -1c
+.RI "int \fBsetRoutingTable\fP (const in_addr dest, const in_addr mask, const void *nextHopMAC, const char *device)"
+.br
+.RI "Manully add an item to routing table\&. Useful when talking with real Linux machines\&. "
+.ti -1c
+.RI "int \fBaddAllDevice\fP (bool sniff=false)"
+.br
+.RI "Add all device of host\&. "
+.ti -1c
+.RI "void \fBinitRouter\fP ()"
+.br
+.RI "Initial router algorithm\&. "
+.ti -1c
+.RI "int \fBcallbackDispatcher\fP (const void *buf, int len, \fBDeviceId\fP id)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "std::unordered_map< u_short, \fBcommonReceiveCallback\fP > \fBcallbackMap\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+API for users\&. Only \fC\fBSocket\fP\fP namespace will be used if you dont care about details below TCP\&. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "int api::addAllDevice (bool sniff = \fCfalse\fP)"
+
+.PP
+Add all device of host\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsniff\fP Start sniffing after open devices 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int number of devices added 
+.RE
+.PP
+
+.SS "int api::callbackDispatcher (const void * buf, int len, \fBDeviceId\fP id)"
+
+.SS "int api::init ()"
+
+.PP
+Initial dispatcher and callback function\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on success, -1 on error 
+.RE
+.PP
+
+.SS "void api::initRouter ()"
+
+.PP
+Initial router algorithm\&. 
+.SS "int api::sendFrame (const void * buf, int len, int ethtype, const void * destmac, \fBDeviceId\fP id)"
+
+.PP
+Encapsulate some data into an Ethernet II frame and send it\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP Pointer to the payload\&. 
+.br
+\fIlen\fP Length of the payload\&. 
+.br
+\fIethtype\fP EtherType field value of this frame\&. 
+.br
+\fIdestmac\fP \fBMAC\fP address of the destination\&. 
+.br
+\fIid\fP ID of the device(returned by \fCaddDevice\fP) to send on\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on success, -1 on error\&. 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBaddDevice\fP 
+.RE
+.PP
+
+.SS "int api::sendIPPacket (const struct in_addr src, const struct in_addr dest, int proto, const void * buf, int len)"
+
+.PP
+Send an IP packet to specified host\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsrc\fP Source IP address\&. 
+.br
+\fIdest\fP Destination IP address\&. 
+.br
+\fIproto\fP Value of \fCprotocol\fP field in IP header\&. 
+.br
+\fIbuf\fP pointer to IP payload 
+.br
+\fIlen\fP Length of IP payload 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, -1 on error\&. 
+.RE
+.PP
+
+.SS "int api::setCallback (u_short etherType, \fBcommonReceiveCallback\fP callback)"
+
+.PP
+Set the Callback with specific type\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIetherType\fP type of ether frame 
+.br
+\fIcallback\fP callback function 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int 1 on insert, 0 on assign, -1 on error 
+.RE
+.PP
+
+.SS "int api::setFrameReceiveCallback (\fBframeReceiveCallback\fP callback)"
+
+.PP
+Register a callback function to be called each time an Ethernet II frame was received\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcallback\fP the callback function\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, -1 on error\&. 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBframeReceiveCallback\fP 
+.RE
+.PP
+
+.SS "int api::setIPPacketReceiveCallback (\fBIPPacketReceiveCallback\fP callback)"
+
+.PP
+Register a callback function to be called each time an IP packet was received\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcallback\fP The callback function\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, -1 on error\&. 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBIPPacketReceiveCallback\fP 
+.RE
+.PP
+
+.SS "int api::setRoutingTable (const in_addr dest, const in_addr mask, const void * nextHopMAC, const char * device)"
+
+.PP
+Manully add an item to routing table\&. Useful when talking with real Linux machines\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdest\fP The destination IP prefix\&. 
+.br
+\fImask\fP The subnet mask of the destination IP prefix\&. 
+.br
+\fInextHopMAC\fP \fBMAC\fP address of the next hop\&. 
+.br
+\fIdevice\fP Name of device to send packets on\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, -1 on error 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "std::unordered_map<u_short, \fBcommonReceiveCallback\fP> api::callbackMap"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

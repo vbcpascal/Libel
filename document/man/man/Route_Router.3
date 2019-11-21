@@ -1,0 +1,132 @@
+.TH "Route::Router" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Route::Router
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <router\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBRouteItem\fP \fBlookup\fP (const \fBip_addr\fP &ip)"
+.br
+.RI "look up a routing item for ip "
+.ti -1c
+.RI "int \fBaddItem\fP (const \fBRouteItem\fP &ri)"
+.br
+.RI "add an item to routing table "
+.ti -1c
+.RI "void \fBinit\fP ()"
+.br
+.RI "Init a router: add local device and tell neibours\&. "
+.ti -1c
+.RI "void \fBsendRoutingTable\fP (int flag, std::optional< \fBDevice::DevicePtr\fP > withDev, std::optional< \fBMAC::MacAddr\fP > toMac)"
+.br
+.RI "Send routing table to others\&. "
+.ti -1c
+.RI "void \fBupdate\fP (const \fBSDP::SDPItemVector\fP &sis, const \fBMAC::MacAddr\fP mac, const \fBDevice::DevicePtr\fP dev)"
+.br
+.RI "Update Routing table with a set of \fBSDP\fP items\&. "
+.ti -1c
+.RI "void \fBrouterWorkingLoop\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBRoutingTable\fP \fBtable\fP"
+.br
+.ti -1c
+.RI "std::thread \fBloopThread\fP"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "int Route::Router::addItem (const \fBRouteItem\fP & ri)"
+
+.PP
+add an item to routing table 
+.PP
+\fBParameters\fP
+.RS 4
+\fIri\fP routing item 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on succeed, but always succeed 
+.RE
+.PP
+
+.SS "void Route::Router::init ()"
+
+.PP
+Init a router: add local device and tell neibours\&. 
+.SS "\fBRouteItem\fP Route::Router::lookup (const \fBip_addr\fP & ip)"
+
+.PP
+look up a routing item for ip 
+.PP
+\fBParameters\fP
+.RS 4
+\fIip\fP ip to look up 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+\fBRouteItem\fP routing item 
+.RE
+.PP
+
+.SS "void Route::Router::routerWorkingLoop ()"
+
+.SS "void Route::Router::sendRoutingTable (int flag, std::optional< \fBDevice::DevicePtr\fP > withDev, std::optional< \fBMAC::MacAddr\fP > toMac)"
+
+.PP
+Send routing table to others\&. Can only be tranferred in two cases:
+.IP "1." 4
+When a new device added into network, and you send routing table back to the specific device\&. In this case, you should tell me the withDev and toMac
+.IP "2." 4
+Send routing table to neibours\&. In this case, this two param is useless
+.PP
+.PP
+\fBParameters\fP
+.RS 4
+\fIflag\fP flag 
+.br
+\fIwithDev\fP (optional) send with device 
+.br
+\fItoMac\fP (optional) send to mac address 
+.RE
+.PP
+
+.SS "void Route::Router::update (const \fBSDP::SDPItemVector\fP & sis, const \fBMAC::MacAddr\fP mac, const \fBDevice::DevicePtr\fP dev)"
+
+.PP
+Update Routing table with a set of \fBSDP\fP items\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsis\fP \fBSDP\fP items 
+.br
+\fImac\fP nexthop's \fBMAC\fP address 
+.br
+\fIdev\fP nexthop via (in my host) 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "std::thread Route::Router::loopThread"
+
+.SS "\fBRoutingTable\fP Route::Router::table"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

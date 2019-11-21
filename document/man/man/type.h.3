@@ -1,0 +1,172 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/type.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/type.h \- Define some types and constant will be used\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <arpa/inet\&.h>\fP
+.br
+\fC#include <pcap/pcap\&.h>\fP
+.br
+\fC#include <algorithm>\fP
+.br
+\fC#include <chrono>\fP
+.br
+\fC#include <cstdint>\fP
+.br
+\fC#include <cstdio>\fP
+.br
+\fC#include <cstring>\fP
+.br
+\fC#include <memory>\fP
+.br
+\fC#include <mutex>\fP
+.br
+\fC#include <string>\fP
+.br
+\fC#include <thread>\fP
+.br
+\fC#include 'massert\&.h'\fP
+.br
+\fC#include <ifaddrs\&.h>\fP
+.br
+\fC#include <netinet/ether\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBDEFAULT_DEV_NAME\fP   'eth0'"
+.br
+.ti -1c
+.RI "#define \fBETHERTYPE_SDP\fP   0x2333"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBDeviceId\fP = int"
+.br
+.ti -1c
+.RI "using \fBip_addr\fP = in_addr"
+.br
+.ti -1c
+.RI "using \fBframeReceiveCallback\fP = int(*)(const void *, int, \fBDeviceId\fP)"
+.br
+.RI "Process a frame upon receiving it\&. "
+.ti -1c
+.RI "using \fBIPPacketReceiveCallback\fP = int(*)(const void *, int)"
+.br
+.RI "Process an IP packet upon receiving it\&. "
+.ti -1c
+.RI "using \fBcommonReceiveCallback\fP = int(*)(const void *, int, \fBDeviceId\fP)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBoperator<\fP (\fBip_addr\fP a, \fBip_addr\fP b)"
+.br
+.ti -1c
+.RI "bool \fBoperator==\fP (\fBip_addr\fP a, \fBip_addr\fP b)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Define some types and constant will be used\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-03 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define DEFAULT_DEV_NAME   'eth0'"
+
+.SS "#define ETHERTYPE_SDP   0x2333"
+
+.SH "Typedef Documentation"
+.PP 
+.SS "using \fBcommonReceiveCallback\fP =  int (*)(const void*, int, \fBDeviceId\fP)"
+
+.SS "using \fBDeviceId\fP =  int"
+
+.SS "using \fBframeReceiveCallback\fP =  int (*)(const void*, int, \fBDeviceId\fP)"
+
+.PP
+Process a frame upon receiving it\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP Pointer to the frame\&. 
+.br
+\fIlen\fP Length of the frame\&. 
+.br
+\fIid\fP ID of the device (returned by \fCaddDevice\fP) receiving current frame\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, -1 on error\&. 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBaddDevice\fP 
+.RE
+.PP
+
+.SS "using \fBip_addr\fP =  in_addr"
+
+.SS "using \fBIPPacketReceiveCallback\fP =  int (*)(const void*, int)"
+
+.PP
+Process an IP packet upon receiving it\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP Pointer to the packet\&. 
+.br
+\fIlen\fP Length of the packet\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, -1 on error\&. 
+.RE
+.PP
+\fBSee also\fP
+.RS 4
+\fBaddDevice\fP 
+.RE
+.PP
+
+.SH "Function Documentation"
+.PP 
+.SS "bool operator< (\fBip_addr\fP a, \fBip_addr\fP b)"
+
+.SS "bool operator== (\fBip_addr\fP a, \fBip_addr\fP b)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

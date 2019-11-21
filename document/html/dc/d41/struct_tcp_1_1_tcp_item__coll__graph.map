@@ -1,0 +1,4 @@
+<map id="Tcp::TcpItem" name="Tcp::TcpItem">
+<area shape="rect" id="node1" title="A tcp item with tcp segment and ip address information." alt="" coords="19,92,115,117"/>
+<area shape="rect" id="node2" href="$d6/d74/struct_tcp_1_1_tcp_segment.html" title="A tcp segment." alt="" coords="5,5,129,31"/>
+</map>

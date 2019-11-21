@@ -1,0 +1,71 @@
+.TH "BufferQueue" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BufferQueue
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <tcpbuffer\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "ssize_t \fBwrite\fP (const u_char *buf, size_t nbyte, bool pshflag=false)"
+.br
+.ti -1c
+.RI "ssize_t \fBread\fP (u_char *buf, size_t nbyte)"
+.br
+.ti -1c
+.RI "size_t \fBsize\fP ()"
+.br
+.ti -1c
+.RI "ssize_t \fBcan_get\fP (size_t nbyte)"
+.br
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::deque< u_char > \fBbuffer\fP"
+.br
+.ti -1c
+.RI "std::queue< size_t > \fBpsh_index\fP"
+.br
+.ti -1c
+.RI "std::shared_mutex \fBbuf_m\fP"
+.br
+.ti -1c
+.RI "size_t \fBbegin_index\fP = 0"
+.br
+.ti -1c
+.RI "size_t \fBend_index\fP = 0"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "ssize_t BufferQueue::can_get (size_t nbyte)\fC [inline]\fP"
+
+.SS "ssize_t BufferQueue::read (u_char * buf, size_t nbyte)\fC [inline]\fP"
+
+.SS "size_t BufferQueue::size ()\fC [inline]\fP"
+
+.SS "ssize_t BufferQueue::write (const u_char * buf, size_t nbyte, bool pshflag = \fCfalse\fP)\fC [inline]\fP"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "size_t BufferQueue::begin_index = 0\fC [private]\fP"
+
+.SS "std::shared_mutex BufferQueue::buf_m\fC [private]\fP"
+
+.SS "std::deque<u_char> BufferQueue::buffer\fC [private]\fP"
+
+.SS "size_t BufferQueue::end_index = 0\fC [private]\fP"
+
+.SS "std::queue<size_t> BufferQueue::psh_index\fC [private]\fP"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

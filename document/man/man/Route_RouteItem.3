@@ -1,0 +1,101 @@
+.TH "Route::RouteItem" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Route::RouteItem \- Routing item in routing table\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <sdp\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBRouteItem\fP ()=default"
+.br
+.ti -1c
+.RI "\fBRouteItem\fP (const \fBip_addr\fP &_ip, const \fBip_addr\fP &_mask, const \fBDevice::DevicePtr\fP &_dev, const \fBMAC::MacAddr\fP &_mac, int _dist, bool _isDev, int _metric)"
+.br
+.ti -1c
+.RI "bool \fBhaveIp\fP (const \fBip_addr\fP &ip) const"
+.br
+.RI "Whether the item can handle an ip address\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBip_addr\fP \fBipPrefix\fP"
+.br
+.ti -1c
+.RI "\fBip_addr\fP \fBsubNetMask\fP"
+.br
+.ti -1c
+.RI "bool \fBisDev\fP"
+.br
+.ti -1c
+.RI "\fBDevice::DevicePtr\fP \fBdev\fP"
+.br
+.ti -1c
+.RI "\fBMAC::MacAddr\fP \fBnextHopMac\fP"
+.br
+.ti -1c
+.RI "int \fBdist\fP"
+.br
+.ti -1c
+.RI "int \fBmetric\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Routing item in routing table\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Route::RouteItem::RouteItem ()\fC [default]\fP"
+
+.SS "Route::RouteItem::RouteItem (const \fBip_addr\fP & _ip, const \fBip_addr\fP & _mask, const \fBDevice::DevicePtr\fP & _dev, const \fBMAC::MacAddr\fP & _mac, int _dist, bool _isDev, int _metric)"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "bool Route::RouteItem::haveIp (const \fBip_addr\fP & ip) const"
+
+.PP
+Whether the item can handle an ip address\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIip\fP ip 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true can 
+.PP
+false cannot 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "\fBDevice::DevicePtr\fP Route::RouteItem::dev\fC [mutable]\fP"
+
+.SS "int Route::RouteItem::dist\fC [mutable]\fP"
+
+.SS "\fBip_addr\fP Route::RouteItem::ipPrefix"
+
+.SS "bool Route::RouteItem::isDev"
+
+.SS "int Route::RouteItem::metric\fC [mutable]\fP"
+
+.SS "\fBMAC::MacAddr\fP Route::RouteItem::nextHopMac\fC [mutable]\fP"
+
+.SS "\fBip_addr\fP Route::RouteItem::subNetMask"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

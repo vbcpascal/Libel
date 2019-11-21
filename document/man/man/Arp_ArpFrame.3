@@ -1,0 +1,58 @@
+.TH "Arp::ArpFrame" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Arp::ArpFrame \- An ARP frame\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <arp\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fB__attribute__\fP ((__packed__))"
+.br
+.ti -1c
+.RI "\fBArpFrame\fP ()=default"
+.br
+.ti -1c
+.RI "\fBArpFrame\fP (const void *buf)"
+.br
+.ti -1c
+.RI "void \fBsetDefaultHdr\fP (\fBarpOpType\fP opType=ARPOP_REQUEST)"
+.br
+.ti -1c
+.RI "void \fBhtonType\fP ()"
+.br
+.ti -1c
+.RI "void \fBntohType\fP ()"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+An ARP frame\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Arp::ArpFrame::ArpFrame ()\fC [default]\fP"
+
+.SS "Arp::ArpFrame::ArpFrame (const void * buf)\fC [inline]\fP"
+
+.SH "Member Function Documentation"
+.PP 
+.SS "struct Arp::ArpFrame::__attribute__ ((__packed__))\fC [inline]\fP"
+
+.SS "void Arp::ArpFrame::htonType ()"
+
+.SS "void Arp::ArpFrame::ntohType ()"
+
+.SS "void Arp::ArpFrame::setDefaultHdr (\fBarpOpType\fP opType = \fCARPOP_REQUEST\fP)"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,105 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/socket.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/socket.h \- POSIX-compatible socket library supporting TCP protocol on IPv4\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <errno\&.h>\fP
+.br
+\fC#include <netdb\&.h>\fP
+.br
+\fC#include <sys/socket\&.h>\fP
+.br
+\fC#include <sys/types\&.h>\fP
+.br
+\fC#include <vector>\fP
+.br
+\fC#include 'ip\&.h'\fP
+.br
+\fC#include 'router\&.h'\fP
+.br
+\fC#include 'socketaddr\&.h'\fP
+.br
+\fC#include 'tcp\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBSocket::Socket\fP"
+.br
+.RI "A socket class supporting basic information and functions\&. "
+.ti -1c
+.RI "class \fBSocket::SocketManager\fP"
+.br
+.RI "A manager managing all sockets\&. "
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBSocket\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBSocket::SocketPtr\fP = std::shared_ptr< Socket >"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBSocket::tcpDispatcher\fP (const void *buf, int len)"
+.br
+.RI "Dispatch tcp segments to related socket\&. "
+.ti -1c
+.RI "void \fBPrinter::printSocket\fP (const \fBSocket::SocketPtr\fP &sock)"
+.br
+.RI "Print some basic information of a socket\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "constexpr int \fBSocket::MSL\fP = 2"
+.br
+.RI "MSL in TCP protocol\&. "
+.ti -1c
+.RI "SocketManager \fBSocket::sockmgr\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+POSIX-compatible socket library supporting TCP protocol on IPv4\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-24 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,116 @@
+.TH "MAC" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+MAC
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBMacAddr\fP"
+.br
+.RI "A class storing a \fBMAC\fP address\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBoperator==\fP (const \fBMacAddr\fP &ml, const \fBMacAddr\fP &mr)"
+.br
+.ti -1c
+.RI "bool \fBisSameMacAddr\fP (const u_char *macA, const u_char *macB)"
+.br
+.ti -1c
+.RI "bool \fBisBroadcast\fP (const u_char *mac)"
+.br
+.RI "Whether a mac address is broadcast\&. "
+.ti -1c
+.RI "bool \fBisBroadcast\fP (const \fBMacAddr\fP &mac)"
+.br
+.RI "Whether a mac address is broadcast\&. "
+.ti -1c
+.RI "std::string \fBtoString\fP (const u_char *mac)"
+.br
+.RI "Convert a \fBMAC\fP address to cpp string\&. "
+.ti -1c
+.RI "void \fBstrtoMAC\fP (u_char *mac, const char *str)"
+.br
+.RI "Convert a string to \fBMAC\fP address\&. "
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "bool MAC::isBroadcast (const \fBMacAddr\fP & mac)"
+
+.PP
+Whether a mac address is broadcast\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImac\fP mac address 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true is broadcast 
+.PP
+false is not broadcast 
+.RE
+.PP
+
+.SS "bool MAC::isBroadcast (const u_char * mac)"
+
+.PP
+Whether a mac address is broadcast\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImac\fP mac address 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true is broadcast 
+.PP
+false is not broadcast 
+.RE
+.PP
+
+.SS "bool MAC::isSameMacAddr (const u_char * macA, const u_char * macB)"
+
+.SS "bool MAC::operator== (const \fBMacAddr\fP & ml, const \fBMacAddr\fP & mr)"
+
+.SS "void MAC::strtoMAC (u_char * mac, const char * str)"
+
+.PP
+Convert a string to \fBMAC\fP address\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImac\fP dst \fBMAC\fP address 
+.br
+\fIstr\fP \fBMAC\fP address string 
+.RE
+.PP
+
+.SS "std::string MAC::toString (const u_char * mac)"
+
+.PP
+Convert a \fBMAC\fP address to cpp string\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImac\fP \fBMAC\fP address 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+std::string \fBMAC\fP address string 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

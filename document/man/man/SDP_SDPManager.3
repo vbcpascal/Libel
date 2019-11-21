@@ -1,0 +1,66 @@
+.TH "SDP::SDPManager" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SDP::SDPManager \- Manage \fBSDP\fP information for routing algorithm\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <sdp\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBsendSDPPacketsTo\fP (const \fBSDPItemVector\fP &sis, int flag, \fBDevice::DevicePtr\fP withDev, \fBMAC::MacAddr\fP toMac)"
+.br
+.RI "Send a set of \fBSDP\fP items \fIwith Dev\fP \fIto Mac\fP "
+.ti -1c
+.RI "void \fBsendSDPPackets\fP (const \fBSDPItemVector\fP &sis, int flag=0, \fBDevice::DevicePtr\fP withoutDev=nullptr)"
+.br
+.RI "Send a set of \fBSDP\fP items to neibours for all devices / without specific dev\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Manage \fBSDP\fP information for routing algorithm\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void SDP::SDPManager::sendSDPPackets (const \fBSDPItemVector\fP & sis, int flag = \fC0\fP, \fBDevice::DevicePtr\fP withoutDev = \fCnullptr\fP)"
+
+.PP
+Send a set of \fBSDP\fP items to neibours for all devices / without specific dev\&. Used most of time
+.PP
+\fBParameters\fP
+.RS 4
+\fIsis\fP \fBSDP\fP items 
+.br
+\fIflag\fP flag 
+.br
+\fIwithoutDev\fP send by without this device\&. nullptr for all devices 
+.RE
+.PP
+
+.SS "void SDP::SDPManager::sendSDPPacketsTo (const \fBSDPItemVector\fP & sis, int flag, \fBDevice::DevicePtr\fP withDev, \fBMAC::MacAddr\fP toMac)"
+
+.PP
+Send a set of \fBSDP\fP items \fIwith Dev\fP \fIto Mac\fP Used only when a new device added into network
+.PP
+\fBParameters\fP
+.RS 4
+\fIsis\fP \fBSDP\fP items 
+.br
+\fIflag\fP flag 
+.br
+\fIwithDev\fP send by only device 
+.br
+\fItoMac\fP send to the specific mac 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

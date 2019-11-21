@@ -1,0 +1,52 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/tests Directory Reference" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/tests Directory Reference
+.SH SYNOPSIS
+.br
+.PP
+.SS "Files"
+
+.in +1c
+.ti -1c
+.RI "file \fBtestARP\&.cpp\fP"
+.br
+.RI "Test: test ARP request and response\&. Host1 uses \fCtestDeviceManager\fP to listen devices\&. And Host2 runs \fCtestARP\fP with param IP of HOST1\&. "
+.ti -1c
+.RI "file \fBtestChecksum\&.cpp\fP"
+.br
+.RI "Test: checksum function\&. "
+.ti -1c
+.RI "file \fBtestDeviceManager\&.cpp\fP"
+.br
+.RI "Test: open all devices and begin listening on them\&. An warning will be shown when trying to add a device opened\&. "
+.ti -1c
+.RI "file \fBtestIP\&.cpp\fP"
+.br
+.RI "Test: IP packet sent and received\&. "
+.ti -1c
+.RI "file \fBtestList\&.cpp\fP"
+.br
+.RI "Test: list all device in the host\&. "
+.ti -1c
+.RI "file \fBtestRoute\&.cpp\fP"
+.br
+.RI "Test: routing and routing algorithm\&. "
+.ti -1c
+.RI "file \fBtestSDP\&.cpp\fP"
+.br
+.RI "Test: \fBSDP\fP routing algorithm\&. "
+.ti -1c
+.RI "file \fBtestSendFrame\&.cpp\fP"
+.br
+.RI "Test: open one device and send 100 frames to destination \fBMAC\fP address\&. It is necessary to set device with the same program on the dst host\&. "
+.ti -1c
+.RI "file \fBtestSocketClient\&.cpp\fP"
+.br
+.RI "Test: test socket as a client\&. It will call functions of \fBapi::socket\fP if \fCTEST_API\fP defined\&. Or it will call the functions of system\&. "
+.ti -1c
+.RI "file \fBtestSocketServer\&.cpp\fP"
+.br
+.RI "Test: test socket as a server\&. It will call functions of \fBapi::socket\fP if \fCTEST_API\fP defined\&. Or it will call the functions of system\&. "
+.in -1c

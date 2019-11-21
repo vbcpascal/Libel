@@ -1,0 +1,184 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/device.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/device.h \- Library supporting network device management\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <arpa/inet\&.h>\fP
+.br
+\fC#include <ifaddrs\&.h>\fP
+.br
+\fC#include <net/if\&.h>\fP
+.br
+\fC#include <pthread\&.h>\fP
+.br
+\fC#include <sys/ioctl\&.h>\fP
+.br
+\fC#include <unistd\&.h>\fP
+.br
+\fC#include <atomic>\fP
+.br
+\fC#include <condition_variable>\fP
+.br
+\fC#include <cstring>\fP
+.br
+\fC#include <iostream>\fP
+.br
+\fC#include <map>\fP
+.br
+\fC#include <memory>\fP
+.br
+\fC#include <mutex>\fP
+.br
+\fC#include <queue>\fP
+.br
+\fC#include <set>\fP
+.br
+\fC#include <string>\fP
+.br
+\fC#include <vector>\fP
+.br
+\fC#include 'ether\&.h'\fP
+.br
+\fC#include 'type\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBPcapArgs\fP"
+.br
+.RI "Pcap arguments\&. "
+.ti -1c
+.RI "class \fBDevice::Device\fP"
+.br
+.RI "\fBDevice\fP created by addDevice\&. "
+.ti -1c
+.RI "class \fBDevice::DeviceManager\fP"
+.br
+.RI "Control all the devices\&. "
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBDevice\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBFRAME_TIME_OUT\fP   10"
+.br
+.ti -1c
+.RI "#define \fBMAX_FRAME_SIZE\fP   65536"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBDevice::DevicePtr\fP = std::shared_ptr< Device >"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBDeviceId\fP \fBaddDevice\fP (const char *device)"
+.br
+.ti -1c
+.RI "\fBDeviceId\fP \fBfindDevice\fP (const char *device)"
+.br
+.ti -1c
+.RI "int \fBkeepReceiving\fP ()"
+.br
+.RI "Keep receiving packages until all the threads end\&. You may use this at the end of your program\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "DeviceManager \fBDevice::deviceMgr\fP"
+.br
+.ti -1c
+.RI "\fBframeReceiveCallback\fP \fBDevice::callback\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Library supporting network device management\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-10-02 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define FRAME_TIME_OUT   10"
+
+.SS "#define MAX_FRAME_SIZE   65536"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBDeviceId\fP addDevice (const char * device)"
+Add a device to the library for sending/receiving packets\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdevice\fP Name of network device to send/receive packet on\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A non-negative \fIdevice-ID\fP on success, -1 on error\&. 
+.RE
+.PP
+
+.SS "\fBDeviceId\fP findDevice (const char * device)"
+Find a device added by \fCaddDevice\fP\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdevice\fP Name of the network device\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A non-negative \fIdevice-ID\fP on success, -1 if no such device was found\&. 
+.RE
+.PP
+
+.SS "int keepReceiving ()"
+
+.PP
+Keep receiving packages until all the threads end\&. You may use this at the end of your program\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int always be 0 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,85 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/device.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/device.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'device\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBDevice\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBDevice::initDeviceMACAddr\fP (u_char *mac, const char *if_name=\fBDEFAULT_DEV_NAME\fP)"
+.br
+.ti -1c
+.RI "std::pair< \fBip_addr\fP, \fBip_addr\fP > \fBDevice::initDeviceIPAddr\fP (const char *if_name)"
+.br
+.ti -1c
+.RI "void \fBDevice::getPacket\fP (u_char *args, const struct pcap_pkthdr *header, const u_char *packet)"
+.br
+.ti -1c
+.RI "int \fBaddDevice\fP (const char *device)"
+.br
+.ti -1c
+.RI "int \fBfindDevice\fP (const char *device)"
+.br
+.ti -1c
+.RI "int \fBkeepReceiving\fP ()"
+.br
+.RI "Keep receiving packages until all the threads end\&. You may use this at the end of your program\&. "
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "int addDevice (const char * device)"
+Add a device to the library for sending/receiving packets\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdevice\fP Name of network device to send/receive packet on\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A non-negative \fIdevice-ID\fP on success, -1 on error\&. 
+.RE
+.PP
+
+.SS "int findDevice (const char * device)"
+Find a device added by \fCaddDevice\fP\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdevice\fP Name of the network device\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A non-negative \fIdevice-ID\fP on success, -1 if no such device was found\&. 
+.RE
+.PP
+
+.SS "int keepReceiving ()"
+
+.PP
+Keep receiving packages until all the threads end\&. You may use this at the end of your program\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int always be 0 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

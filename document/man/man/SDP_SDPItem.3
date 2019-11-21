@@ -1,0 +1,62 @@
+.TH "SDP::SDPItem" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SDP::SDPItem \- An \fBSDP\fP item used by \fBSDP\fP routing algorithm\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <sdp\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBSDPItem\fP ()=default"
+.br
+.ti -1c
+.RI "\fBSDPItem\fP (const \fBip_addr\fP &_ip, const \fBip_addr\fP &_mask, int _dist, bool _del)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBip_addr\fP \fBipPrefix\fP"
+.br
+.ti -1c
+.RI "\fBip_addr\fP \fBsubNetMask\fP"
+.br
+.ti -1c
+.RI "int \fBdist\fP"
+.br
+.ti -1c
+.RI "bool \fBtoDel\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+An \fBSDP\fP item used by \fBSDP\fP routing algorithm\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "SDP::SDPItem::SDPItem ()\fC [default]\fP"
+
+.SS "SDP::SDPItem::SDPItem (const \fBip_addr\fP & _ip, const \fBip_addr\fP & _mask, int _dist, bool _del)\fC [inline]\fP"
+
+.SH "Member Data Documentation"
+.PP 
+.SS "int SDP::SDPItem::dist"
+
+.SS "\fBip_addr\fP SDP::SDPItem::ipPrefix"
+
+.SS "\fBip_addr\fP SDP::SDPItem::subNetMask"
+
+.SS "bool SDP::SDPItem::toDel"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

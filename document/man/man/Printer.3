@@ -1,0 +1,234 @@
+.TH "Printer" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Printer
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBprintArpTable\fP ()"
+.br
+.RI "Print current ARP table\&. "
+.ti -1c
+.RI "void \fBprintArpFrame\fP (const \fBArp::ArpFrame\fP &af, bool sender=false)"
+.br
+.RI "Print an ARP frame\&. "
+.ti -1c
+.RI "void \fBprintMAC\fP (const u_char *mac, const std::string end='\\n')"
+.br
+.RI "Print a \fBMAC\fP address\&. "
+.ti -1c
+.RI "void \fBprintEtherFrame\fP (const \fBEther::EtherFrame\fP &ef, int col=0, int option=\fBe_PRINT_ALL\fP)"
+.br
+.RI "Print a EtherFrame object\&. "
+.ti -1c
+.RI "void \fBprint\fP (const u_char *buf, int len, int placeholder=0)"
+.br
+.RI "print a common payload data "
+.ti -1c
+.RI "void \fBprintIp\fP (const \fBip_addr\fP &ip, bool newline=true)"
+.br
+.RI "Print IP\&. "
+.ti -1c
+.RI "void \fBprintIpPacket\fP (const \fBIp::IpPacket\fP &ipp, bool sender=false)"
+.br
+.RI "Print an ip packet\&. "
+.ti -1c
+.RI "void \fBprintRouteItem\fP (const \fBRoute::RouteItem\fP &r)"
+.br
+.ti -1c
+.RI "void \fBprintRouteTable\fP ()"
+.br
+.ti -1c
+.RI "void \fBprintSDP\fP (const SDP::SDPPacket &sdpp, bool sender=false)"
+.br
+.RI "Print a \fBSDP\fP packet\&. "
+.ti -1c
+.RI "void \fBprintSocket\fP (const \fBSocket::SocketPtr\fP &sock)"
+.br
+.RI "Print some basic information of a socket\&. "
+.ti -1c
+.RI "void \fBprintTcpItem\fP (const \fBTcp::TcpItem\fP &ts, bool sender=false, std::string info='')"
+.br
+.RI "Print a tcp item\&. "
+.ti -1c
+.RI "void \fBprintSeq\fP (const \fBTcp::Sequence::SeqSet\fP &ss)"
+.br
+.RI "Print a sequence number set\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "std::map< u_short, std::string > \fBarpOpTypeNameMap\fP"
+.br
+.ti -1c
+.RI "std::map< u_char, std::string > \fBipProtoNameMap\fP"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void Printer::print (const u_char * buf, int len, int placeholder = \fC0\fP)"
+
+.PP
+print a common payload data 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP buffer to print 
+.br
+\fIlen\fP length to print 
+.br
+\fIplaceholder\fP number of placeholder 
+.RE
+.PP
+
+.SS "void Printer::printArpFrame (const \fBArp::ArpFrame\fP & af, bool sender = \fCfalse\fP)"
+
+.PP
+Print an ARP frame\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIaf\fP ARP frame 
+.br
+\fIsender\fP is sender or receiver 
+.RE
+.PP
+
+.SS "void Printer::printArpTable ()"
+
+.PP
+Print current ARP table\&. 
+.SS "void Printer::printEtherFrame (const \fBEther::EtherFrame\fP & ef, int col = \fC0\fP, int option = \fC\fBe_PRINT_ALL\fP\fP)"
+
+.PP
+Print a EtherFrame object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIef\fP EtherFrame object 
+.br
+\fIcol\fP column shown for frame payload\&. if col = 0, only brief information will be shown\&. 
+.br
+\fIoption\fP option 
+.RE
+.PP
+
+.SS "void Printer::printIp (const \fBip_addr\fP & ip, bool newline = \fCtrue\fP)"
+
+.PP
+Print IP\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIip\fP ip address 
+.br
+\fInewline\fP whether a newline after printing 
+.RE
+.PP
+
+.SS "void Printer::printIpPacket (const \fBIp::IpPacket\fP & ipp, bool sender = \fCfalse\fP)"
+
+.PP
+Print an ip packet\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIipp\fP ip packet 
+.br
+\fIsender\fP whether it's the sender 
+.RE
+.PP
+
+.SS "void Printer::printMAC (const u_char * mac, const std::string end = \fC'\\n'\fP)"
+
+.PP
+Print a \fBMAC\fP address\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImac\fP \fBMAC\fP address 
+.br
+\fIend\fP string print at the end 
+.RE
+.PP
+
+.SS "void Printer::printRouteItem (const \fBRoute::RouteItem\fP & r)"
+
+.SS "void Printer::printRouteTable ()"
+
+.SS "void Printer::printSDP (const SDP::SDPPacket & sdpp, bool sender = \fCfalse\fP)"
+
+.PP
+Print a \fBSDP\fP packet\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsdpp\fP \fBSDP\fP packet 
+.br
+\fIsender\fP whether is sender 
+.RE
+.PP
+
+.SS "void Printer::printSeq (const \fBTcp::Sequence::SeqSet\fP & ss)"
+
+.PP
+Print a sequence number set\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIss\fP sequence number set 
+.RE
+.PP
+
+.SS "void Printer::printSocket (const \fBSocket::SocketPtr\fP & sock)"
+
+.PP
+Print some basic information of a socket\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsock\fP socket to print 
+.RE
+.PP
+
+.SS "void Printer::printTcpItem (const \fBTcp::TcpItem\fP & ts, bool sender = \fCfalse\fP, std::string info = \fC''\fP)"
+
+.PP
+Print a tcp item\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIts\fP tcp segment 
+.br
+\fIsender\fP whether is sender 
+.br
+\fIinfo\fP more information show finally 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "std::map<u_short, std::string> Printer::arpOpTypeNameMap"
+\fBInitial value:\fP
+.PP
+.nf
+{
+    {ARPOP_REQUEST, "\033[35mRequest\033[0m"},
+    {ARPOP_REPLY, "\033[36mREPLY\033[0m"}}
+.fi
+.SS "std::map<u_char, std::string> Printer::ipProtoNameMap"
+\fBInitial value:\fP
+.PP
+.nf
+{
+    {IPPROTO_TCP, "\033[35mTCP\033[0m"}, {IPPROTO_UDP, "\033[36mUDP\033[0m"}}
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

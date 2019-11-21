@@ -1,0 +1,101 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/include/tcpseq.h" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/include/tcpseq.h \- TCP sequence number\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <netinet/tcp\&.h>\fP
+.br
+\fC#include <atomic>\fP
+.br
+\fC#include <thread>\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBTcp::Sequence::ISNGenerator\fP"
+.br
+.RI "To generate initial sequence number\&. "
+.ti -1c
+.RI "struct \fBTcp::Sequence::SeqSet\fP"
+.br
+.RI "\fBSequence\fP set in a communication\&. "
+.in -1c
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBTcp\fP"
+.br
+.ti -1c
+.RI " \fBTcp::Sequence\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBSEQ_ZERO\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBTcp::Sequence::lessThan\fP (tcp_seq lhs, tcp_seq rhs, tcp_seq base)"
+.br
+.ti -1c
+.RI "bool \fBTcp::Sequence::greaterThan\fP (tcp_seq lhs, tcp_seq rhs, tcp_seq base)"
+.br
+.ti -1c
+.RI "bool \fBTcp::Sequence::equalTo\fP (tcp_seq lhs, tcp_seq rhs)"
+.br
+.ti -1c
+.RI "void \fBPrinter::printSeq\fP (const \fBTcp::Sequence::SeqSet\fP &ss)"
+.br
+.RI "Print a sequence number set\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "ISNGenerator \fBTcp::Sequence::isnGen\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+TCP sequence number\&. 
+
+
+.PP
+\fBAuthor\fP
+.RS 4
+guanzhichao (vbcpascal@gmail.com) 
+.RE
+.PP
+\fBVersion\fP
+.RS 4
+0\&.1 
+.RE
+.PP
+\fBDate\fP
+.RS 4
+2019-11-16 
+.RE
+.PP
+
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define SEQ_ZERO"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

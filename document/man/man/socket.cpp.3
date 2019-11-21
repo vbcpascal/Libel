@@ -1,0 +1,57 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/socket.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/socket.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'socket\&.h'\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBSocket\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBWAIT_CRITICAL_CHANGE\fP(state)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBSocket::tcpDispatcher\fP (const void *buf, int len)"
+.br
+.RI "Dispatch tcp segments to related socket\&. "
+.ti -1c
+.RI "void \fBPrinter::printSocket\fP (const \fBSocket::SocketPtr\fP &sock)"
+.br
+.RI "Print some basic information of a socket\&. "
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define WAIT_CRITICAL_CHANGE(state)"
+\fBValue:\fP
+.PP
+.nf
+{                                                             \
+    stcclk\&.lock();                                              \
+    tcpWorker\&.stCriticalChangeCv\&.wait(stcclk, [&] {             \
+      return tcpWorker\&.getCriticalSt() == Tcp::TcpState::state; \
+    });                                                         \
+    stcclk\&.unlock();                                            \
+  }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,76 @@
+.TH "/Users/guanzhichao/course/计算机网络/protocol/src/ether.cpp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Users/guanzhichao/course/计算机网络/protocol/src/ether.cpp
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'ether\&.h'\fP
+.br
+\fC#include <cstdint>\fP
+.br
+\fC#include <map>\fP
+.br
+
+.SS "Namespaces"
+
+.in +1c
+.ti -1c
+.RI " \fBMAC\fP"
+.br
+.ti -1c
+.RI " \fBEther\fP"
+.br
+.ti -1c
+.RI " \fBPrinter\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBMAC::operator==\fP (const MacAddr &ml, const MacAddr &mr)"
+.br
+.ti -1c
+.RI "std::string \fBMAC::toString\fP (const u_char *mac)"
+.br
+.RI "Convert a \fBMAC\fP address to cpp string\&. "
+.ti -1c
+.RI "void \fBMAC::strtoMAC\fP (u_char *mac, const char *str)"
+.br
+.RI "Convert a string to \fBMAC\fP address\&. "
+.ti -1c
+.RI "bool \fBMAC::isSameMacAddr\fP (const u_char *macA, const u_char *macB)"
+.br
+.ti -1c
+.RI "bool \fBMAC::isBroadcast\fP (const u_char *mac)"
+.br
+.RI "Whether a mac address is broadcast\&. "
+.ti -1c
+.RI "bool \fBMAC::isBroadcast\fP (const MacAddr &mac)"
+.br
+.RI "Whether a mac address is broadcast\&. "
+.ti -1c
+.RI "std::string \fBetherToStr\fP (uint16_t type)"
+.br
+.ti -1c
+.RI "void \fBPrinter::printMAC\fP (const u_char *mac, const std::string end='\\n')"
+.br
+.RI "Print a \fBMAC\fP address\&. "
+.ti -1c
+.RI "void \fBPrinter::printEtherFrame\fP (const \fBEther::EtherFrame\fP &ef, int col=0, int option=\fBe_PRINT_ALL\fP)"
+.br
+.RI "Print a EtherFrame object\&. "
+.ti -1c
+.RI "void \fBPrinter::print\fP (const u_char *buf, int len, int placeholder=0)"
+.br
+.RI "print a common payload data "
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "std::string etherToStr (uint16_t type)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.

@@ -1,0 +1,89 @@
+.TH "Arp" 3 "Fri Nov 22 2019" "TCP/IP Ptotocol" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Arp
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBArpFrame\fP"
+.br
+.RI "An ARP frame\&. "
+.ti -1c
+.RI "class \fBArpManager\fP"
+.br
+.RI "Manage all ARP items, request/reply an ARP frame\&. "
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "using \fBarpOpType\fP = int"
+.br
+.RI "The value of ar_op defined in if_arp\&.h\&. "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBarpCallBack\fP (const void *buf, int len, \fBDeviceId\fP id)"
+.br
+.RI "Default ARP frame callback function\&. "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "constexpr int \fBARP_TIMEOUT\fP = 1"
+.br
+.RI "timeout of arp reply (second) "
+.ti -1c
+.RI "\fBArpManager\fP \fBarpMgr\fP"
+.br
+.RI "unique ARP Manager "
+.in -1c
+.SH "Typedef Documentation"
+.PP 
+.SS "using \fBArp::arpOpType\fP = typedef int"
+
+.PP
+The value of ar_op defined in if_arp\&.h\&. should be ARPOP_REQUEST or ARPOP_REPLY in this lab; 
+.SH "Function Documentation"
+.PP 
+.SS "int Arp::arpCallBack (const void * buf, int len, \fBDeviceId\fP id)"
+
+.PP
+Default ARP frame callback function\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuf\fP pointer to the payload of Ethernet frame received 
+.br
+\fIlen\fP the length of payload of Ethernet frame received 
+.br
+\fIid\fP id of device 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+int 0 on success, -1 on error 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "constexpr int Arp::ARP_TIMEOUT = 1\fC [constexpr]\fP"
+
+.PP
+timeout of arp reply (second) 
+.SS "\fBArpManager\fP Arp::arpMgr"
+
+.PP
+unique ARP Manager 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for TCP/IP Ptotocol from the source code\&.
