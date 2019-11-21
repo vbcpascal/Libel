@@ -143,9 +143,8 @@ void printEtherFrame(const Ether::EtherFrame& ef, int col, int option) {
 }
 
 void print(const u_char* buf, int len, int placeholder) {
-  int col = 2;
-  int index = 0;
-  for (int i = 0; i < len + placeholder; ++i) {
+  int col = 2, index = 0, tl = len + placeholder;
+  for (int i = 0; i < tl; ++i) {
     if (i != 0 && i % (8 * col) == 0)
       printf("\n");
     else if (i != 0 && i % 8 == 0)

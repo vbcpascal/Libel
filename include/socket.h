@@ -49,7 +49,7 @@ class Socket {
   int connect(const sockaddr* address, socklen_t address_len);
   ssize_t read(u_char* buf, size_t nbyte);
   ssize_t write(const u_char* buf, size_t nbyte);
-  ssize_t send(const Tcp::TcpItem& ti);
+  ssize_t send(Tcp::TcpItem& ti);
   int close();
 };
 using SocketPtr = std::shared_ptr<Socket>;

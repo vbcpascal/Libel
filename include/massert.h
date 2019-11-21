@@ -21,7 +21,7 @@
 #define ASSERT(Expr, Msg, ...)                    \
   {                                               \
     if (!(Expr)) {                                \
-      const size_t BUFSIZE = 255;                 \
+      const std::size_t BUFSIZE = 255;            \
       char buf[BUFSIZE];                          \
       snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__); \
       fprintf(stderr,                             \
@@ -41,7 +41,7 @@
 
 #define LOG(Title, Msg, ...)                      \
   {                                               \
-    const size_t BUFSIZE = 255;                   \
+    const std::size_t BUFSIZE = 255;              \
     char buf[BUFSIZE];                            \
     snprintf(buf, BUFSIZE, Msg, ##__VA_ARGS__);   \
     fprintf(stderr, "[ %s ] \t%s\n", Title, buf); \

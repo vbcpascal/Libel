@@ -5,16 +5,6 @@ namespace Device {
 DeviceManager deviceMgr;
 frameReceiveCallback callback;
 
-struct pcapArgs {
-  DeviceId id;
-  std::string name;
-  u_char mac[ETHER_ADDR_LEN];
-
-  pcapArgs(DeviceId id, std::string name, u_char* m) : id(id), name(name) {
-    std::memcpy(mac, m, ETHER_ADDR_LEN);
-  }
-};
-
 int initDeviceMACAddr(u_char* mac, const char* if_name = DEFAULT_DEV_NAME) {
 #ifdef __APPLE__
   ifaddrs* iflist;
@@ -74,8 +64,8 @@ void getPacket(u_char* args, const struct pcap_pkthdr* header,
                const u_char* packet) {
   // args may be useless?(10.2)
   // NO!!(10.3)
-  pcapArgs* pa = reinterpret_cast<pcapArgs*>(args);
-
+  if (!args) return;
+  PcapArgs* pa = reinterpret_cast<PcapArgs*>(args);
   int len = header->len;
   if (len != static_cast<int>(header->caplen)) {
     LOG_ERR("Data Lost.");
@@ -102,10 +92,16 @@ void Device::badDevice() {
 Device::~Device() {
   stopSniffing();
   if (pcap) pcap_close(pcap);
+  closed = true;
+  senderCv.notify_all();
+  if (pcapArgs) {
+    delete pcapArgs;
+  };
 }
 
 Device::Device(std::string name, bool sniff)
     : name(name), pcap(nullptr), sniffing(false) {
+  pcapArgs = nullptr;
   id = (max_id++);
 
   // get MAC
@@ -173,13 +169,14 @@ int Device::startSniffing() {
   if (sniffing) return -1;
 
   sniffing = true;
-  pcapArgs* pa = new pcapArgs(id, name, mac);
+  pcapArgs = new PcapArgs(id, name, mac);
   if (!pcap) {
     LOG_ERR("No pcap.");
     return -1;
   }
-  sniffingThread = std::thread(
-      [=]() { pcap_loop(pcap, -1, getPacket, reinterpret_cast<u_char*>(pa)); });
+  sniffingThread = std::thread([=]() {
+    pcap_loop(pcap, -1, getPacket, reinterpret_cast<u_char*>(pcapArgs));
+  });
   return 0;
 }
 
@@ -204,7 +201,8 @@ void Device::senderLoop() {
 
   while (true) {
     lk.lock();
-    senderCv.wait(lk, [&]() { return sender.size() > 0; });
+    senderCv.wait(lk, [&]() { return (closed || (sender.size()) > 0); });
+    if (closed) return;
     while (sender.size()) {
       auto frame = sender.front();
       sender.pop();

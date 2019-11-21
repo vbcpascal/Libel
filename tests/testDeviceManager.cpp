@@ -26,8 +26,7 @@ int myCallback(const void* buf, int len, DeviceId id) {
 
 int main(int argc, char* argv[]) {
   // choose one between next two
-  // api::setFrameReceiveCallback(myCallback);
-  api::init();
+  api::setFrameReceiveCallback(myCallback);
 
   // add all device
   int cnt = Device::deviceMgr.addAllDevice();

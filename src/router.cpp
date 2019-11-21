@@ -68,6 +68,7 @@ void Router::init() {
   // Printer::printRouteTable();
   sendRoutingTable(SDPFLAG_ISNEW, {}, {});
   loopThread = std::thread([&]() { this->routerWorkingLoop(); });
+  loopThread.detach();
 }
 
 void Router::sendRoutingTable(int flag,

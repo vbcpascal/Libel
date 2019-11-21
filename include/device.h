@@ -16,6 +16,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include <atomic>
 #include <condition_variable>
 #include <cstring>
 #include <iostream>
@@ -33,6 +34,16 @@
 // 0 means no time out
 #define FRAME_TIME_OUT 10
 #define MAX_FRAME_SIZE 65536
+
+struct PcapArgs {
+  DeviceId id;
+  std::string name;
+  u_char mac[ETHER_ADDR_LEN];
+
+  PcapArgs(DeviceId id, std::string name, u_char *m) : id(id), name(name) {
+    std::memcpy(mac, m, ETHER_ADDR_LEN);
+  }
+};
 
 namespace Device {
 
@@ -129,6 +140,8 @@ class Device {
   int stopSniffing();
 
  private:
+  bool closed = false;
+
   static DeviceId max_id;      // max id in devices
   DeviceId id;                 // unique id for deivce
   std::string name;            // name of device
@@ -136,8 +149,9 @@ class Device {
   ip_addr ip;                  // ip of device
   ip_addr subnetMask;          // subnet mask of device
 
-  pcap_t *pcap;   // a pcap struct pointer
-  bool sniffing;  // is sniffing
+  pcap_t *pcap;        // a pcap struct pointer
+  bool sniffing;       // is sniffing
+  PcapArgs *pcapArgs;  // pcap args
 
   std::queue<Ether::EtherFrame> sender;  // frame queue to send
   void badDevice();    // delete and release id when get a bad device

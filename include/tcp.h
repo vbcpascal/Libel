@@ -37,14 +37,20 @@
 namespace Tcp {
 extern Sequence::ISNGenerator isnGen;
 
-constexpr int tcpTimeout = 10;
-constexpr int tcpMaxRetrans = 0;
+constexpr int tcpTimeout = 3;
+constexpr int tcpMaxRetrans = 2;
 
 class TcpWorker {
  public:
+  bool closed = false;
+
   std::atomic_bool syned;
   std::atomic<TcpState> st;          // Current state of TCP connection
   std::atomic<TcpState> criticalSt;  // Critical State, for DFA
+  std::condition_variable stSameCv;  // they are the same!
+  std::condition_variable stCriticalChangeCv;  // Critical Stage changed
+  std::mutex stSameCv_m;
+  std::mutex stCCCv_m;
 
   Sequence::SeqSet seq;               // Sequence number
   std::shared_mutex seq_m;            // Mutex of sequence number
@@ -52,13 +58,17 @@ class TcpWorker {
   std::set<tcp_seq> abandonedSeq;     // Abandoned sequence number
   std::mutex abanseq_m;
 
-  std::queue<TcpItem> sendList;  // Queue of segment to send
-  BufferQueue recvBuf;           // List of segment received
-  std::shared_mutex sendlst_m;   // Mutex of sendList
-  std::shared_mutex recvbuf_m;   // Mutex of recvList
+  std::queue<TcpItem> sendList;          // Queue of segment to send
+  std::queue<TcpItem> sendNonBlockList;  // Queue of segment to send
+  BufferQueue recvBuf;                   // List of segment received
+  std::shared_mutex sendlst_m;           // Mutex of sendList
+  std::shared_mutex sendNonBlocklst_m;   // Mutex of sendList
+  std::shared_mutex recvbuf_m;           // Mutex of recvBuffer
   std::thread sender;
-  std::condition_variable_any sendCv;  // wait for not empty
-  std::condition_variable_any recvCv;  // wait for not empty
+  std::thread senderNonBlock;
+  std::condition_variable_any sendCv;          // wait for not empty
+  std::condition_variable_any sendNonBlockCv;  // wait for not empty
+  std::condition_variable_any recvCv;          // wait for not empty
 
   int backlog;  // ength of the listen queue. 0 for any
   std::queue<std::pair<Socket::SocketAddr, tcp_seq>>
@@ -68,15 +78,17 @@ class TcpWorker {
 
  public:
   TcpWorker();
+  ~TcpWorker();
   TcpState getSt();
   void setSt(TcpState newst);
   TcpState getCriticalSt();
   void setCriticalSt(TcpState newst);
 
-  ssize_t send(const TcpItem& ti);
+  ssize_t send(TcpItem& ti);
   ssize_t read(u_char* buf, size_t nbyte);
   void handler(TcpItem& ts);
   void senderLoop();
+  void senderNonBlockLoop();
 };
 
 }  // namespace Tcp

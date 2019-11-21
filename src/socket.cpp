@@ -1,5 +1,14 @@
 #include "socket.h"
 
+#define WAIT_CRITICAL_CHANGE(state)                             \
+  {                                                             \
+    stcclk.lock();                                              \
+    tcpWorker.stCriticalChangeCv.wait(stcclk, [&] {             \
+      return tcpWorker.getCriticalSt() == Tcp::TcpState::state; \
+    });                                                         \
+    stcclk.unlock();                                            \
+  }
+
 namespace Socket {
 
 Socket::Socket(int domain, int type, int protocol, int fd)
@@ -38,7 +47,7 @@ int Socket::accept(sockaddr* address, socklen_t* address_len) {
   sock->dst = saddr_seq.first;
   sock->tcpWorker.seq.initRcvIsn(saddr_seq.second);
   sock->tcpWorker.syned.store(true);
-  Printer::printSocket(sock);
+  // Printer::printSocket(sock);
 
   Tcp::TcpSegment ts(sock->src.port, sock->dst.port);
   ts.setFlags(TH_SYN + TH_ACK);
@@ -48,7 +57,7 @@ int Socket::accept(sockaddr* address, socklen_t* address_len) {
   sock->tcpWorker.setSt(Tcp::TcpState::SYN_RECEIVED);
 
   if (sock->send(ti) < 0) {
-    // failed. TODO
+    tcpWorker.setSt(Tcp::TcpState::CLOSED);
     RET_SETERRNO(ECONNABORTED);
   }
 
@@ -57,7 +66,7 @@ int Socket::accept(sockaddr* address, socklen_t* address_len) {
     sock->tcpWorker.setSt(Tcp::TcpState::ESTABLISHED);
   }
 
-  memcpy(address, &saddr_seq, sizeof(sockaddr));
+  saddr_seq.first.get(address);
   *address_len = INET_ADDRSTRLEN;
   return fd;
 }
@@ -65,12 +74,17 @@ int Socket::accept(sockaddr* address, socklen_t* address_len) {
 int Socket::connect(const sockaddr* address, socklen_t address_len) {
   std::unique_lock<std::mutex> lock(mu);
   SocketAddr dstSaddr(address);
+  std::cout << dstSaddr.toStr() << std::endl;
   dst = dstSaddr;
 
   // set src ip and port (if not bind)
   auto addr_in = dst.ip;
   if (src.ip.s_addr == 0) {
     Device::DevicePtr dev = Route::router.lookup(addr_in).dev;
+    if (!dev) {
+      LOG_ERR("Device not found.");
+      return -1;
+    }
     src.ip = dev->getIp();
   }
   if (src.port == 0) {
@@ -95,17 +109,14 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
     tcpWorker.setSt(Tcp::TcpState::SYN_SENT);
 
     if (this->send(ti) < 0) {
-      // TODO: connect failed
+      tcpWorker.setSt(Tcp::TcpState::CLOSED);
       RET_SETERRNO(ETIMEDOUT);
     }
   }
 
   // ^ STN_SENT --[rcv SYN/ACK, snd ACK]--> ESTAB
   if (tcpWorker.getCriticalSt() == Tcp::TcpState::ESTABLISHED) {
-    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq, tcpWorker.seq_m);
-    Printer::printTcpItem(ti);
     tcpWorker.setSt(Tcp::TcpState::ESTABLISHED);
-    this->send(ti);
     return 0;
   }
 
@@ -118,7 +129,7 @@ int Socket::connect(const sockaddr* address, socklen_t address_len) {
     tcpWorker.setSt(Tcp::TcpState::SYN_RECEIVED);
 
     if (this->send(ti) < 0) {
-      // TODO: connect failed
+      tcpWorker.setSt(Tcp::TcpState::CLOSED);
       RET_SETERRNO(ETIMEDOUT);
     }
   }
@@ -137,43 +148,48 @@ ssize_t Socket::read(u_char* buf, size_t nbyte) {
 }
 
 ssize_t Socket::write(const u_char* buf, size_t nbyte) {
-  tcp_seq s = tcpWorker.seq.allocateWithLen(nbyte);
   Tcp::TcpSegment ts(src.port, dst.port);
+  ts.setFlags(TH_PUSH + TH_ACK);
   ts.setPayload(buf, nbyte);
-  ts.setSeq(s);
+  ts.setSeq(tcpWorker.seq, nbyte);
+  ts.setAck(tcpWorker.seq.rcv_nxt);
   Tcp::TcpItem ti(ts, src.ip, dst.ip);
 
   return tcpWorker.send(ti);
 }
 
-ssize_t Socket::send(const Tcp::TcpItem& ti) { return tcpWorker.send(ti); }
+ssize_t Socket::send(Tcp::TcpItem& ti) { return tcpWorker.send(ti); }
 
 int Socket::close() {
+  std::unique_lock stcclk(tcpWorker.stCCCv_m, std::defer_lock);
+
   // SYN_RCVD --[CLOSE, snd FIN]--> FIN_WAIT_1
   if (tcpWorker.getSt() == Tcp::TcpState::LISTEN) {
     Tcp::TcpSegment ts(src.port, dst.port);
-    ts.setFlags(TH_FIN);
+    ts.setFlags(TH_FIN + TH_ACK);
     ts.setSeq(tcpWorker.seq, 1);
     ts.setAck(tcpWorker.seq.rcv_nxt);
     Tcp::TcpItem ti(ts, src.ip, dst.ip);
     tcpWorker.setSt(Tcp::TcpState::FIN_WAIT_1);
 
     if (this->send(ti) < 0) {
-      // TODO
+      tcpWorker.setSt(Tcp::TcpState::CLOSED);
+      return 0;
     }
   }
 
   // ESTAB --[CLOSE, snd FIN]--> FIN_WAIT_1
   if (tcpWorker.getSt() == Tcp::TcpState::ESTABLISHED) {
     Tcp::TcpSegment ts(src.port, dst.port);
-    ts.setFlags(TH_FIN);
+    ts.setFlags(TH_FIN + TH_ACK);
     ts.setSeq(tcpWorker.seq, 1);
     ts.setAck(tcpWorker.seq.rcv_nxt);
     Tcp::TcpItem ti(ts, src.ip, dst.ip);
     tcpWorker.setSt(Tcp::TcpState::FIN_WAIT_1);
 
     if (this->send(ti) < 0) {
-      // TODO
+      tcpWorker.setSt(Tcp::TcpState::CLOSED);
+      return 0;
     }
   }
 
@@ -192,16 +208,8 @@ int Socket::close() {
   }
 
   // ^ FIN_WAIT_2 --[rcv FIN, snd ACK]--> TIME_WAIT
-  if (tcpWorker.getSt() == Tcp::TcpState::FIN_WAIT_2 &&
-      tcpWorker.getCriticalSt() == Tcp::TcpState::TIMED_WAIT) {
-    auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq, tcpWorker.seq_m);
-    tcpWorker.setSt(Tcp::TcpState::TIMED_WAIT);
-    this->send(ti);
-  }
-
-  // ^ FIN_WAIT_1 --[rcv FIN, snd ACK]--> CLOSING
-  if (tcpWorker.getSt() == Tcp::TcpState::FIN_WAIT_1 &&
-      tcpWorker.getCriticalSt() == Tcp::TcpState::CLOSING) {
+  if (tcpWorker.getSt() == Tcp::TcpState::FIN_WAIT_2) {
+    WAIT_CRITICAL_CHANGE(TIMED_WAIT);
     auto ti = Tcp::buildAckItem(src, dst, tcpWorker.seq, tcpWorker.seq_m);
     tcpWorker.setSt(Tcp::TcpState::TIMED_WAIT);
     this->send(ti);
@@ -219,17 +227,18 @@ int Socket::close() {
     tcpWorker.setSt(Tcp::TcpState::CLOSED);
   }
 
-  // CLOSE_WAIT --[CLOSE, snd FIN]--> WAIT
+  // CLOSE_WAIT --[CLOSE, snd FIN]--> LAST_ACK
   if (tcpWorker.getSt() == Tcp::TcpState::CLOSE_WAIT) {
     Tcp::TcpSegment ts(src.port, dst.port);
-    ts.setFlags(TH_FIN);
+    ts.setFlags(TH_FIN + TH_ACK);
     ts.setSeq(tcpWorker.seq, 1);
     ts.setAck(tcpWorker.seq.rcv_nxt);
     Tcp::TcpItem ti(ts, src.ip, dst.ip);
     tcpWorker.setSt(Tcp::TcpState::LAST_ACK);
 
     if (this->send(ti) < 0) {
-      // todo
+      tcpWorker.setSt(Tcp::TcpState::CLOSED);
+      return 0;
     }
   }
 
@@ -334,11 +343,12 @@ int tcpDispatcher(const void* buf, int len) {
   SocketAddr srcSaddr, dstSaddr;
   srcSaddr.ip = ipp.hdr.ip_src;
   dstSaddr.ip = ipp.hdr.ip_dst;
-  LOG_ERR("%d %d", len, ipp.hdr.ip_hl);
   Tcp::TcpSegment ts((u_char*)ipp.data, len - ipp.hdr.ip_hl * 4);
-  srcSaddr.port = ts.hdr.th_sport;
-  dstSaddr.port = ts.hdr.th_dport;
   Tcp::TcpItem ti(ts, ipp.hdr.ip_src, ipp.hdr.ip_dst);
+  ti.setChecksum();
+  ti.ntoh();
+  srcSaddr.port = ti.ts.hdr.th_sport;
+  dstSaddr.port = ti.ts.hdr.th_dport;
   // Printer::printIpPacket(ipp);
   Printer::printTcpItem(ti);
 
@@ -359,8 +369,9 @@ int tcpDispatcher(const void* buf, int len) {
 
 namespace Printer {
 void printSocket(const Socket::SocketPtr& sock) {
-  printf("Socket: %d, src=%s, dst=%s, st=%s\n", sock->fd,
+  printf("\033[;1mSocket\033[0m: %d, src=%s, dst=%s, st=%s\n", sock->fd,
          sock->src.toStr().c_str(), sock->dst.toStr().c_str(),
          Tcp::stateToStr(sock->tcpWorker.getSt()).c_str());
+  printf("  Seq: %s", sock->tcpWorker.seq.toStr().c_str());
 }
 }  // namespace Printer

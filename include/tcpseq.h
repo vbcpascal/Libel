@@ -10,9 +10,11 @@
 #ifndef TCPSEQ_H_
 #define TCPSEQ_H_
 
+#define SEQ_ZERO
+
 #include <netinet/tcp.h>
 
-#include <mutex>
+#include <atomic>
 #include <thread>
 
 namespace Tcp::Sequence {
@@ -20,8 +22,7 @@ namespace Tcp::Sequence {
 // To generate initial sequence number
 class ISNGenerator {
  private:
-  tcp_seq isn;
-  std::mutex isn_m;
+  std::atomic<tcp_seq> isn;
   std::thread setter;
 
  public:
@@ -44,6 +45,7 @@ struct SeqSet {
   tcp_seq rcvAckWithLen(int len);
   tcp_seq sndAckWithLen(int len);
   bool tryAndRcvAck(tcphdr hdr);  // no sliding window only
+  std::string toStr() const;
 };
 
 // last ACK == rcv_nxt
@@ -53,5 +55,9 @@ bool greaterThan(tcp_seq lhs, tcp_seq rhs, tcp_seq base);
 bool equalTo(tcp_seq lhs, tcp_seq rhs);
 
 }  // namespace Tcp::Sequence
+
+namespace Printer {
+void printSeq(const Tcp::Sequence::SeqSet& ss);
+}
 
 #endif

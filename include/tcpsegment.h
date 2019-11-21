@@ -19,6 +19,27 @@
 
 namespace Tcp {
 
+#define TCP_TYPE_MAP            \
+  X(FIN, TH_FIN)                \
+  X(SYN, TH_SYN)                \
+  X(RST, TH_RST)                \
+  X(PUSH, TH_PUSH)              \
+  X(ACK, TH_ACK)                \
+  X(URG, TH_URG)                \
+  X(SYN_ACK, (TH_SYN + TH_ACK)) \
+  X(FIN_ACK, (TH_FIN + TH_ACK))
+
+#define X(TCPNAME, TCPFLAG) bool ISTYPE_##TCPNAME(tcphdr t);
+TCP_TYPE_MAP
+#undef X
+
+#define X(TCPNAME, TCPFLAG) bool WITHTYPE_##TCPNAME(tcphdr t);
+TCP_TYPE_MAP
+#undef X
+
+bool TYPE_NONE(tcphdr t);
+std::string tcpFlagStr(int flags);
+
 struct TcpSegment {
   struct __attribute__((__packed__)) {
     tcphdr hdr;
@@ -55,33 +76,36 @@ struct TcpItem {
       : srcIp(src), dstIp(dst), nonblock(nonblock) {}
   TcpItem(const TcpSegment& ts, ip_addr src, ip_addr dst, bool nonblock = false)
       : ts(ts), srcIp(src), dstIp(dst), nonblock(nonblock) {}
+
+  void hton();
+  void ntoh();
+  void setChecksum();
 };
 
+/**
+ * @brief Build an ACK item automatically.
+ *
+ * Only one of ackLen and ackSeq can be set. ackLen will be overwrited by ackSeq
+ * if both of them are set.
+ *
+ * @param src src address
+ * @param dst dst address
+ * @param ss sequence set of TcpWorker
+ * @param seq_m mutex of sequence
+ * @param ackLen the length to acknowledge. default: 1 for control segment
+ * @param ackSeq sequence number to set in ACK
+ * @return TcpItem TCP ACK item built
+ */
 TcpItem buildAckItem(Socket::SocketAddr src, Socket::SocketAddr dst,
                      Sequence::SeqSet& ss, std::shared_mutex& seq_m,
+                     std::optional<int>(ackLen) = 1,
                      std::optional<tcp_seq>(ackSeq) = {});
-
-#define TCP_TYPE_MAP            \
-  X(SYN, TH_SYN)                \
-  X(ACK, TH_ACK)                \
-  X(FIN, TH_FIN)                \
-  X(SYN_ACK, (TH_SYN + TH_ACK)) \
-  X(FIN_ACK, (TH_FIN + TH_ACK))
-
-#define X(TCPNAME, TCPFLAG) bool ISTYPE_##TCPNAME(tcphdr t);
-TCP_TYPE_MAP
-#undef X
-
-#define X(TCPNAME, TCPFLAG) bool WITHTYPE_##TCPNAME(tcphdr t);
-TCP_TYPE_MAP
-#undef X
-
-bool TYPE_NONE(tcphdr t);
 
 }  // namespace Tcp
 
 namespace Printer {
-void printTcpItem(const Tcp::TcpItem& ts, bool sender = false);
+void printTcpItem(const Tcp::TcpItem& ts, bool sender = false,
+                  std::string info = "");
 }
 
 #endif
