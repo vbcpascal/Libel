@@ -1,9 +1,10 @@
 /**
  * @file tcpbuffer.h
- * @author guanzhichao
- * @brief
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
- * @date 2019-11-18
+ * @date 2019-11-15
+ *
+ * @brief Buffer for TCP. Data received will be stored in `BufferQueue`.
  *
  */
 

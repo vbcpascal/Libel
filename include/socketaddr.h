@@ -1,11 +1,10 @@
 /**
  * @file socketaddr.h
- * @author guanzhichao
- * @brief
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-11-02
  *
- * @copyright Copyright (c) 2019
+ * @brief Store a socket address. Providing `SocketAddr` and system `sockaddr`
  *
  */
 

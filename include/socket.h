@@ -1,9 +1,10 @@
 /**
  * @file socket.h
- * @author guanzhichao
- * @brief POSIX-compatible socket library supporting TCP protocol on IPv4.
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-10-24
+ *
+ * @brief POSIX-compatible socket library supporting TCP protocol on IPv4.
  *
  */
 
@@ -23,15 +24,34 @@
 #include "tcp.h"
 
 namespace Socket {
+/**
+ * @brief MSL in TCP protocol
+ *
+ */
 constexpr int MSL = 2;
 
+/**
+ * @brief A socket class supporting basic information and functions.
+ *
+ */
 class Socket {
  public:
   // basic information of a socket
-  int fd;  // file description id
+
+  /**
+   * @brief file description id
+   *
+   */
+  int fd;
+
+  /**
+   * @brief A related tcp worker to send or handle segments with more
+   * information of a socket.
+   *
+   */
+  Tcp::TcpWorker tcpWorker;
   SocketAddr src;
   SocketAddr dst;
-  Tcp::TcpWorker tcpWorker;
 
   // information set when created
   int domain;    // only AF_INET supported
@@ -54,6 +74,10 @@ class Socket {
 };
 using SocketPtr = std::shared_ptr<Socket>;
 
+/**
+ * @brief A manager managing all sockets
+ *
+ */
 class SocketManager {
  public:
   int nextFd = 1024;
@@ -75,11 +99,20 @@ class SocketManager {
 
 extern SocketManager sockmgr;
 
+/**
+ * @brief Dispatch tcp segments to related socket
+ *
+ */
 int tcpDispatcher(const void* buf, int len);
 
 }  // namespace Socket
 
 namespace Printer {
+/**
+ * @brief Print some basic information of a socket
+ *
+ * @param sock socket to print
+ */
 void printSocket(const Socket::SocketPtr& sock);
 }  // namespace Printer
 

@@ -1,9 +1,10 @@
 /**
  * @file massert.h
- * @author guanzhichao
- * @brief Library supporting show message
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
- * @date 2019-10-18
+ * @date 2019-10-02
+ *
+ * @brief Library supporting show message
  *
  */
 

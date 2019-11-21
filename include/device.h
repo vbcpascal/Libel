@@ -1,11 +1,13 @@
 /**
  * @file device.h
- * @author guanzhichao
- * @brief Library supporting network device management.
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-10-02
  *
+ * @brief Library supporting network device management.
+ *
  */
+
 #ifndef DEVICE_H_
 #define DEVICE_H_
 
@@ -35,6 +37,10 @@
 #define FRAME_TIME_OUT 10
 #define MAX_FRAME_SIZE 65536
 
+/**
+ * @brief Pcap arguments
+ *
+ */
 struct PcapArgs {
   DeviceId id;
   std::string name;

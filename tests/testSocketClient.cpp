@@ -1,3 +1,14 @@
+/**
+ * @file testSocketClient.cpp
+ * @author guanzhichao (vbcpascal@gmail.com)
+ * @version 0.1
+ * @date 2019-11-22
+ *
+ * @brief Test: test socket as a client. It will call functions of api::socket
+ * if `TEST_API` defined. Or it will call the functions of system.
+ *
+ */
+
 #include "api.h"
 
 #define TEST_API

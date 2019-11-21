@@ -1,11 +1,10 @@
 /**
- * @file socketstate.h
- * @author guanzhichao
- * @brief
+ * @file tcpstate.h
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
- * @date 2019-11-02
+ * @date 2019-11-17
  *
- * @copyright Copyright (c) 2019
+ * @brief State of TCP(Socket)
  *
  */
 

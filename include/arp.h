@@ -1,9 +1,10 @@
 /**
  * @file arp.h
- * @author guanzhichao
- * @brief Library supporting sending and receiving ARP frame.
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-10-18
+ *
+ * @brief Library supporting sending and receiving ARP frame.
  *
  */
 

@@ -1,9 +1,10 @@
 /**
  * @file api.h
- * @author guanzhichao
- * @brief Library supporting api for users.
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
- * @date 2019-10-18
+ * @date 2019-10-02
+ *
+ * @brief Library supporting api for users.
  *
  */
 #ifndef API_H_
@@ -16,8 +17,21 @@
 #include "tcp.h"
 #include "type.h"
 
+/**
+ * @brief API for users. Only `Socket` namespace will be used if you dont care
+ * about details below TCP.
+ *
+ */
 namespace api {
 
+/**
+ * @brief Socket functions with are similiar with system ones.
+ *
+ * Can be easily called without wrapping. See also:
+ * http://pubs.opengroup.org/onlinepubs/9699919799/functions/sock.html and so
+ * on.
+ *
+ */
 namespace socket {
 int socket(int domain, int type, int protocol);
 int bind(int socket, const struct sockaddr *address, socklen_t address_len);
@@ -117,7 +131,7 @@ int setRoutingTable(const in_addr dest, const in_addr mask,
 int addAllDevice(bool sniff = false);
 
 /**
- * @brief Initial router
+ * @brief Initial router algorithm.
  *
  */
 void initRouter();

@@ -1,9 +1,10 @@
 /**
  * @file tcpsegment.h
- * @author guanzhichao
- * @brief
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
- * @date 2019-11-18
+ * @date 2019-11-15
+ *
+ * @brief TCP flags, TCP segment and TCP item (stored IP address).
  *
  */
 
@@ -11,6 +12,7 @@
 #define TCPSEGMENT_H_
 
 #include <netinet/tcp.h>
+
 #include <shared_mutex>
 
 #include "ip.h"
@@ -29,17 +31,34 @@ namespace Tcp {
   X(SYN_ACK, (TH_SYN + TH_ACK)) \
   X(FIN_ACK, (TH_FIN + TH_ACK))
 
+/**
+ * @brief Whether a tcp segment **IS** the type.
+ *
+ */
 #define X(TCPNAME, TCPFLAG) bool ISTYPE_##TCPNAME(tcphdr t);
 TCP_TYPE_MAP
 #undef X
 
+/**
+ * @brief Whether a tcp segment **WITH** the type.
+ *
+ */
 #define X(TCPNAME, TCPFLAG) bool WITHTYPE_##TCPNAME(tcphdr t);
 TCP_TYPE_MAP
 #undef X
 
+/**
+ * @brief Whether a tcp segment with no flags. This function is useless in real
+ * communication.
+ *
+ */
 bool TYPE_NONE(tcphdr t);
 std::string tcpFlagStr(int flags);
 
+/**
+ * @brief A tcp segment
+ *
+ */
 struct TcpSegment {
   struct __attribute__((__packed__)) {
     tcphdr hdr;
@@ -65,6 +84,10 @@ struct TcpSegment {
   void ntoh();
 };
 
+/**
+ * @brief A tcp item with tcp segment and ip address information
+ *
+ */
 struct TcpItem {
   TcpSegment ts;
   ip_addr srcIp;
@@ -104,8 +127,17 @@ TcpItem buildAckItem(Socket::SocketAddr src, Socket::SocketAddr dst,
 }  // namespace Tcp
 
 namespace Printer {
+
+/**
+ * @brief Print a tcp item
+ *
+ * @param ts tcp segment
+ * @param sender whether is sender
+ * @param info more information show finally
+ */
 void printTcpItem(const Tcp::TcpItem& ts, bool sender = false,
                   std::string info = "");
-}
+                  
+}  // namespace Printer
 
 #endif

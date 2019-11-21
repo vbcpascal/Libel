@@ -1,13 +1,14 @@
 /**
  * @file sdp.h
- * @author guanzhichao
- * @brief Self Destruct Protocol: An Distance Vector Routing protocol
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-10-19
  *
- * @copyright Copyright (c) 2019
+ * @brief Self Destruct Protocol: An Distance Vector Routing protocol. Read
+ * documents for more details.
  *
  */
+
 #ifndef SDP_H_
 #define SDP_H_
 
@@ -67,14 +68,36 @@ class RouteItem {
   bool haveIp(const ip_addr& ip) const;
 };
 
+/**
+ * @brief Compare two `RouteItem` according to prefix length
+ *
+ */
 bool operator<(const RouteItem& rl, const RouteItem& rr);
 
+/**
+ * @brief Get prefix length from mask
+ *
+ * @param mask subnet mask
+ * @return int prefix length
+ */
 int maskToPflen(const in_addr& mask);
+
+/**
+ * @brief Get prefix length from prefix length
+ *
+ * @param pflen prefix length
+ * @return ip_addr subnet mask
+ */
 ip_addr pflenToMask(int pflen);
+
 }  // namespace Route
 
 namespace SDP {
 
+/**
+ * @brief An SDP item used by SDP routing algorithm
+ *
+ */
 class SDPItem {
  public:
   ip_addr ipPrefix;
@@ -89,6 +112,10 @@ class SDPItem {
   }
 };
 
+/**
+ * @brief An SDP packet sent and received
+ *
+ */
 struct __attribute__((__packed__)) SDPPacket {
   uint8_t len;
   uint8_t flag;
@@ -103,6 +130,10 @@ struct __attribute__((__packed__)) SDPPacket {
 
 using SDPItemVector = std::vector<SDPItem>;
 
+/**
+ * @brief Manage SDP information for routing algorithm
+ *
+ */
 class SDPManager {
  public:
   /**
@@ -144,8 +175,14 @@ extern SDPManager sdpMgr;
 #define SDP_ITEMFLAG_DEL 0x1
 
 namespace Printer {
+/**
+ * @brief Print a SDP packet
+ *
+ * @param sdpp SDP packet
+ * @param sender whether is sender
+ */
 void printSDP(const SDP::SDPPacket& sdpp, bool sender = false);
-}
+}  // namespace Printer
 
 /*
  * SDP protocol:

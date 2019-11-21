@@ -1,9 +1,10 @@
 /**
  * @file type.h
- * @author guanzhichao
- * @brief Define some types and constant will be used.
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-10-03
+ *
+ * @brief Define some types and constant will be used.
  *
  */
 

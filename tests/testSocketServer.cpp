@@ -5,11 +5,10 @@
  * @date 2019-11-21
  *
  * @brief Test: test socket as a server. It will call functions of api::socket
- * if TEST_SERVER defined. Or it will call the functions of system.
+ * if `TEST_API` defined. Or it will call the functions of system.
  *
  */
 
-#include <cstdlib>
 #include "api.h"
 
 #define TEST_API

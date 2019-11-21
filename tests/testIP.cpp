@@ -1,3 +1,13 @@
+/**
+ * @file testIP.cpp
+ * @author guanzhichao (vbcpascal@gmail.com)
+ * @version 0.1
+ * @date 2019-11-22
+ *
+ * @brief Test: IP packet sent and received.
+ *
+ */
+
 #include "api.h"
 #include "ip.h"
 

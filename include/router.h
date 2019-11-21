@@ -1,9 +1,10 @@
 /**
  * @file router.h
- * @author guanzhichao
- * @brief Library supporting Router
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-10-18
+ *
+ * @brief Routing table and routing algorithm.
  *
  */
 

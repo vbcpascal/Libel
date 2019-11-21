@@ -4,7 +4,7 @@
  * @version 0.1
  * @date 2019-10-02
  *
- * @brief Test(1): open all devices and begin listening on them. An warning will
+ * @brief Test: open all devices and begin listening on them. An warning will
  * be shown when trying to add a device opened.
  *
  */

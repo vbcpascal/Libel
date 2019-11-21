@@ -1,3 +1,13 @@
+/**
+ * @file testSDP.cpp
+ * @author guanzhichao (vbcpascal@gmail.com)
+ * @version 0.1
+ * @date 2019-11-22
+ *
+ * @brief Test: SDP routing algorithm
+ *
+ */
+
 #include "api.h"
 #include "router.h"
 #include "sdp.h"

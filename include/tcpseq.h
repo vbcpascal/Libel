@@ -1,9 +1,10 @@
 /**
- * @file sequence.h
- * @author guanzhichao
- * @brief
+ * @file tcpseq.h
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
- * @date 2019-11-17
+ * @date 2019-11-16
+ *
+ * @brief TCP sequence number.
  *
  */
 
@@ -19,7 +20,10 @@
 
 namespace Tcp::Sequence {
 
-// To generate initial sequence number
+/**
+ * @brief To generate initial sequence number
+ *
+ */
 class ISNGenerator {
  private:
   std::atomic<tcp_seq> isn;
@@ -33,22 +37,77 @@ class ISNGenerator {
 
 extern ISNGenerator isnGen;
 
+/**
+ * @brief Sequence set in a communication
+ *
+ */
 struct SeqSet {
-  tcp_seq snd_isn;  // sender initial sequence number
-  tcp_seq snd_una;  // oldest unacknowledged seq num
-  tcp_seq snd_nxt;  // next seq num to be sent
-  tcp_seq rcv_isn;  // receive initial sequence number
-  tcp_seq rcv_nxt;  // next seq num expected on an incoming segment
+  /**
+   * @brief sender initial sequence number
+   *
+   */
+  tcp_seq snd_isn;
 
+  /**
+   * @brief oldest unacknowledged seq num
+   *
+   */
+  tcp_seq snd_una;
+
+  /**
+   * @brief next seq num to be sent
+   *
+   */
+  tcp_seq snd_nxt;
+
+  /**
+   * @brief receive initial sequence number
+   *
+   */
+  tcp_seq rcv_isn;
+
+  /**
+   * @brief next seq num expected on an incoming segment
+   *
+   */
+  tcp_seq rcv_nxt;
+
+  /**
+   * @brief Initial `rcv_isn` and `rcv_nxt`
+   *
+   */
   void initRcvIsn(tcp_seq s);
+
+  /**
+   * @brief Allocate sequence number for a segment with length `len`
+   *
+   */
   tcp_seq allocateWithLen(int len);
+
+  /**
+   * @brief Update `snd_una` for an ACK with length `len`
+   *
+   */
   tcp_seq rcvAckWithLen(int len);
+
+  /**
+   * @brief Get the ACK number when sending an ACK with length `len`
+   *
+   */
   tcp_seq sndAckWithLen(int len);
+
+  /**
+   * @brief Compare and update sequence number
+   *
+   */
   bool tryAndRcvAck(tcphdr hdr);  // no sliding window only
+
+  /**
+   * @brief Convert the sequence set to a string
+   *
+   */
   std::string toStr() const;
 };
-
-// last ACK == rcv_nxt
 
 bool lessThan(tcp_seq lhs, tcp_seq rhs, tcp_seq base);
 bool greaterThan(tcp_seq lhs, tcp_seq rhs, tcp_seq base);
@@ -57,7 +116,12 @@ bool equalTo(tcp_seq lhs, tcp_seq rhs);
 }  // namespace Tcp::Sequence
 
 namespace Printer {
+/**
+ * @brief Print a sequence number set
+ *
+ * @param ss sequence number set
+ */
 void printSeq(const Tcp::Sequence::SeqSet& ss);
-}
+}  // namespace Printer
 
 #endif

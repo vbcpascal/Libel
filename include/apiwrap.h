@@ -1,3 +1,13 @@
+/**
+ * @file apiwrap.h
+ * @author guanzhichao (vbcpascal@gmail.com)
+ * @version 0.1
+ * @date 2019-10-28
+ *
+ * @brief Library for user to wrapping.
+ *
+ */
+
 #ifndef APIWRAP_H_
 #define APIWRAP_H_
 

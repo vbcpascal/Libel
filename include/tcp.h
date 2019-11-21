@@ -1,9 +1,10 @@
 /**
  * @file tcp.h
- * @author guanzhichao
- * @brief
+ * @author guanzhichao (vbcpascal@gmail.com)
  * @version 0.1
  * @date 2019-10-24
+ *
+ * @brief Main TCP functions and status.
  *
  */
 
