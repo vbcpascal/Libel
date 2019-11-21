@@ -2,14 +2,16 @@ cmake_minimum_required(VERSION 3.8)
 project(tcp_ip)
 set(LIB_NAME tcp_ip)
 
-SET(CMAKE_C_COMPILER /usr/bin/clang)
-SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
+# SET(CMAKE_C_COMPILER /usr/bin/clang)
+# SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
+
+SET(CMAKE_C_COMPILER /usr/bin/gcc)
+SET(CMAKE_CXX_COMPILER /usr/bin/g++)
 
 include_directories(./include)
 
 # Select flags.
-# set(CMAKE_CXX_FLAGS "-O0 -g -Wall -fsanitize=address")
-set(CMAKE_CXX_FLAGS "-O0 -g -Wall -fsanitize=address")
+set(CMAKE_CXX_FLAGS "-O0 -g -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -fsanitize=address")
 
