@@ -1,3 +1,13 @@
+/**
+ * @file testRoute.cpp
+ * @author guanzhichao (vbcpascal@gmail.com)
+ * @version 0.1
+ * @date 2019-11-07
+ *
+ * @brief Test: routing and routing algorithm
+ *
+ */
+
 #include "api.h"
 #include "router.h"
 
